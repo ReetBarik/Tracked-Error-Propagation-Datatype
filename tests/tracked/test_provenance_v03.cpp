@@ -142,6 +142,39 @@ TEST_CASE("scope_appends_suffix") {
 }
 
 // ============================================================
+// 6b. Free push_scope/pop_scope wrap the same stack (no block)
+// ============================================================
+
+TEST_CASE("push_pop_scope_suffix") {
+    clear();
+    auto a = track("a", 3.0);
+    auto b = track("b", 1.0);
+
+    // A declaration statement can be wrapped without a lexical block: `x`
+    // remains visible after pop_scope(), yet the op inside carries the suffix.
+    tracked::push_scope("line=f.h:10");
+    auto x = tracked::sub(a, b, TRACKED_HERE);   // ends with @line=f.h:10
+    tracked::pop_scope();
+    REQUIRE(ends_with(x.id(), "@line=f.h:10"));
+
+    // popped: subsequent ops are unscoped again, and `x` is still usable here
+    auto y = tracked::sub(x, b, TRACKED_HERE);
+    REQUIRE(!ends_with(y.id(), "@line=f.h:10"));
+
+    // push/pop nests under an enclosing RAII scope, joining with '/'
+    {
+        tracked::scope outer("run=A");
+        tracked::push_scope("line=f.h:20");
+        auto r = tracked::sub(a, b, TRACKED_HERE);
+        tracked::pop_scope();
+        REQUIRE(ends_with(r.id(), "@run=A/line=f.h:20"));
+        // back to just the outer scope after pop
+        auto r2 = tracked::sub(a, b, TRACKED_HERE);
+        REQUIRE(ends_with(r2.id(), "@run=A"));
+    }
+}
+
+// ============================================================
 // 7. Journal flush emits the v0.3 schema
 // ============================================================
 

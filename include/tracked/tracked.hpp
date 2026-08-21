@@ -108,6 +108,22 @@ public:
     scope& operator=(const scope&) = delete;
 };
 
+// ---- Free scope push/pop ----------------------------------------------------
+//
+// The RAII `scope` class scopes a *lexical block*.  Some instrumentation must
+// scope a single statement that includes a declaration — brace-wrapping such a
+// statement (`{ scope s(...); T x = ...; }`) would scope `x` out of the enclosing
+// block.  These free functions push/pop the same thread-local stack without a
+// block, so a declaration statement can be wrapped as
+// `push_scope("line=f.h:10"); T x = ...; pop_scope();` with `x` still in scope.
+// Same LIFO contract as `scope`: every push must be balanced by exactly one pop.
+inline void push_scope(std::string ctx) {
+    detail::scope_stack.push_back(std::move(ctx));
+}
+inline void pop_scope() {
+    detail::scope_stack.pop_back();
+}
+
 // ---- Forward declarations (definitions after the class) ---------------------
 
 template <class T> class Tracked;
