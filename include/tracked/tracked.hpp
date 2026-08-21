@@ -25,10 +25,12 @@
 
 #include <tracked/journal.hpp>
 #include <algorithm>
+#include <cassert>
 #include <cmath>
 #include <cstdint>
 #include <limits>
 #include <set>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -64,6 +66,24 @@ inline std::set<std::string> prov_union(const std::set<std::string>& a,
 // by the RAII scope class) and deliberately NOT reset by clear().
 
 inline thread_local std::vector<std::string> scope_stack;
+
+// v1 scope grammar (docs/SCHEMA.md, normative): a component is `key=value`
+// with non-empty key and value; neither side may contain '/' (the stack
+// joiner) or a second '=' (the key/value splitter). A malformed component
+// silently corrupts every downstream grouping, so this fails fast at the push
+// site in all build types (the scan is trivially cheap next to record
+// emission).
+inline void validate_scope_component(const std::string& ctx) {
+    auto eq = ctx.find('=');
+    bool ok = eq != std::string::npos && eq > 0 && eq + 1 < ctx.size()
+           && ctx.find('/') == std::string::npos
+           && ctx.find('=', eq + 1) == std::string::npos;
+    if (!ok)
+        throw std::invalid_argument(
+            "tracked: invalid scope component \"" + ctx
+            + "\": must be key=value with non-empty key/value and no '/' or "
+              "second '='");
+}
 
 // Join the scope stack with '/', prefixed with '@'.  Empty when no scope.
 inline std::string current_scope_suffix() {
@@ -102,7 +122,10 @@ inline TrackedId make_id(std::string_view op, const SourceLocation& loc) {
 //   { tracked::scope s("s=1"); ... }   // ids get "@run=A/s=1"
 class scope {
 public:
-    explicit scope(std::string ctx) { detail::scope_stack.push_back(std::move(ctx)); }
+    explicit scope(std::string ctx) {
+        detail::validate_scope_component(ctx);   // throws std::invalid_argument
+        detail::scope_stack.push_back(std::move(ctx));
+    }
     ~scope() { detail::scope_stack.pop_back(); }
     scope(const scope&)            = delete;
     scope& operator=(const scope&) = delete;
@@ -118,9 +141,11 @@ public:
 // `push_scope("line=f.h:10"); T x = ...; pop_scope();` with `x` still in scope.
 // Same LIFO contract as `scope`: every push must be balanced by exactly one pop.
 inline void push_scope(std::string ctx) {
+    detail::validate_scope_component(ctx);       // throws std::invalid_argument
     detail::scope_stack.push_back(std::move(ctx));
 }
 inline void pop_scope() {
+    assert(!detail::scope_stack.empty() && "pop_scope without matching push");
     detail::scope_stack.pop_back();
 }
 
@@ -323,18 +348,28 @@ Tracked<T> add(const Tracked<T>& a, const Tracked<T>& b, SourceLocation loc) {
     T abs_res = std::abs(res);
     T abs_sum = std::abs(a.value_) + std::abs(b.value_);
     T cond;
-    if (a.value_ == -b.value_ && a.value_ != T(0)) {
+    journal::EmitFlags flags;
+    if (a.value_ == -b.value_ && a.value_ != T(0)
+            && std::isfinite((double)a.value_)) {
         // Exact cancellation of x + (-x); result is exactly 0, no precision lost.
         // (The a != 0 guard is required because IEEE has 0 == -0: without it we
-        // would conflate 0 + (-0) with meaningful cancellation.)
+        // would conflate 0 + (-0) with meaningful cancellation. The finiteness
+        // guard keeps inf + (-inf) — which produces NaN, not 0 — out of here;
+        // it falls through to the saturated cap="nan" case below.)
         cond = T(1);
+        flags.exact_tie = true;
     } else if (abs_res > T(0)) {
         cond = abs_sum / abs_res;
+    } else if (abs_sum == T(0)) {
+        // Both operands exactly zero (0 + 0, 0 + -0): exact zero tie, no
+        // precision lost.
+        cond = T(1);
+        flags.exact_tie = true;
     } else {
-        // abs_res == 0 and not an exact x + (-x) cancellation. abs_sum == 0 iff
-        // both operands are zero (0 + 0, 0 + -0) — no precision lost, cond = 1.
-        // Otherwise abs_res underflowed to 0 from unequal inputs — genuine loss.
-        cond = (abs_sum == T(0)) ? T(1) : T(1) / unit_roundoff<T>();
+        // abs_res == 0 from unequal inputs (flush-to-zero underflow) — genuine
+        // loss — or a NaN result that fell through every guard above.
+        cond = T(1) / unit_roundoff<T>();
+        flags.cap = std::isnan((double)res) ? "nan" : "add_uflow";
     }
     T max_in_err = std::max(a.rel_err_bound_, b.rel_err_bound_);
     T new_err    = cond * (max_in_err + unit_roundoff<T>());
@@ -343,7 +378,7 @@ Tracked<T> add(const Tracked<T>& a, const Tracked<T>& b, SourceLocation loc) {
     auto pv      = detail::prov_union(a.prov_vars_,   b.prov_vars_);
     auto pc      = detail::prov_union(a.prov_consts_, b.prov_consts_);
     journal::emit("add", loc, id, {a.id_, b.id_},
-        (double)res, (double)cond, (double)new_err, pv, pc);
+        (double)res, (double)cond, (double)new_err, pv, pc, flags);
     return Tracked<T>(res, new_err, new_cond, std::move(id), std::move(pv), std::move(pc));
 }
 
@@ -353,15 +388,21 @@ Tracked<T> sub(const Tracked<T>& a, const Tracked<T>& b, SourceLocation loc) {
     T abs_res = std::abs(res);
     T abs_sum = std::abs(a.value_) + std::abs(b.value_);
     T cond;
-    if (a.value_ == b.value_) {
+    journal::EmitFlags flags;
+    if (a.value_ == b.value_ && std::isfinite((double)a.value_)) {
         // Exact cancellation: result is exactly 0, no precision lost.
-        // (Also covers 0 - 0 and 0 - -0, previously handled by abs_sum == 0.)
+        // (Also covers 0 - 0 and 0 - -0, previously handled by abs_sum == 0.
+        // The finiteness guard keeps inf - inf — which produces NaN, not 0 —
+        // out of here; it falls through to the saturated cap="nan" case.)
         cond = T(1);
+        flags.exact_tie = true;
     } else if (abs_res > T(0)) {
         cond = abs_sum / abs_res;
     } else {
-        // abs_res == 0 but a != b (e.g., subnormal underflow) — genuine loss.
+        // abs_res == 0 but a != b (flush-to-zero underflow) — genuine loss —
+        // or a NaN result that fell through the guards above.
         cond = T(1) / unit_roundoff<T>();
+        flags.cap = std::isnan((double)res) ? "nan" : "sub_uflow";
     }
     T max_in_err = std::max(a.rel_err_bound_, b.rel_err_bound_);
     T new_err    = cond * (max_in_err + unit_roundoff<T>());
@@ -370,7 +411,7 @@ Tracked<T> sub(const Tracked<T>& a, const Tracked<T>& b, SourceLocation loc) {
     auto pv      = detail::prov_union(a.prov_vars_,   b.prov_vars_);
     auto pc      = detail::prov_union(a.prov_consts_, b.prov_consts_);
     journal::emit("sub", loc, id, {a.id_, b.id_},
-        (double)res, (double)cond, (double)new_err, pv, pc);
+        (double)res, (double)cond, (double)new_err, pv, pc, flags);
     return Tracked<T>(res, new_err, new_cond, std::move(id), std::move(pv), std::move(pc));
 }
 

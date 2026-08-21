@@ -48,9 +48,11 @@ seeds `prov_consts` (recorded for audit, never reported as an origin);
 provenance role — reach for it only when a scratch scalar genuinely doesn't
 warrant a name. See [docs/PROVENANCE.md](docs/PROVENANCE.md).
 
-Each journal record (schema **v0.3**) looks like:
+The journal (schema **v1**, normative spec: [docs/SCHEMA.md](docs/SCHEMA.md))
+starts with a header record and has one record per op:
 
 ```json
+{"schema":1,"library_version":"1.0.0","keys":["op","at","id","in","val","cond","rel_err","prov_vars","prov_consts"]}
 {"op":"sub","at":"main.cpp:main:10","id":"sub@main.cpp:10#1",
  "in":["a","b"],"val":1e-12,"cond":2e12,"rel_err":2.2e-4,
  "prov_vars":["a","b"],"prov_consts":[]}
@@ -59,7 +61,8 @@ Each journal record (schema **v0.3**) looks like:
 Every value carries a stable `id`; `in` lists the **ids of the direct
 operands** verbatim, so the journal is a walkable DAG. `cond` is the local
 condition number of the op; bits lost ≈ `log2(cond)`, decimal digits lost ≈
-`log10(cond)`.
+`log10(cond)`. Saturated records carry a `cap` cause, exact-cancellation ties
+carry `exact_tie`, and NaN/±Inf encode losslessly as `"nan"`/`"inf"`/`"-inf"`.
 
 ## Provenance and attribution
 

@@ -52,15 +52,24 @@ Tracked<T> log(const Tracked<T>& a, SourceLocation loc = {}) {
     using std::log;
     T res     = log(a.value_);
     T ln_abs  = std::abs(res);
-    // Cap condition at 1/u when |log(x)| is smaller than u (x ≈ 1).
-    T cond    = (ln_abs > unit_roundoff<T>()) ? T(1) / ln_abs : T(1) / unit_roundoff<T>();
+    // Cap condition at 1/u when |log(x)| is smaller than u (x ≈ 1). A NaN
+    // result (log of a negative) falls into the cap branch too — the ordinary
+    // FP comparison is false for NaN — and is labeled cap="nan", not "log".
+    T cond;
+    journal::EmitFlags flags;
+    if (ln_abs > unit_roundoff<T>()) {
+        cond = T(1) / ln_abs;
+    } else {
+        cond = T(1) / unit_roundoff<T>();
+        flags.cap = std::isnan((double)res) ? "nan" : "log";
+    }
     T new_err  = cond * (a.rel_err_bound_ + unit_roundoff<T>());
     T new_cond = std::max(a.max_cond_seen_, cond);
     TrackedId id = detail::make_id("log", loc);
     auto pv = a.prov_vars_;
     auto pc = a.prov_consts_;
     journal::emit("log", loc, id, {a.id_},
-        (double)res, (double)cond, (double)new_err, pv, pc);
+        (double)res, (double)cond, (double)new_err, pv, pc, flags);
     return Tracked<T>(res, new_err, new_cond, std::move(id), std::move(pv), std::move(pc));
 }
 
@@ -89,16 +98,21 @@ Tracked<T> sin(const Tracked<T>& a, SourceLocation loc = {}) {
     T u      = unit_roundoff<T>();
     T abs_x  = abs(a.value_);
     T abs_s  = abs(res);
-    T cond   = (abs_s >= u * abs_x)
-             ? abs_x * abs(cos(a.value_)) / abs_s
-             : T(1) / u;
+    T cond;
+    journal::EmitFlags flags;
+    if (abs_s >= u * abs_x) {
+        cond = abs_x * abs(cos(a.value_)) / abs_s;
+    } else {
+        cond = T(1) / u;
+        flags.cap = std::isnan((double)res) ? "nan" : "sin";
+    }
     T new_err  = cond * (a.rel_err_bound_ + u);
     T new_cond = std::max(a.max_cond_seen_, cond);
     TrackedId id = detail::make_id("sin", loc);
     auto pv = a.prov_vars_;
     auto pc = a.prov_consts_;
     journal::emit("sin", loc, id, {a.id_},
-        (double)res, (double)cond, (double)new_err, pv, pc);
+        (double)res, (double)cond, (double)new_err, pv, pc, flags);
     return Tracked<T>(res, new_err, new_cond, std::move(id), std::move(pv), std::move(pc));
 }
 
@@ -111,16 +125,21 @@ Tracked<T> cos(const Tracked<T>& a, SourceLocation loc = {}) {
     T u      = unit_roundoff<T>();
     T abs_x  = abs(a.value_);
     T abs_c  = abs(res);
-    T cond   = (abs_c >= u * abs_x)
-             ? abs_x * abs(sin(a.value_)) / abs_c
-             : T(1) / u;
+    T cond;
+    journal::EmitFlags flags;
+    if (abs_c >= u * abs_x) {
+        cond = abs_x * abs(sin(a.value_)) / abs_c;
+    } else {
+        cond = T(1) / u;
+        flags.cap = std::isnan((double)res) ? "nan" : "cos";
+    }
     T new_err  = cond * (a.rel_err_bound_ + u);
     T new_cond = std::max(a.max_cond_seen_, cond);
     TrackedId id = detail::make_id("cos", loc);
     auto pv = a.prov_vars_;
     auto pc = a.prov_consts_;
     journal::emit("cos", loc, id, {a.id_},
-        (double)res, (double)cond, (double)new_err, pv, pc);
+        (double)res, (double)cond, (double)new_err, pv, pc, flags);
     return Tracked<T>(res, new_err, new_cond, std::move(id), std::move(pv), std::move(pc));
 }
 
@@ -135,7 +154,14 @@ Tracked<T> atan2(const Tracked<T>& y, const Tracked<T>& x, SourceLocation loc = 
     T abs_res  = abs(res);
     T denom    = (x.value_ * x.value_ + y.value_ * y.value_) * abs_res;
     T numer    = T(2) * abs(x.value_ * y.value_);
-    T cond     = (abs_res >= u) ? numer / denom : T(1) / u;
+    T cond;
+    journal::EmitFlags flags;
+    if (abs_res >= u) {
+        cond = numer / denom;
+    } else {
+        cond = T(1) / u;
+        flags.cap = std::isnan((double)res) ? "nan" : "atan2";
+    }
     T max_in_err = std::max(y.rel_err_bound_, x.rel_err_bound_);
     T new_err    = cond * (max_in_err + u);
     T new_cond   = std::max({y.max_cond_seen_, x.max_cond_seen_, cond});
@@ -143,7 +169,7 @@ Tracked<T> atan2(const Tracked<T>& y, const Tracked<T>& x, SourceLocation loc = 
     auto pv      = detail::prov_union(y.prov_vars_,   x.prov_vars_);
     auto pc      = detail::prov_union(y.prov_consts_, x.prov_consts_);
     journal::emit("atan2", loc, id, {y.id_, x.id_},
-        (double)res, (double)cond, (double)new_err, pv, pc);
+        (double)res, (double)cond, (double)new_err, pv, pc, flags);
     return Tracked<T>(res, new_err, new_cond, std::move(id), std::move(pv), std::move(pc));
 }
 

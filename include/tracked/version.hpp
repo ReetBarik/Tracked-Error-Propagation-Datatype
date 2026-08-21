@@ -11,9 +11,10 @@
 #define TRACKED_VERSION_PATCH 0
 #define TRACKED_VERSION_STRING "1.0.0"
 
-// On-disk JSONL journal schema version.
-//   0 = headerless pre-v1 stream (the v0.3/v0.4 record format: 9 keys, no
-//       header line, NaN->null and +/-Inf clamped to +/-DBL_MAX).
-// Version 1 adds a mandatory header record as line 1 of every journal; readers
-// hard-require it or explicitly enter legacy mode.
-#define TRACKED_JOURNAL_SCHEMA_VERSION 0
+// On-disk JSONL journal schema version. See docs/SCHEMA.md (normative).
+//   1 = header record as line 1, optional cap/exact_tie record keys,
+//       non-finite string sentinels ("nan"/"inf"/"-inf"), emitter-side JSON
+//       escaping, validated scope grammar.
+// (0 was the headerless pre-v1 stream: 9 keys, no header line, NaN->null,
+// +/-Inf clamped to +/-DBL_MAX. Readers need an explicit legacy mode for it.)
+#define TRACKED_JOURNAL_SCHEMA_VERSION 1
