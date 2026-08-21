@@ -89,6 +89,30 @@ for (int s = 0; s < N; ++s) {
 Full design rationale, the id scheme, scope semantics, the graph model, and
 migration notes from v0.2 are in [docs/PROVENANCE.md](docs/PROVENANCE.md).
 
+## Install & consume
+
+The library is header-only C++17; there are three ways to consume it.
+
+**1. Install + `find_package`:**
+
+```bash
+cmake -B build -DTRACKED_BUILD_TESTS=OFF
+cmake --install build --prefix /your/prefix
+```
+
+```cmake
+find_package(tracked 1.0 CONFIG REQUIRED)
+target_link_libraries(your_target PRIVATE tracked::tracked)
+```
+
+**2. `add_subdirectory` / FetchContent:** the test suite (and its Catch2
+network fetch) is off by default when the project is not top-level
+(`TRACKED_BUILD_TESTS`), so embedding is offline-safe. Link `tracked::tracked`.
+
+**3. Vendored headers (git subtree / copy):** add `include/` to your include
+path. `include/tracked/version.hpp` is committed (not configure-generated), so
+version macros work without CMake.
+
 ## Build & test
 
 No external dependencies beyond a C++17 compiler and CMake (Catch2 is fetched
@@ -99,6 +123,8 @@ cmake -B build -DCMAKE_BUILD_TYPE=Debug
 cmake --build build -j$(nproc)
 cd build && ctest --output-on-failure
 ```
+
+CI runs the suite on ubuntu + macos (`.github/workflows/ci.yml`).
 
 ## What's included
 
