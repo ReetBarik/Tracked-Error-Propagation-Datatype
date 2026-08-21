@@ -134,7 +134,8 @@ CI runs the suite on ubuntu + macos (`.github/workflows/ci.yml`).
 - **`include/tracked/`** — the library:
   - `tracked.hpp` — `Tracked<T>`, `track()`, `constant()`, `literal()`, `scope`,
     `opaque()`, arithmetic.
-  - `ops.hpp` — `sqrt`, `exp`, `log`, `abs`, `sin`, `cos`, `atan2` with
+  - `ops.hpp` — `sqrt`, `exp`, `log`, `abs`, `sin`, `cos`, `atan2`, `log1p`,
+    `expm1`, `hypot`, `fma` with
     per-op condition numbers.
   - `complex.hpp` — `tracked::Complex<T>`, full complex math decomposed into
     real ops so each is visible in the journal.

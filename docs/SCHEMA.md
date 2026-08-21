@@ -93,6 +93,8 @@ op-record keys they do not recognize (additive keys never bump the schema).
   | `"atan2"` | `atan2(y,x)` with `\|result\| < u`, finite result |
   | `"add_uflow"` | `a + b` flushed to exactly 0 from unequal, finite inputs |
   | `"sub_uflow"` | `a - b` flushed to exactly 0 with `a ≠ b`, finite inputs |
+  | `"log1p"` | `log1p(x)` with `x ≈ -1` (the log singularity), finite result |
+  | `"fma_uflow"` | `fma(a,b,c)` flushed to exactly 0 without an exact tie |
   | `"nan"` | the op produced NaN (NaN operands fall through every saturation guard, so the cond is reported saturated with this cause rather than a misleading one) |
 
   Note on the `*_uflow` causes: under default IEEE round-to-nearest with

@@ -223,7 +223,80 @@ By the two-input form (2):
 the origin. **Cap:** `1/u` when `|atan2(y,x)| < u`. This formula governs the
 imaginary part of `Complex log`, where it makes the branch cut visible.
 
-### 3.8 Summary table
+### 3.8 `log1p(x)`,  `f = ln(1+x)`
+
+`f'(x) = 1/(1+x)`. By (1):
+
+```
+     |  x / (1+x)  |            x
+κ  = | ----------- | =  ----------------                           (11a)
+     |   ln(1+x)   |     (1+x) · ln(1+x)
+```
+
+As `x → 0`, `ln(1+x) → x`, so `κ → 1`: **well-conditioned exactly where
+computing `log(1+x)` through the add would cancel** (the add `1+x` commits a
+relative error ~`u/x` before `log` ever sees it; `log1p` takes `x` directly).
+That is why `log1p` is the canonical *fix* for the `log`-near-1 signal. Blows
+up only as `x → −1⁺` (the log singularity). **Cap:** `1/u` when
+`|(1+x)·ln(1+x)| < u·|x|` (`cap="log1p"`); at `x = 0` the implementation
+returns the limit `κ = 1` exactly.
+
+### 3.9 `expm1(x)`,  `f = eˣ − 1`
+
+`f'(x) = eˣ`. By (1):
+
+```
+     |  x · eˣ  |     |      (     1 )|
+κ  = | -------- |  =  | x ·  ( 1 + - )|                            (11b)
+     |  eˣ − 1  |     |      (     f )|
+```
+
+(the second form, via `eˣ = f + 1`, is what the implementation computes — it
+avoids `∞/∞` for large `x`). As `x → 0`, `κ → 1`: well-conditioned exactly
+where `exp(x) − 1` through the sub would cancel — the canonical fix for that
+cascade signal. `κ ≈ |x|` for large positive `x` (same growth as `exp`),
+`κ → 0` as `x → −∞`. Finite for all finite `x` — **no saturation cap** (only
+a NaN input caps, `cap="nan"`).
+
+### 3.10 `hypot(x, y)`,  `f = √(x² + y²)`
+
+Two-input. `∂f/∂x = x/f`, so the per-input relative sensitivities are
+
+```
+x · ∂f/∂x       x²                    y²
+---------- = -------- ∈ [0, 1],    -------- ∈ [0, 1]
+    f         x² + y²               x² + y²
+```
+
+They sum to exactly 1, so under the max-gated model (2) the joint bound is
+`κ = 1`: **never worse-conditioned than its inputs**, and (as a library
+function) computed without the intermediate overflow/underflow that squaring
+would commit — the canonical fix for a range-guard violation in `√(x²+y²)`.
+Never capped.
+
+### 3.11 `fma(a, b, c)`,  `f = a·b + c` (single rounding)
+
+The multiply is exact inside an fma (one rounding at the end), so the
+conditioning is the *add's*, with the product as one addend:
+
+```
+      |a·b| + |c|
+κ  = -------------                                                 (11c)
+      |a·b + c|
+```
+
+Cancellation between `a·b` and `c` is fma's hotspot — and fma is also the
+canonical *fix* for that cancellation, because the product enters it exactly
+(no committed rounding before the subtract; this is how compensated products
+and Kahan-style algorithms exploit it). Same special cases as `add`: an exact
+zero tie (`a·b == −c`) reports `κ = 1` with `exact_tie`; flush-to-zero
+underflow caps at `1/u` (`cap="fma_uflow"`); NaN caps (`cap="nan"`).
+*Approximation:* the implementation evaluates (11c) with the **rounded**
+product `fl(a·b)` (the exact product is not observable in a double), so in the
+rare corner where the exact product ties with `−c` but the rounded one does
+not, the resulting exact zero is labeled `fma_uflow` rather than `exact_tie`.
+
+### 3.12 Summary table
 
 | Op | `f` | `κ` (this library) | Strict κ from (1)/(2) | Note |
 |---|---|---|---|---|
@@ -239,6 +312,10 @@ imaginary part of `Complex log`, where it makes the branch cut visible.
 | `sin(x)`   | `sin x` | `\|x·cot x\|` | same | cap `1/u` |
 | `cos(x)`   | `cos x` | `\|x·tan x\|` | same | cap `1/u` |
 | `atan2(y,x)`| `atan2` | `2\|xy\|/((x²+y²)\|atan2\|)` | same | cap `1/u` |
+| `log1p(x)` | `ln(1+x)` | `\|x/((1+x)·ln(1+x))\|` | same | cap `1/u`; κ→1 at 0 |
+| `expm1(x)` | `eˣ−1` | `\|x·eˣ/(eˣ−1)\|` | same | no cap; κ→1 at 0 |
+| `hypot(x,y)` | `√(x²+y²)` | **1** | ≤ 1 per input | max-model, §3.10 |
+| `fma(a,b,c)` | `a·b+c` | `(\|a·b\|+\|c\|)/\|a·b+c\|` | same | cancellation; §3.11 |
 
 ---
 
@@ -396,6 +473,10 @@ can be re-checked.
 | `sin` | `\|x·cot x\|` | (1) with `f=sin x` | T&B Lecture 12 framework |
 | `cos` | `\|x·tan x\|` | (1) with `f=cos x` | T&B Lecture 12 framework |
 | `atan2` | `2\|xy\|/((x²+y²)\|atan2\|)` | (2) with the `atan2` partials (§3.7) | T&B Lecture 12 framework |
+| `log1p` | `\|x/((1+x)·ln(1+x))\|` | (1) with `f=ln(1+x)` (§3.8) | T&B Lecture 12 framework; motivation: Goldberg §"Cancellation" |
+| `expm1` | `\|x·eˣ/(eˣ−1)\|` | (1) with `f=eˣ−1` (§3.9) | T&B Lecture 12 framework |
+| `hypot` | 1 *(per-input ≤ 1)* | (2) with `f=√(x²+y²)` (§3.10) | Higham §27.5 (hypot without overflow) |
+| `fma` | `(\|a·b\|+\|c\|)/\|a·b+c\|` | (2), exact product + one rounding (§3.11) | Higham §2.6 (fused multiply-add) |
 | error model (12) | `κ·(max_err + u)` | standard model `fl=(a op b)(1+δ)` | Higham §2.2; T&B Lecture 13 |
 | complex `/` | Smith branches | overflow avoidance, not conditioning | **Smith 1962**; Higham §3.6 |
 | Kahan test | compensated sum | swamping vs compensation (§4.2) | **Kahan 1965**; Higham §4.3 |
