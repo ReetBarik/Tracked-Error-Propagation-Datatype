@@ -218,8 +218,14 @@ _NUMERIC_KEYS = ("val", "cond", "rel_err")
 
 def _map_v1_record(rec: dict, path) -> dict:
     """Apply the v1 reader rules to one op record (SCHEMA.md 'Non-finite
-    encoding'): exact sentinels only, no nulls, alarm-direction mapping."""
-    nonfinite = False
+    encoding'): exact sentinels only, no nulls, alarm-direction mapping.
+
+    Alongside the ``_nonfinite`` flag, the original sentinels are stashed in
+    ``_sentinels`` ({key: sentinel string}) — the alarm-direction clamp is
+    aggregation policy, but a *display* consumer (the viewer drill-down) must
+    show "nan"/"inf" rather than a fabricated ±DBL_MAX.
+    """
+    sentinels: dict[str, str] = {}
     for k in _NUMERIC_KEYS:
         if k not in rec:
             continue
@@ -234,13 +240,14 @@ def _map_v1_record(rec: dict, path) -> dict:
                     f"{path}: invalid value {v!r} for {k!r} — v1 accepts "
                     "exactly the sentinels \"nan\"/\"inf\"/\"-inf\"")
             rec[k] = -DBL_MAX_CLAMP if v == "-inf" else DBL_MAX_CLAMP
-            nonfinite = True
-    if nonfinite:
+            sentinels[k] = v
+    if sentinels:
         rec["_nonfinite"] = True
+        rec["_sentinels"] = sentinels
     return rec
 
 
-def read_journal(path, legacy: bool = False) -> Iterator[dict]:
+def read_journal(path, legacy: bool = False, on_header=None) -> Iterator[dict]:
     """Stream op records from a journal, enforcing the SCHEMA.md reader rules.
 
     v1 mode (default): line 1 MUST be a header record with ``schema == 1``;
@@ -251,6 +258,11 @@ def read_journal(path, legacy: bool = False) -> Iterator[dict]:
     Legacy mode (explicit opt-in for pre-v1 journals): byte-identical behavior
     to the historical reducer, except any record carrying a ``schema`` key
     hard-fails (v1 contamination).
+
+    ``on_header``, when given, is called with every validated header record
+    (line 1 and mid-stream shard boundaries) — headers carry metadata
+    (``library_version``) that aggregation discards but the viewer surfaces.
+    Never called in legacy mode (headerless by definition).
     """
     it = _read_jsonl(Path(path))
     if legacy:
@@ -272,12 +284,16 @@ def read_journal(path, legacy: bool = False) -> Iterator[dict]:
     if first.get("schema") != 1:
         raise ValueError(
             f"{path}: unsupported journal schema {first.get('schema')!r}")
+    if on_header is not None:
+        on_header(first)
     for rec in it:
         if "schema" in rec:                   # mid-stream shard boundary
             if rec.get("schema") != 1:
                 raise ValueError(
                     f"{path}: mixed journal schemas mid-stream "
                     f"({rec.get('schema')!r} after 1)")
+            if on_header is not None:
+                on_header(rec)
             continue
         yield _map_v1_record(rec, path)
 
