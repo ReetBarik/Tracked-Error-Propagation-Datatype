@@ -28,6 +28,23 @@ reproduces AMP's historical `stability_reducer.py` byte-for-byte on the frozen
 v0.3 fixture journals (`tests/parity/`); CI enforces this against committed
 goldens.
 
+## tracked-view
+
+Journal run → self-contained static HTML viewer (no npm, no CDN; works from
+`file://`). Two views: a unit → function → region DAG with precision
+telemetry and a per-sample op-level drill-down, and an actionable report
+(ranked hotspot cards + the decision ledger). The distiller emits a small
+shard-invariant view model (dump it with `--json`); the HTML template ships
+inside the wheel. Full design + view-model contract: `viewer/README.md`.
+
+```bash
+tracked-view viewer/fixtures/demo -o view.html          # run dir (*.jsonl)
+tracked-view shard0.jsonl shard1.jsonl -o view.html --json model.json
+```
+
+Shares the reducer's policy seam: `--predict name=u`, `--legacy`,
+`--saturation-cap X` (non-double-T journals).
+
 ## tracked-line-inject
 
 libclang-driven per-statement `line=<basename>:<N>` scope injection: emits a

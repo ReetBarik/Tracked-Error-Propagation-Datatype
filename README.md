@@ -148,8 +148,14 @@ CI runs the suite on ubuntu + macos (`.github/workflows/ci.yml`).
 - **`examples/complex_log_micro/`** — optional Kokkos-based micro-driver
   demonstrating the **opaque-barrier** pattern for kernels that call framework
   math you can't see into. Not built by the top-level CMake; see its README.
-- **`viewer/`** — (placeholder) a zero-dependency single-file HTML viewer for
-  journal runs; see its README.
+- **`examples/viewer_kernels/`** — nine small example kernels + a driver
+  written to the chunkable-driver contract; generates the committed viewer
+  fixtures (`viewer/fixtures/`) and the viewer's per-sample drill-down slices.
+- **`viewer/`** — the run viewer: `tracked-view <run_dir> -o view.html`
+  distills a journal run into a zero-dependency single-file HTML with a
+  unit → function → region DAG (per-sample op-level drill-down) and an
+  actionable report (ranked hotspots + decision ledger). Open
+  `viewer/demo/view.html` for a committed demo; see `viewer/README.md`.
 - **`docs/`** — design records (`PLAN.md`, `PLAN-v1.1.md`, `PLAN-v0.3.md`,
   `PLAN-v0.4.md`), `PROVENANCE.md` (the provenance model, incl. literals), and
   `CONDITION_NUMBERS.md` (full derivations of every per-op condition number, the

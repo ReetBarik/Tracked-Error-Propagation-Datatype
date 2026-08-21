@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tracked run viewer</title>
+<!--
+  Single-file viewer for Tracked<T> journal runs (docs/TRACKED_LIBRARY_PLAN.md
+  Phase 6; design record: viewer/README.md).  Zero dependencies: no npm, no
+  CDN, no fetch, no external fonts — works from file://.
+
+  The view model is injected by `tracked-view` into the JSON script block
+  below (the first occurrence of the injection marker in this file — do not
+  name it anywhere above the script block); opened standalone the template
+  shows its empty state.
+
+  Visual encoding (validated against the dataviz reference palette, both
+  modes; see viewer/README.md for the validator runs):
+    - signal class = categorical identity: local_cancellation blue slot 1,
+      cancellation_cascade orange slot 2, log_near_root aqua slot 3;
+      stable + atan2_saturation = neutral (saturation carries its cap badge).
+      Chips + a fixed legend everywhere: identity is never color-alone.
+    - status colors are reserved for state: range violation (critical),
+      non-finite (serious) — always icon + label.
+    - hotspot meter = digits lost from max_rel_err on an explicit 16-digit
+      track (never cond — a cascade ranks #1 *because* cond is low).
+    - rel_err decade histogram clamped to [1e-17, 1) with labeled overflow
+      bins; sequential single hue.
+    - drill-down op DAG: sequential ramp over log10(cond) of finite,
+      uncapped conds; capped/non-finite nodes badge out of the ramp.
+    - every chart has a table twin; tooltips never gate; all marks are
+      keyboard-focusable.
+  Journal-derived strings are untrusted: they enter the DOM only via
+  textContent.
+-->
+<style>
+  :root {
+    color-scheme: light;
+    /* chart chrome & ink (reference palette) */
+    --surface: #fcfcfb; --page: #f9f9f7;
+    --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #898781;
+    --grid: #e1e0d9; --axis: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    /* categorical class slots (validated all-pairs, light) */
+    --class-local: #2a78d6;    /* slot 1 blue  : local_cancellation  */
+    --class-cascade: #eb6834;  /* slot 2 orange: cancellation_cascade */
+    --class-root: #1baf7a;     /* slot 3 aqua  : log_near_root        */
+    --class-neutral: #898781;  /* stable / atan2_saturation           */
+    /* status (reserved; icon+label always) */
+    --status-critical: #d03b3b; --status-serious: #ec835a;
+    --status-warning: #fab219;  --status-good: #0ca30c;
+    /* sequential ramp anchors (blue) */
+    --seq-lo: #cde2fb; --seq-hi: #0d366b;
+    --bar: #2a78d6;
+    --wash: rgba(11,11,11,0.035);
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface: #1a1a19; --page: #0d0d0d;
+    --ink: #ffffff; --ink-2: #c3c2b7; --ink-3: #898781;
+    --grid: #2c2c2a; --axis: #383835;
+    --border: rgba(255,255,255,0.10);
+    /* dark steps are separately selected, not flipped (validated all-pairs) */
+    --class-local: #3987e5; --class-cascade: #d95926; --class-root: #199e70;
+    --class-neutral: #898781;
+    --seq-lo: #184f95; --seq-hi: #b7d3f6;
+    --bar: #3987e5;
+    --wash: rgba(255,255,255,0.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface: #1a1a19; --page: #0d0d0d;
+      --ink: #ffffff; --ink-2: #c3c2b7; --ink-3: #898781;
+      --grid: #2c2c2a; --axis: #383835;
+      --border: rgba(255,255,255,0.10);
+      --class-local: #3987e5; --class-cascade: #d95926; --class-root: #199e70;
+      --class-neutral: #898781;
+      --seq-lo: #184f95; --seq-hi: #b7d3f6;
+      --bar: #3987e5;
+      --wash: rgba(255,255,255,0.05);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--page); color: var(--ink);
+    font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12px; }
+
+  header.app { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
+    padding: 14px 20px 10px; border-bottom: 1px solid var(--grid); }
+  header.app h1 { font-size: 17px; margin: 0; font-weight: 650; }
+  header.app .meta { color: var(--ink-3); font-size: 12px; }
+  header.app .spacer { flex: 1; }
+  .tabs { display: flex; gap: 4px; }
+  .tabs button, .toggle button, button.linkish {
+    font: inherit; color: var(--ink-2); background: none;
+    border: 1px solid transparent; border-radius: 7px; padding: 5px 12px;
+    cursor: pointer; }
+  .tabs button[aria-selected="true"] { color: var(--ink); font-weight: 650;
+    background: var(--surface); border-color: var(--border); }
+  .tabs button:hover, .toggle button:hover, button.linkish:hover
+    { background: var(--wash); }
+  button.linkish { color: var(--ink); border-color: var(--border);
+    background: var(--surface); font-size: 12px; }
+
+  .filters { display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+    font-size: 13px; color: var(--ink-2); flex-wrap: wrap; }
+  .filters select { font: inherit; color: var(--ink); background: var(--surface);
+    border: 1px solid var(--border); border-radius: 7px; padding: 4px 8px; }
+
+  main { padding: 0 20px 40px; }
+  .layout { display: grid; grid-template-columns: 230px minmax(0,1fr); gap: 16px; }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+
+  .card { background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px; }
+  .card h2 { font-size: 13px; font-weight: 650; margin: 0 0 8px;
+    color: var(--ink-2); text-transform: none; }
+
+  /* unit list */
+  .unit-list { display: flex; flex-direction: column; gap: 6px; }
+  .unit-list button { text-align: left; font: inherit; background: none;
+    border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px;
+    cursor: pointer; color: var(--ink); background: var(--surface); }
+  .unit-list button[aria-selected="true"] { outline: 2px solid var(--class-local);
+    outline-offset: -1px; }
+  .unit-list .uname { font-weight: 650; font-size: 13px; }
+  .unit-list .usub { color: var(--ink-3); font-size: 11px; margin-top: 2px; }
+
+  /* chips & badges: swatch carries color, text stays in ink tokens */
+  .chip { display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; color: var(--ink-2); border: 1px solid var(--border);
+    border-radius: 999px; padding: 1px 8px 1px 5px; background: var(--surface);
+    white-space: nowrap; }
+  .chip .sw { width: 9px; height: 9px; border-radius: 3px; flex: none; }
+  .badge { display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; border-radius: 999px; padding: 1px 8px;
+    border: 1px solid var(--border); color: var(--ink-2); white-space: nowrap; }
+  .badge.critical { border-color: var(--status-critical); color: var(--ink); }
+  .badge.critical .ic { color: var(--status-critical); }
+  .badge.serious { border-color: var(--status-serious); color: var(--ink); }
+  .badge.serious .ic { color: var(--status-serious); }
+  .badge .ic { font-weight: 700; }
+
+  .legend { display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+    font-size: 12px; color: var(--ink-2); margin: 2px 0 10px; }
+  .legend .edge-key { display: inline-flex; align-items: center; gap: 5px; }
+  .legend .edge-key svg { display: block; }
+
+  /* graph */
+  .graph-wrap { overflow: auto; border: 1px solid var(--grid);
+    border-radius: 8px; background: var(--surface); }
+  svg text { fill: var(--ink); }
+  svg .sub { fill: var(--ink-3); }
+  svg .lane-label { fill: var(--ink-2); font-size: 11px; font-weight: 650; }
+  svg .lane-line { stroke: var(--grid); stroke-width: 1; }
+  svg .edge { stroke: var(--axis); stroke-width: 2; fill: none; }
+  svg .edge.chain { stroke: var(--class-cascade); }
+  svg .node rect.box { fill: var(--surface); stroke: var(--border); rx: 6; }
+  svg .node:hover rect.box, svg .node:focus rect.box
+    { stroke: var(--ink-3); }
+  svg .node { cursor: pointer; outline: none; }
+  svg .node:focus-visible rect.box { stroke: var(--ink); stroke-width: 1.5; }
+  svg .accent { rx: 2; }
+
+  /* detail panel & tables */
+  table { border-collapse: collapse; width: 100%; font-size: 12px; }
+  th, td { text-align: left; padding: 4px 10px 4px 0; border-bottom: 1px solid var(--grid);
+    vertical-align: top; }
+  th { color: var(--ink-3); font-weight: 600; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr:hover td { background: var(--wash); }
+
+  .kv { display: grid; grid-template-columns: max-content 1fr; gap: 2px 14px;
+    font-size: 12px; }
+  .kv dt { color: var(--ink-3); } .kv dd { margin: 0; font-variant-numeric: tabular-nums; }
+
+  /* stat tiles */
+  .kpis { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+  .tile { background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 16px; min-width: 110px; }
+  .tile .label { font-size: 12px; color: var(--ink-3); }
+  .tile .value { font-size: 24px; font-weight: 600; }
+
+  /* hotspot cards */
+  .cards { display: grid; gap: 10px; }
+  .hotspot { display: grid; grid-template-columns: 34px minmax(0,1fr); gap: 12px; }
+  .hotspot .rank { font-size: 18px; font-weight: 650; color: var(--ink-3); }
+  .hotspot .loc { font-weight: 650; }
+  .hotspot .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+    margin-top: 4px; }
+  .hotspot .note { color: var(--ink-2); font-size: 12px; margin-top: 4px; }
+  .meter { margin-top: 8px; max-width: 420px; }
+  .meter .track { height: 8px; border-radius: 4px; position: relative;
+    overflow: hidden; }
+  .meter .fill { position: absolute; inset: 0 auto 0 0; border-radius: 4px; }
+  .meter .cap-line { font-size: 11px; color: var(--ink-3); margin-top: 3px;
+    display: flex; justify-content: space-between; }
+  .metrics { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px;
+    color: var(--ink-2); margin-top: 6px; }
+  .metrics b { color: var(--ink); font-weight: 650;
+    font-variant-numeric: tabular-nums; }
+
+  .hist { margin-top: 8px; }
+
+  /* tooltip */
+  #tip { position: fixed; z-index: 10; pointer-events: none; display: none;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 10px; font-size: 12px; max-width: 340px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.18); }
+  #tip .t-title { font-weight: 650; margin-bottom: 3px; }
+  #tip .t-row { display: flex; justify-content: space-between; gap: 14px; }
+  #tip .t-row .v { font-weight: 650; font-variant-numeric: tabular-nums; }
+  #tip .t-row .k { color: var(--ink-2); }
+
+  .empty { text-align: center; color: var(--ink-3); padding: 80px 20px; }
+  .section-gap { margin-top: 16px; }
+  .scroll-x { overflow-x: auto; }
+  .hidden { display: none !important; }
+  .code-line { background: var(--wash); border-radius: 6px; padding: 6px 10px;
+    margin-top: 6px; overflow-x: auto; white-space: nowrap; }
+  footer { color: var(--ink-3); font-size: 11px; padding: 18px 20px;
+    border-top: 1px solid var(--grid); }
+</style>
+</head>
+<body>
+<script type="application/json" id="vm">{"config":{"cascade_cancel_ratio":0.1,"cascade_cond_ceiling":1000.0,"cascade_rel_err":1e-06,"high_cond":1000000.0,"local_cancel_cond":1000000000000000.0,"predictions":{"float":5.960464477539063e-08},"range_max":3.4028234663852886e+38,"range_min_normal":1.1754943508222875e-38,"range_name":"float","saturation_cap":9007199254740992.0},"kind":"tracked_view_model","legacy":false,"library_versions":["1.0.0"],"provenance":{"generator":"tracked-tools","journals":["journal.jsonl"]},"report":{"hotspots":[{"kind":"region","location":"examples/viewer_kernels/kernels.hpp:kahan_step:111","metrics":{"digits_lost":16.0,"max_cond":83885909999.34451,"max_rel_err":1.3575088442282481e+82,"max_sensitivity":1.5284190659704326e+89,"n":96,"p99_rel_err":1e+82,"predictions":{"float":9.110087549510196e+81},"range_ok":true},"note":"elevated per-op cond 8.39e+10","rank":1,"signal_class":"log_near_root","unit":"kahan"},{"kind":"region","location":"examples/viewer_kernels/kernels.hpp:kahan_step:110","metrics":{"digits_lost":16.0,"max_cond":999999996.0988388,"max_rel_err":1.76597636749245e+73,"max_sensitivity":3.056838147225056e+97,"n":96,"p99_rel_err":1e+73,"predictions":{"float":1.8220175190121269e+90},"range_ok":true},"note":"elevated per-op cond 1.00e+09","rank":2,"signal_class":"log_near_root","unit":"kahan"},{"kind":"region","location":"examples/viewer_kernels/kernels.hpp:kahan_step:108","metrics":{"digits_lost":16.0,"max_cond":1.0000000348185556,"max_rel_err":5.340312013168963e+64,"max_sensitivity":3.056838147225056e+97,"n":96,"p99_rel_err":1e+64,"predictions":{"float":1.8220175190121269e+90},"range_ok":true},"note":"rel_err 5.34e+64 with low per-op cond 1.00e+00 (accumulated cancellation)","rank":3,"signal_class":"cancellation_cascade","unit":"kahan"},{"kind":"region","location":"examples/viewer_kernels/kernels.hpp:kahan_step:109","metrics":{"digits_lost":16.0,"max_cond":1.0,"max_rel_err":5.340312013168963e+64,"max_sensitivity":3.056838147225056e+97,"n":96,"p99_rel_err":1e+64,"predictions":{"float":1.8220175190121269e+90},"range_ok":true},"note":"rel_err 5.34e+64 with low per-op cond 1.00e+00 (accumulated cancellation)","rank":4,"signal_class":"cancellation_cascade","unit":"kahan"},{"kind":"region","location":"examples/viewer_kernels/kernels.hpp:exp_taylor:144","metrics":{"digits_lost":16.0,"max_cond":6.866063362643861,"max_rel_err":130682.46576640492,"max_sensitivity":1.3542272360222353e+20,"n":288,"p99_rel_err":10000.0,"predictions":{"float":8071823334826.441},"range_ok":true},"note":"rel_err 1.31e+05 with low per-op cond 6.87e+00 (accumulated cancellation)","rank":5,"signal_class":"cancellation_cascade","unit":"alternating_series"},{"kind":"region","location":"examples/viewer_kernels/kernels.hpp:exp_taylor:142","metrics":{"digits_lost":16.0,"max_cond":6.723838316742608,"max_rel_err":19033.09929783171,"max_sensitivity":1.5897450162000154e+20,"n":288,"p99_rel_err":10000.0,"predictions":{"float":9475618697404.953},"range_ok":true},"note":"rel_err 1.90e+04 with low per-op cond 6.72e+00 (accumulated cancellation)","rank":6,"signal_class":"cancellation_cascade","unit":"alternating_series"},{"kind":"region","location":"examples/viewer_kernels/kernels.hpp:run_range_overflow:246","metrics":{"digits_lost":16.0,"max_cond":0.0,"max_rel_err":5.0,"max_sensitivity":9007199254740992.0,"n":16,"p99_rel_err":1.0,"predictions":{"float":536870912.0},"range_ok":false},"note":"atan2 saturation cap (2**53) only; no genuine hotspot","rank":7,"signal_class":"atan2_saturation","unit":"range_overflow"},{"kind":"region","location":"examples/viewer_kernels/kernels.hpp:phase_angle:213","metrics":{"digits_lost":16.0,"max_cond":1.999477353050873,"max_rel_err":2.0,"max_sensitivity":9007199254740992.0,"n":16,"p99_rel_err":1.0,"predictions":{"float":536870912.0},"range_ok":true},"note":"rel_err 2.00e+00 with low per-op cond 2.00e+00 (accumulated cancellation)","rank":8,"signal_class":"cancellation_cascade","unit":"polar_phase"},{"kind":"region","location":"examples/viewer_kernels/kernels.hpp:phase_angle:214","metrics":{"digits_lost":16.0,"max_cond":1.0,"max_rel_err":2.0,"max_sensitivity":1.0,"n":16,"p99_rel_err":1.0,"predictions":{"float":5.960464477539063e-08},"range_ok":true},"note":"rel_err 2.00e+00 with low per-op cond 1.00e+00 (accumulated cancellation)","rank":9,"signal_class":"cancellation_cascade","unit":"polar_phase"},{"kind":"region","location":"examples/viewer_kernels/kernels.hpp:resolve:218","metrics":{"digits_lost":16.0,"max_cond":9.618353468608949e-17,"max_rel_err":2.0,"max_sensitivity":9007199254740992.0,"n":16,"p99_rel_err":1.0,"predictions":{"float":536870912.0},"range_ok":true},"note":"rel_err 2.00e+00 with low per-op cond 9.62e-17 (accumulated cancellation)","rank":10,"signal_class":"cancellation_cascade","unit":"polar_phase"},{"kind":"region","location":"examples/viewer_kernels/kernels.hpp:resolve:219","metrics":{"digits_lost":16.0,"max_cond":3.8473413874435795e-16,"max_rel_err":2.0,"max_sensitivity":9007199254740992.0,"n":16,"p99_rel_err":1.0,"predictions":{"float":536870912.0},"range_ok":true},"note":"rel_err 2.00e+00 with low per-op cond 3.85e-16 (accumulated cancellation)","rank":11,"signal_class":"cancellation_cascade","unit":"polar_phase"},{"kind":"region","location":"examples/viewer_kernels/kernels.hpp:resolve:220","metrics":{"digits_lost":16.0,"max_cond":1.0,"max_rel_err":2.0,"max_sensitivity":1.0,"n":16,"p99_rel_err":1.0,"predictions":{"float":5.960464477539063e-08},"range_ok":true},"note":"rel_err 2.00e+00 with low per-op cond 1.00e+00 (accumulated cancellation)","rank":12,"signal_class":"cancellation_cascade","unit":"polar_phase"},{"kind":"region","location":"examples/viewer_kernels/kernels.hpp:resolve:221","metrics":{"digits_lost":16.0,"max_cond":1.0,"max_rel_err":2.0,"max_sensitivity":1.0,"n":16,"p99_rel_err":1.0,"predictions":{"float":5.960464477539063e-08},"range_ok":true},"note":"rel_err 2.00e+00 with low per-op cond 1.00e+00 (accumulated cancellation)","rank":13,"signal_class":"cancellation_cascade","unit":"polar_phase"},{"kind":"region","location":"examples/viewer_kernels/kernels.hpp:resolve:222","metrics":{"digits_lost":16.0,"max_cond":1.0,"max_rel_err":2.0,"max_sensitivity":1.0,"n":16,"p99_rel_err":1.0,"predictions":{"float":5.960464477539063e-08},"range_ok":true},"note":"rel_err 2.00e+00 with low per-op cond 1.00e+00 (accumulated cancellation)","rank":14,"signal_class":"cancellation_cascade","unit":"polar_phase"},{"kind":"region","location":"examples/viewer_kernels/kernels.hpp:exp_log_roundtrip:188","metrics":{"digits_lost":16.0,"max_cond":4999999.999456616,"max_rel_err":1.0,"max_sensitivity":9007199254740992.0,"n":16,"p99_rel_err":1.0,"predictions":{"float":536870912.0},"range_ok":true},"note":"elevated per-op cond 5.00e+06","rank":15,"signal_class":"log_near_root","unit":"log_sum_exp"},{"kind":"chain","location":"kernels.hpp:65","metrics":{"digits_lost":15.778151250383644,"max_cond":1801439850948199.2,"max_rel_err":0.6000000000000004,"max_sensitivity":1801439850948199.2,"predictions":{"float":107374182.40000005},"range_ok":true,"samples":16},"note":"cascade chain over 1 line(s), 16 sample(s)","rank":16,"signal_class":"cancellation_cascade","unit":"cancellation"},{"kind":"region","location":"examples/viewer_kernels/kernels.hpp:cancellation_check:67","metrics":{"digits_lost":15.778151250383644,"max_cond":1.0,"max_rel_err":0.6000000000000004,"max_sensitivity":1.0,"n":16,"p99_rel_err":0.1,"predictions":{"float":5.960464477539063e-08},"range_ok":true},"note":"rel_err 6.00e-01 with low per-op cond 1.00e+00 (accumulated cancellation)","rank":17,"signal_class":"cancellation_cascade","unit":"cancellation"},{"kind":"region","location":"kernels.hpp:65","metrics":{"digits_lost":15.778151250383644,"max_cond":1801439850948199.2,"max_rel_err":0.6000000000000003,"max_sensitivity":1801439850948199.2,"n":16,"p99_rel_err":0.1,"predictions":{"float":107374182.40000005},"range_ok":true},"note":"local cond 1.80e+15 exceeds 1e15 (|a-b|->0)","rank":18,"signal_class":"local_cancellation","unit":"cancellation"},{"kind":"chain","location":"examples/viewer_kernels/kernels.hpp:second_difference:162; examples/viewer_kernels/kernels.hpp:second_difference:163","metrics":{"digits_lost":11.647470185213045,"max_cond":66666661151.64239,"max_rel_err":4.4408917311595165e-05,"max_sensitivity":199999983454.92715,"predictions":{"float":11920.927968914935},"range_ok":true,"samples":16},"note":"cascade chain over 2 line(s), 16 sample(s)","rank":19,"signal_class":"cancellation_cascade","unit":"second_difference"},{"kind":"region","location":"examples/viewer_kernels/kernels.hpp:second_difference:164","metrics":{"digits_lost":11.647470185213045,"max_cond":3.00001383460727,"max_rel_err":4.4408917311595165e-05,"max_sensitivity":3.00001383460727,"n":16,"p99_rel_err":1e-05,"predictions":{"float":1.788147589330238e-07},"range_ok":true},"note":"rel_err 4.44e-05 with low per-op cond 3.00e+00 (accumulated cancellation)","rank":20,"signal_class":"cancellation_cascade","unit":"second_difference"}],"hotspots_total":47,"ledger":[{"detail":"48 records carried a non-finite val/cond/rel_err sentinel; aggregates clamp them to the alarm direction (docs/SCHEMA.md)","subject":"run","unit":"*","verdict":"nonfinite_records"},{"caps":{},"detail":"no elevated conditioning or accumulated-error signal","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:exp_taylor:136","unit":"alternating_series","verdict":"stable"},{"caps":{},"detail":"no elevated conditioning or accumulated-error signal","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","unit":"alternating_series","verdict":"stable"},{"caps":{},"detail":"no elevated conditioning or accumulated-error signal","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","unit":"alternating_series","verdict":"stable"},{"caps":{},"detail":"rel_err 1.90e+04 with low per-op cond 6.72e+00 (accumulated cancellation)","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:exp_taylor:142","unit":"alternating_series","verdict":"cancellation_cascade"},{"caps":{},"detail":"rel_err 1.31e+05 with low per-op cond 6.87e+00 (accumulated cancellation)","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:exp_taylor:144","unit":"alternating_series","verdict":"cancellation_cascade"},{"detail":"cascade chain over 1 line(s) in 16 sample(s); max rel_err 6.00e-01","kind":"chain","range":"ok","subject":"kernels.hpp:65","unit":"cancellation","verdict":"cancellation_cascade"},{"caps":{},"detail":"rel_err 6.00e-01 with low per-op cond 1.00e+00 (accumulated cancellation)","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:cancellation_check:67","unit":"cancellation","verdict":"cancellation_cascade"},{"caps":{},"detail":"no elevated conditioning or accumulated-error signal","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:guarded_sum:59","unit":"cancellation","verdict":"stable"},{"caps":{},"detail":"local cond 1.80e+15 exceeds 1e15 (|a-b|->0)","exact_ties":0,"kind":"region","range":"ok","subject":"kernels.hpp:65","unit":"cancellation","verdict":"local_cancellation"},{"caps":{},"detail":"no elevated conditioning or accumulated-error signal","exact_ties":0,"kind":"region","range":"ok","subject":"(unattributed ops)","unit":"complex_logdiv","verdict":"stable"},{"caps":{},"detail":"elevated per-op cond 1.67e+09","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:run_complex_logdiv:260","unit":"complex_logdiv","verdict":"log_near_root"},{"caps":{},"detail":"no elevated conditioning or accumulated-error signal","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:run_complex_logdiv:263","unit":"complex_logdiv","verdict":"stable"},{"caps":{},"detail":"rel_err 5.34e+64 with low per-op cond 1.00e+00 (accumulated cancellation)","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:kahan_step:108","unit":"kahan","verdict":"cancellation_cascade"},{"caps":{},"detail":"rel_err 5.34e+64 with low per-op cond 1.00e+00 (accumulated cancellation)","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:kahan_step:109","unit":"kahan","verdict":"cancellation_cascade"},{"caps":{},"detail":"elevated per-op cond 1.00e+09","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:kahan_step:110","unit":"kahan","verdict":"log_near_root"},{"caps":{},"detail":"elevated per-op cond 8.39e+10","exact_ties":16,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:kahan_step:111","unit":"kahan","verdict":"log_near_root"},{"caps":{},"detail":"no elevated conditioning or accumulated-error signal","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:exp_log_roundtrip:187","unit":"log_sum_exp","verdict":"stable"},{"caps":{"log":4},"detail":"elevated per-op cond 5.00e+06","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:exp_log_roundtrip:188","unit":"log_sum_exp","verdict":"log_near_root"},{"caps":{},"detail":"no elevated conditioning or accumulated-error signal","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:lse_naive:178","unit":"log_sum_exp","verdict":"stable"},{"caps":{},"detail":"no elevated conditioning or accumulated-error signal","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:lse_naive:179","unit":"log_sum_exp","verdict":"stable"},{"caps":{},"detail":"no elevated conditioning or accumulated-error signal","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:lse_naive:180","unit":"log_sum_exp","verdict":"stable"},{"caps":{},"detail":"no elevated conditioning or accumulated-error signal","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:lse_naive:181","unit":"log_sum_exp","verdict":"stable"},{"caps":{},"detail":"no elevated conditioning or accumulated-error signal","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:lse_shifted:194","unit":"log_sum_exp","verdict":"stable"},{"caps":{},"detail":"no elevated conditioning or accumulated-error signal","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:lse_shifted:195","unit":"log_sum_exp","verdict":"stable"},{"caps":{},"detail":"no elevated conditioning or accumulated-error signal","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:lse_shifted:196","unit":"log_sum_exp","verdict":"stable"},{"caps":{},"detail":"no elevated conditioning or accumulated-error signal","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:lse_shifted:197","unit":"log_sum_exp","verdict":"stable"},{"caps":{},"detail":"no elevated conditioning or accumulated-error signal","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:mean_of:79","unit":"naive_variance","verdict":"stable"},{"caps":{},"detail":"no elevated conditioning or accumulated-error signal","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:naive_variance:85","unit":"naive_variance","verdict":"stable"},{"caps":{},"detail":"elevated per-op cond 2.00e+08","exact_ties":0,"kind":"region","range":"ok","subject":"kernels.hpp:87","unit":"naive_variance","verdict":"log_near_root"},{"caps":{},"detail":"no elevated conditioning or accumulated-error signal","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:phase_angle:212","unit":"polar_phase","verdict":"stable"},{"caps":{"atan2":8},"detail":"rel_err 2.00e+00 with low per-op cond 2.00e+00 (accumulated cancellation)","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:phase_angle:213","unit":"polar_phase","verdict":"cancellation_cascade"},{"caps":{},"detail":"rel_err 2.00e+00 with low per-op cond 1.00e+00 (accumulated cancellation)","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:phase_angle:214","unit":"polar_phase","verdict":"cancellation_cascade"},{"caps":{"sin":8},"detail":"rel_err 2.00e+00 with low per-op cond 9.62e-17 (accumulated cancellation)","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:resolve:218","unit":"polar_phase","verdict":"cancellation_cascade"},{"caps":{"cos":8},"detail":"rel_err 2.00e+00 with low per-op cond 3.85e-16 (accumulated cancellation)","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:resolve:219","unit":"polar_phase","verdict":"cancellation_cascade"},{"caps":{},"detail":"rel_err 2.00e+00 with low per-op cond 1.00e+00 (accumulated cancellation)","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:resolve:220","unit":"polar_phase","verdict":"cancellation_cascade"},{"caps":{},"detail":"rel_err 2.00e+00 with low per-op cond 1.00e+00 (accumulated cancellation)","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:resolve:221","unit":"polar_phase","verdict":"cancellation_cascade"},{"caps":{},"detail":"rel_err 2.00e+00 with low per-op cond 1.00e+00 (accumulated cancellation)","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:resolve:222","unit":"polar_phase","verdict":"cancellation_cascade"},{"caps":{},"detail":"no elevated conditioning or accumulated-error signal","exact_ties":0,"kind":"region","range":"|val| up to 1.322e+120 overflows float","subject":"examples/viewer_kernels/kernels.hpp:run_range_overflow:241","unit":"range_overflow","verdict":"stable"},{"caps":{},"detail":"no elevated conditioning or accumulated-error signal","exact_ties":0,"kind":"region","range":"|val| down to 1.000e-100 underflows float","subject":"examples/viewer_kernels/kernels.hpp:run_range_overflow:243","unit":"range_overflow","verdict":"stable"},{"caps":{},"detail":"no elevated conditioning or accumulated-error signal","exact_ties":0,"kind":"region","range":"|val| up to 1.749e+240 overflows float","subject":"examples/viewer_kernels/kernels.hpp:run_range_overflow:244","unit":"range_overflow","verdict":"stable"},{"detail":"16 records with non-finite val/cond/rel_err at this region","kind":"region","subject":"examples/viewer_kernels/kernels.hpp:run_range_overflow:245","unit":"range_overflow","verdict":"nonfinite_values"},{"caps":{},"detail":"no elevated conditioning or accumulated-error signal","exact_ties":0,"kind":"region","range":"|val| up to 1.798e+308 overflows float","subject":"examples/viewer_kernels/kernels.hpp:run_range_overflow:245","unit":"range_overflow","verdict":"stable"},{"caps":{"nan":16},"detail":"atan2 saturation cap (2**53) only; no genuine hotspot","exact_ties":0,"kind":"region","range":"|val| up to 1.798e+308 overflows float","subject":"examples/viewer_kernels/kernels.hpp:run_range_overflow:246","unit":"range_overflow","verdict":"atan2_saturation"},{"detail":"16 records with non-finite val/cond/rel_err at this region","kind":"region","subject":"examples/viewer_kernels/kernels.hpp:run_range_overflow:246","unit":"range_overflow","verdict":"nonfinite_values"},{"detail":"16 records with non-finite val/cond/rel_err at this region","kind":"region","subject":"examples/viewer_kernels/kernels.hpp:run_range_overflow:249","unit":"range_overflow","verdict":"nonfinite_values"},{"caps":{},"detail":"no elevated conditioning or accumulated-error signal","exact_ties":0,"kind":"region","range":"|val| up to 1.798e+308 overflows float","subject":"examples/viewer_kernels/kernels.hpp:run_range_overflow:249","unit":"range_overflow","verdict":"stable"},{"detail":"cascade chain over 2 line(s) in 16 sample(s); max rel_err 4.44e-05","kind":"chain","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:second_difference:162; examples/viewer_kernels/kernels.hpp:second_difference:163","unit":"second_difference","verdict":"cancellation_cascade"},{"caps":{},"detail":"elevated per-op cond 3.33e+10","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:second_difference:162","unit":"second_difference","verdict":"log_near_root"},{"caps":{},"detail":"elevated per-op cond 6.67e+10","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:second_difference:163","unit":"second_difference","verdict":"log_near_root"},{"caps":{},"detail":"rel_err 4.44e-05 with low per-op cond 3.00e+00 (accumulated cancellation)","exact_ties":0,"kind":"region","range":"ok","subject":"examples/viewer_kernels/kernels.hpp:second_difference:164","unit":"second_difference","verdict":"cancellation_cascade"}]},"totals":{"no_id_records":0,"nonfinite_records":48,"records":2928,"samples":144,"units":9},"units":[{"chains":[],"class_counts":{"cancellation_cascade":2,"stable":3},"drilldown":{"max_rel_err":130682.46576640492,"nodes":[{"cap":null,"cond":1,"exact_tie":false,"in":["x"],"op":"neg","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:136","rel_err":2.220446049250313e-16,"val":-12.5},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~0"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-12.5},{"cap":null,"cond":1,"exact_tie":false,"in":["_lit@examples/viewer_kernels/kernels.hpp:135~0",1],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":4.440892098500626e-16,"val":-12.5},{"cap":null,"cond":1.173913043478261,"exact_tie":false,"in":["_lit@examples/viewer_kernels/kernels.hpp:134~0",2],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:142","rel_err":6.516526448886789e-16,"val":-11.5},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~1"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-6.25},{"cap":null,"cond":1,"exact_tie":false,"in":[2,4],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":5.551115123125783e-16,"val":78.125},{"cap":null,"cond":1.3452157598499062,"exact_tie":false,"in":[3,5],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:144","rel_err":1.0259623588195243e-15,"val":66.625},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~2"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-4.166666666666667},{"cap":null,"cond":1,"exact_tie":false,"in":[5,7],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":6.661338147750939e-16,"val":-325.52083333333337},{"cap":null,"cond":1.5146857648668222,"exact_tie":false,"in":[6,8],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:142","rel_err":1.7221744813158313e-15,"val":-258.89583333333337},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~3"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-3.125},{"cap":null,"cond":1,"exact_tie":false,"in":[8,10],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":7.771561172376096e-16,"val":1017.2526041666667},{"cap":null,"cond":1.6827810953644975,"exact_tie":false,"in":[9,11],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:144","rel_err":3.0848688918252003e-15,"val":758.3567708333334},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~4"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-2.5},{"cap":null,"cond":1,"exact_tie":false,"in":[11,13],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":8.881784197001252e-16,"val":-2543.131510416667},{"cap":null,"cond":1.8498067055906187,"exact_tie":false,"in":[12,14],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:142","rel_err":5.911780961531427e-15,"val":-1784.7747395833335},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~5"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-2.0833333333333335},{"cap":null,"cond":1,"exact_tie":false,"in":[14,16],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":9.992007221626409e-16,"val":5298.19064670139},{"cap":null,"cond":2.015976922041847,"exact_tie":false,"in":[15,17],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:144","rel_err":1.21418323862101e-14,"val":3513.415907118056},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~6"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-1.7857142857142858},{"cap":null,"cond":1,"exact_tie":false,"in":[17,19],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":1.1102230246251565e-15,"val":-9461.054726252481},{"cap":null,"cond":2.1814489796572323,"exact_tie":false,"in":[18,20],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:142","rel_err":2.672897735849321e-14,"val":-5947.638819134425},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~7"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-1.5625},{"cap":null,"cond":1,"exact_tie":false,"in":[20,22],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":1.2212453270876722e-15,"val":14782.898009769502},{"cap":null,"cond":2.3463416727918105,"exact_tie":false,"in":[21,23],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:144","rel_err":6.297580970221849e-14,"val":8835.259190635077},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~8"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-1.3888888888888888},{"cap":null,"cond":1,"exact_tie":false,"in":[23,25],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":1.3322676295501878e-15,"val":-20531.80279134653},{"cap":null,"cond":2.510747019332731,"exact_tie":false,"in":[24,26],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:142","rel_err":1.5839507541489754e-13,"val":-11696.543600711453},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~9"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-1.25},{"cap":null,"cond":1,"exact_tie":false,"in":[26,28],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":1.4432899320127035e-15,"val":25664.753489183164},{"cap":null,"cond":2.674737664181991,"exact_tie":false,"in":[27,29],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:144","rel_err":4.239622295671341e-13,"val":13968.20988847171},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~10"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-1.1363636363636365},{"cap":null,"cond":1,"exact_tie":false,"in":[29,31],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":1.5543122344752192e-15,"val":-29164.492601344507},{"cap":null,"cond":2.8383719429803995,"exact_tie":false,"in":[30,32],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:142","rel_err":1.2036776198751232e-12,"val":-15196.282712872797},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~11"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-1.0416666666666667},{"cap":null,"cond":1,"exact_tie":false,"in":[32,34],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":1.6653345369377348e-15,"val":30379.679793067196},{"cap":null,"cond":3.001697331975228,"exact_tie":false,"in":[33,35],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:144","rel_err":3.613409155486541e-12,"val":15183.3970801944},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~12"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-0.9615384615384616},{"cap":null,"cond":1,"exact_tie":false,"in":[35,37],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":1.7763568394002505e-15,"val":-29211.23057025692},{"cap":null,"cond":3.1647529664435345,"exact_tie":false,"in":[36,38],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:142","rel_err":1.1435898701961317e-11,"val":-14027.833490062521},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~13"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-0.8928571428571429},{"cap":null,"cond":1,"exact_tie":false,"in":[38,40],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":1.887379141862766e-15,"val":26081.455866300825},{"cap":null,"cond":3.3275714224656725,"exact_tie":false,"in":[39,41],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:144","rel_err":3.8054139145499685e-11,"val":12053.622376238303},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~14"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-0.8333333333333334},{"cap":null,"cond":1,"exact_tie":false,"in":[41,43],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":1.9984014443252818e-15,"val":-21734.546555250687},{"cap":null,"cond":3.490180101269624,"exact_tie":false,"in":[42,44],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:142","rel_err":1.328161867043993e-10,"val":-9680.924179012383},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~15"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-0.78125},{"cap":null,"cond":1,"exact_tie":false,"in":[44,46],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":2.1094237467877974e-15,"val":16980.1144962896},{"cap":null,"cond":3.6526022087950203,"exact_tie":false,"in":[45,47],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:144","rel_err":4.851251024405279e-10,"val":7299.190317277216},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~16"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-0.7352941176470589},{"cap":null,"cond":1,"exact_tie":false,"in":[47,49],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":2.220446049250313e-15,"val":-12485.378306095296},{"cap":null,"cond":3.8148575921331718,"exact_tie":false,"in":[48,50],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:142","rel_err":1.850683603713904e-09,"val":-5186.187988818079},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~17"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-0.6944444444444444},{"cap":null,"cond":1,"exact_tie":false,"in":[50,52],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":2.3314683517128287e-15,"val":8670.401601455065},{"cap":null,"cond":3.9769632780310356,"exact_tie":false,"in":[51,53],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:144","rel_err":7.360101172755957e-09,"val":3484.213612636986},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~18"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-0.6578947368421053},{"cap":null,"cond":1,"exact_tie":false,"in":[53,55],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":2.4424906541753444e-15,"val":-5704.211579904649},{"cap":null,"cond":4.138934056705736,"exact_tie":false,"in":[54,56],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:142","rel_err":3.046297386423345e-08,"val":-2219.9979672676627},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~19"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-0.625},{"cap":null,"cond":1,"exact_tie":false,"in":[56,58],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":2.55351295663786e-15,"val":3565.1322374404053},{"cap":null,"cond":4.300782704737081,"exact_tie":false,"in":[57,59],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:144","rel_err":1.3101463160763573e-07,"val":1345.1342701727426},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~20"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-0.5952380952380952},{"cap":null,"cond":1,"exact_tie":false,"in":[59,61],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":2.6645352591003757e-15,"val":-2122.1025222859557},{"cap":null,"cond":4.462520550908536,"exact_tie":false,"in":[60,62],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:142","rel_err":5.846554865142248e-07,"val":-776.9682521132131},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~21"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-0.5681818181818182},{"cap":null,"cond":1,"exact_tie":false,"in":[62,64],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":2.7755575615628914e-15,"val":1205.7400694806568},{"cap":null,"cond":4.624157281994942,"exact_tie":false,"in":[63,65],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:144","rel_err":2.703538925936433e-06,"val":428.77181736744365},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~22"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-0.5434782608695652},{"cap":null,"cond":1,"exact_tie":false,"in":[65,67],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":2.886579864025407e-15,"val":-655.293516022096},{"cap":null,"cond":4.785701943027854,"exact_tie":false,"in":[66,68],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:142","rel_err":1.2938331491436745e-05,"val":-226.52169865465237},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~23"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-0.5208333333333334},{"cap":null,"cond":1,"exact_tie":false,"in":[68,70],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":2.9976021664879227e-15,"val":341.29870626150836},{"cap":null,"cond":4.947161602793371,"exact_tie":false,"in":[69,71],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:144","rel_err":6.40080167591974e-05,"val":114.77700760685599},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~24"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-0.5},{"cap":null,"cond":1,"exact_tie":false,"in":[71,73],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":3.1086244689504383e-15,"val":-170.64935313075418},{"cap":null,"cond":5.108544451843805,"exact_tie":false,"in":[72,74],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:142","rel_err":0.0003269877988892903,"val":-55.87234552389819},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~25"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-0.4807692307692308},{"cap":null,"cond":1,"exact_tie":false,"in":[74,76],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":3.219646771412954e-15,"val":82.04295823593951},{"cap":null,"cond":5.2698538348084485,"exact_tie":false,"in":[75,77],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:144","rel_err":0.0017231779059128855,"val":26.17061271204132},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~26"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-0.46296296296296297},{"cap":null,"cond":1,"exact_tie":false,"in":[77,79],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":3.3306690738754696e-15,"val":-37.98285103515718},{"cap":null,"cond":5.431101370656728,"exact_tie":false,"in":[78,80],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:142","rel_err":0.009358753886689466,"val":-11.812238323115864},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~27"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-0.44642857142857145},{"cap":null,"cond":1,"exact_tie":false,"in":[80,82],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":3.4416913763379853e-15,"val":16.95662992640946},{"cap":null,"cond":5.592278051131765,"exact_tie":false,"in":[81,83],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:144","rel_err":0.052336753946478215,"val":5.144391603293595},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~28"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-0.43103448275862066},{"cap":null,"cond":1,"exact_tie":false,"in":[83,85],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":3.552713678800501e-15,"val":-7.308892209659249},{"cap":null,"cond":5.753421263236682,"exact_tie":false,"in":[84,86],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:142","rel_err":0.3011153930044547,"val":-2.164500606365654},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~29"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-0.4166666666666667},{"cap":null,"cond":1,"exact_tie":false,"in":[86,88],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":3.6637359812630166e-15,"val":3.0453717540246874},{"cap":null,"cond":5.914454542228886,"exact_tie":false,"in":[87,89],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:144","rel_err":1.780933303890234,"val":0.8808711476590334},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~30"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-0.4032258064516129},{"cap":null,"cond":1,"exact_tie":false,"in":[89,91],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":3.774758283725532e-15,"val":-1.2279724814615673},{"cap":null,"cond":6.07558491930291,"exact_tie":false,"in":[90,92],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:142","rel_err":10.820211523399813,"val":-0.34710133380253394},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~31"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-0.390625},{"cap":null,"cond":1,"exact_tie":false,"in":[92,94],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":3.885780586188048e-15,"val":0.47967675057092474},{"cap":null,"cond":6.2362850106505014,"exact_tie":false,"in":[93,95],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:144","rel_err":67.47792293544607,"val":0.1325754167683908},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~32"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-0.3787878787878788},{"cap":null,"cond":1,"exact_tie":false,"in":[95,97],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":3.9968028886505635e-15,"val":-0.181695738852623},{"cap":null,"cond":6.39798646031061,"exact_tie":false,"in":[96,98],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:142","rel_err":431.72283731086674,"val":-0.0491203220842322},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~33"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-0.36764705882352944},{"cap":null,"cond":1,"exact_tie":false,"in":[98,100],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":4.107825191113079e-15,"val":0.06679990398993493},{"cap":null,"cond":6.556728925630071,"exact_tie":false,"in":[99,101],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:144","rel_err":2830.689615251245,"val":0.017679581905702735},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~34"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-0.35714285714285715},{"cap":null,"cond":1,"exact_tie":false,"in":[101,103],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":4.218847493575595e-15,"val":-0.023857108567833907},{"cap":null,"cond":6.723838316742608,"exact_tie":false,"in":[102,104],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:142","rel_err":19033.09929783171,"val":-0.006177526662131172},{"cap":null,"cond":1,"exact_tie":false,"in":[0,"_lit@examples/viewer_kernels/kernels.hpp:138~35"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","rel_err":3.3306690738754696e-16,"val":-0.3472222222222222},{"cap":null,"cond":1,"exact_tie":false,"in":[104,106],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","rel_err":4.3298697960381105e-15,"val":0.008283718252720106},{"cap":null,"cond":6.866063362643861,"exact_tie":false,"in":[105,107],"op":"add","region":"examples/viewer_kernels/kernels.hpp:exp_taylor:144","rel_err":130682.46576640492,"val":0.002106191590588934}],"rerun":"--unit alternating_series --sample-offset 0 --sample-count 1","sample":"0","sample_scope":"integral=alternating_series/sample=0","sources":["_lit@examples/viewer_kernels/kernels.hpp:134~0","_lit@examples/viewer_kernels/kernels.hpp:135~0","_lit@examples/viewer_kernels/kernels.hpp:138~0","_lit@examples/viewer_kernels/kernels.hpp:138~1","_lit@examples/viewer_kernels/kernels.hpp:138~10","_lit@examples/viewer_kernels/kernels.hpp:138~11","_lit@examples/viewer_kernels/kernels.hpp:138~12","_lit@examples/viewer_kernels/kernels.hpp:138~13","_lit@examples/viewer_kernels/kernels.hpp:138~14","_lit@examples/viewer_kernels/kernels.hpp:138~15","_lit@examples/viewer_kernels/kernels.hpp:138~16","_lit@examples/viewer_kernels/kernels.hpp:138~17","_lit@examples/viewer_kernels/kernels.hpp:138~18","_lit@examples/viewer_kernels/kernels.hpp:138~19","_lit@examples/viewer_kernels/kernels.hpp:138~2","_lit@examples/viewer_kernels/kernels.hpp:138~20","_lit@examples/viewer_kernels/kernels.hpp:138~21","_lit@examples/viewer_kernels/kernels.hpp:138~22","_lit@examples/viewer_kernels/kernels.hpp:138~23","_lit@examples/viewer_kernels/kernels.hpp:138~24","_lit@examples/viewer_kernels/kernels.hpp:138~25","_lit@examples/viewer_kernels/kernels.hpp:138~26","_lit@examples/viewer_kernels/kernels.hpp:138~27","_lit@examples/viewer_kernels/kernels.hpp:138~28","_lit@examples/viewer_kernels/kernels.hpp:138~29","_lit@examples/viewer_kernels/kernels.hpp:138~3","_lit@examples/viewer_kernels/kernels.hpp:138~30","_lit@examples/viewer_kernels/kernels.hpp:138~31","_lit@examples/viewer_kernels/kernels.hpp:138~32","_lit@examples/viewer_kernels/kernels.hpp:138~33","_lit@examples/viewer_kernels/kernels.hpp:138~34","_lit@examples/viewer_kernels/kernels.hpp:138~35","_lit@examples/viewer_kernels/kernels.hpp:138~4","_lit@examples/viewer_kernels/kernels.hpp:138~5","_lit@examples/viewer_kernels/kernels.hpp:138~6","_lit@examples/viewer_kernels/kernels.hpp:138~7","_lit@examples/viewer_kernels/kernels.hpp:138~8","_lit@examples/viewer_kernels/kernels.hpp:138~9","x"]},"edges":[{"dst":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","n":576,"src":"examples/viewer_kernels/kernels.hpp:exp_taylor:136"},{"dst":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","n":576,"src":"examples/viewer_kernels/kernels.hpp:exp_taylor:139"},{"dst":"examples/viewer_kernels/kernels.hpp:exp_taylor:142","n":288,"src":"examples/viewer_kernels/kernels.hpp:exp_taylor:140"},{"dst":"examples/viewer_kernels/kernels.hpp:exp_taylor:144","n":288,"src":"examples/viewer_kernels/kernels.hpp:exp_taylor:140"},{"dst":"examples/viewer_kernels/kernels.hpp:exp_taylor:144","n":288,"src":"examples/viewer_kernels/kernels.hpp:exp_taylor:142"},{"dst":"examples/viewer_kernels/kernels.hpp:exp_taylor:142","n":272,"src":"examples/viewer_kernels/kernels.hpp:exp_taylor:144"}],"functions":[{"file":"examples/viewer_kernels/kernels.hpp","key":"examples/viewer_kernels/kernels.hpp:exp_taylor","name":"exp_taylor","regions":["examples/viewer_kernels/kernels.hpp:exp_taylor:136","examples/viewer_kernels/kernels.hpp:exp_taylor:139","examples/viewer_kernels/kernels.hpp:exp_taylor:140","examples/viewer_kernels/kernels.hpp:exp_taylor:142","examples/viewer_kernels/kernels.hpp:exp_taylor:144"]}],"max_rel_err":130682.46576640492,"name":"alternating_series","records":1744,"regions":[{"abs_val_max":13.7,"abs_val_min":12.5,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:exp_taylor","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:exp_taylor:136","kind":"at","line":136,"max_amp":1.5897450162000154e+20,"max_cond":1.0,"max_rel_err":2.220446049250313e-16,"max_sensitivity":1.5897450162000154e+20,"n":16,"nonfinite_count":0,"note":"no elevated conditioning or accumulated-error signal","ops":{"neg":16},"p50_rel_err":1e-16,"p99_rel_err":1e-16,"predictions":{"float":9475618697404.953},"range_ok":true,"region_local_vars":["x"],"rel_err_hist":{"buckets":{"-16":16},"total":16},"signal_class":"stable","zero_rel_err":0},{"abs_val_max":13.7,"abs_val_min":0.3472222222222222,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:exp_taylor","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:exp_taylor:139","kind":"at","line":139,"max_amp":1.5897450162000154e+20,"max_cond":1.0,"max_rel_err":3.3306690738754696e-16,"max_sensitivity":1.5897450162000154e+20,"n":576,"nonfinite_count":0,"note":"no elevated conditioning or accumulated-error signal","ops":{"div":576},"p50_rel_err":1e-16,"p99_rel_err":1e-16,"predictions":{"float":9475618697404.953},"range_ok":true,"region_local_vars":[],"rel_err_hist":{"buckets":{"-16":576},"total":576},"signal_class":"stable","zero_rel_err":0},{"abs_val_max":96180.50580117326,"abs_val_min":0.008283718252720106,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:exp_taylor","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:exp_taylor:140","kind":"at","line":140,"max_amp":1.5897450162000154e+20,"max_cond":1.0,"max_rel_err":4.3298697960381105e-15,"max_sensitivity":1.5897450162000154e+20,"n":576,"nonfinite_count":0,"note":"no elevated conditioning or accumulated-error signal","ops":{"mul":576},"p50_rel_err":1e-15,"p99_rel_err":1e-15,"predictions":{"float":9475618697404.953},"range_ok":true,"region_local_vars":[],"rel_err_hist":{"buckets":{"-15":480,"-16":96},"total":576},"signal_class":"stable","zero_rel_err":0},{"abs_val_max":48433.23276472938,"abs_val_min":0.006177526662131172,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:exp_taylor","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:exp_taylor:142","kind":"at","line":142,"max_amp":1.3542272360222353e+20,"max_cond":6.723838316742608,"max_rel_err":19033.09929783171,"max_sensitivity":1.5897450162000154e+20,"n":288,"nonfinite_count":0,"note":"rel_err 1.90e+04 with low per-op cond 6.72e+00 (accumulated cancellation)","ops":{"add":288},"p50_rel_err":1e-09,"p99_rel_err":10000.0,"predictions":{"float":9475618697404.953},"range_ok":true,"region_local_vars":[],"rel_err_hist":{"buckets":{"-1":10,"-10":11,"-11":14,"-12":18,"-13":26,"-14":16,"-15":32,"-16":16,"-2":6,"-3":16,"-4":13,"-5":6,"-6":13,"-7":16,"-8":16,"-9":11,"0":15,"1":6,"2":11,"3":11,"4":5},"total":288},"signal_class":"cancellation_cascade","zero_rel_err":0},{"abs_val_max":47747.27303644388,"abs_val_min":0.002106191590588934,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:exp_taylor","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:exp_taylor:144","kind":"at","line":144,"max_amp":1.0066989076706435e+20,"max_cond":6.866063362643861,"max_rel_err":130682.46576640492,"max_sensitivity":1.3542272360222353e+20,"n":288,"nonfinite_count":0,"note":"rel_err 1.31e+05 with low per-op cond 6.87e+00 (accumulated cancellation)","ops":{"add":288},"p50_rel_err":1e-09,"p99_rel_err":10000.0,"predictions":{"float":8071823334826.441},"range_ok":true,"region_local_vars":[],"rel_err_hist":{"buckets":{"-1":11,"-10":16,"-11":16,"-12":16,"-13":16,"-14":32,"-15":27,"-16":5,"-2":16,"-3":6,"-4":10,"-5":16,"-6":13,"-7":7,"-8":12,"-9":16,"0":6,"1":15,"2":8,"3":8,"4":14,"5":2},"total":288},"signal_class":"cancellation_cascade","zero_rel_err":0}],"samples":16,"variables":{"x":{"is_source_var":true,"max_amp":1.5897450162000154e+20,"max_sensitivity":1.5897450162000154e+20,"n_samples":16,"predictions":{"float":9475618697404.953}}}},{"chains":[{"count":16,"max_cond":1801439850948199.2,"max_rel_err":0.6000000000000004,"max_sensitivity":1801439850948199.2,"ops":{"sub":1},"predictions":{"float":107374182.40000005},"range_ok":true,"region_local_vars":["a"],"spans":[{"file":"kernels.hpp","line_end":65,"line_start":65}]}],"class_counts":{"cancellation_cascade":1,"local_cancellation":1,"stable":1},"drilldown":{"max_rel_err":0.6000000000000004,"nodes":[{"cap":null,"cond":1,"exact_tie":false,"in":["a","b"],"op":"add","region":"examples/viewer_kernels/kernels.hpp:guarded_sum:59","rel_err":2.220446049250313e-16,"val":1.000000000000001},{"cap":null,"cond":1801439850948199.2,"exact_tie":false,"in":[0,"a"],"op":"sub","region":"kernels.hpp:65","rel_err":0.6000000000000003,"val":1.1102230246251565e-15},{"cap":null,"cond":1,"exact_tie":false,"in":[1,0],"op":"div","region":"examples/viewer_kernels/kernels.hpp:cancellation_check:67","rel_err":0.6000000000000004,"val":1.1102230246251554e-15}],"rerun":"--unit cancellation --sample-offset 0 --sample-count 1","sample":"0","sample_scope":"integral=cancellation/sample=0","sources":["a","b"]},"edges":[{"dst":"examples/viewer_kernels/kernels.hpp:cancellation_check:67","n":16,"src":"examples/viewer_kernels/kernels.hpp:guarded_sum:59"},{"dst":"kernels.hpp:65","n":16,"src":"examples/viewer_kernels/kernels.hpp:guarded_sum:59"},{"dst":"examples/viewer_kernels/kernels.hpp:cancellation_check:67","n":16,"src":"kernels.hpp:65"}],"functions":[{"file":"examples/viewer_kernels/kernels.hpp","key":"examples/viewer_kernels/kernels.hpp:cancellation_check","name":"cancellation_check","regions":["examples/viewer_kernels/kernels.hpp:cancellation_check:67","kernels.hpp:65"]},{"file":"examples/viewer_kernels/kernels.hpp","key":"examples/viewer_kernels/kernels.hpp:guarded_sum","name":"guarded_sum","regions":["examples/viewer_kernels/kernels.hpp:guarded_sum:59"]}],"max_rel_err":0.6000000000000004,"name":"cancellation","records":48,"regions":[{"abs_val_max":1.5543122344752168e-15,"abs_val_min":1.1102230246251554e-15,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:cancellation_check","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:cancellation_check:67","kind":"at","line":67,"max_amp":1.0,"max_cond":1.0,"max_rel_err":0.6000000000000004,"max_sensitivity":1.0,"n":16,"nonfinite_count":0,"note":"rel_err 6.00e-01 with low per-op cond 1.00e+00 (accumulated cancellation)","ops":{"div":16},"p50_rel_err":0.1,"p99_rel_err":0.1,"predictions":{"float":5.960464477539063e-08},"range_ok":true,"region_local_vars":[],"rel_err_hist":{"buckets":{"-1":16},"total":16},"signal_class":"cancellation_cascade","zero_rel_err":0},{"abs_val_max":1.0000000000000016,"abs_val_min":1.000000000000001,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:guarded_sum","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:guarded_sum:59","kind":"at","line":59,"max_amp":1801439850948199.2,"max_cond":1.0,"max_rel_err":2.220446049250313e-16,"max_sensitivity":1801439850948199.2,"n":16,"nonfinite_count":0,"note":"no elevated conditioning or accumulated-error signal","ops":{"add":16},"p50_rel_err":1e-16,"p99_rel_err":1e-16,"predictions":{"float":107374182.40000005},"range_ok":true,"region_local_vars":["a","b"],"rel_err_hist":{"buckets":{"-16":16},"total":16},"signal_class":"stable","zero_rel_err":0},{"abs_val_max":1.5543122344752192e-15,"abs_val_min":1.1102230246251565e-15,"cap_counts":{},"exact_tie_count":0,"file":"kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:cancellation_check","gate_a_count":0,"key":"kernels.hpp:65","kind":"line","line":65,"max_amp":1.0,"max_cond":1801439850948199.2,"max_rel_err":0.6000000000000003,"max_sensitivity":1801439850948199.2,"n":16,"nonfinite_count":0,"note":"local cond 1.80e+15 exceeds 1e15 (|a-b|->0)","ops":{"sub":16},"p50_rel_err":0.1,"p99_rel_err":0.1,"predictions":{"float":107374182.40000005},"range_ok":true,"region_local_vars":["a"],"rel_err_hist":{"buckets":{"-1":16},"total":16},"signal_class":"local_cancellation","zero_rel_err":0}],"samples":16,"variables":{"a":{"is_source_var":true,"max_amp":1801439850948199.2,"max_sensitivity":1801439850948199.2,"n_samples":16,"predictions":{"float":107374182.40000005}},"b":{"is_source_var":true,"max_amp":1801439850948199.2,"max_sensitivity":1801439850948199.2,"n_samples":16,"predictions":{"float":107374182.40000005}}}},{"chains":[],"class_counts":{"log_near_root":1,"stable":2},"drilldown":{"max_rel_err":5.55111466548983e-07,"nodes":[{"cap":null,"cond":1,"exact_tie":false,"in":["z","z"],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:run_complex_logdiv:260","rel_err":2.220446049250313e-16,"val":0.6400000000000001},{"cap":null,"cond":1,"exact_tie":false,"in":["z","z"],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:run_complex_logdiv:260","rel_err":2.220446049250313e-16,"val":0.3600000011999999},{"cap":null,"cond":1,"exact_tie":false,"in":[0,1],"op":"add","region":"examples/viewer_kernels/kernels.hpp:run_complex_logdiv:260","rel_err":3.3306690738754696e-16,"val":1.0000000012},{"cap":null,"cond":0.5,"exact_tie":false,"in":[2],"op":"sqrt","region":"examples/viewer_kernels/kernels.hpp:run_complex_logdiv:260","rel_err":2.220446049250313e-16,"val":1.0000000006},{"cap":null,"cond":1666666529.2660596,"exact_tie":false,"in":[3],"op":"log","region":"examples/viewer_kernels/kernels.hpp:run_complex_logdiv:260","rel_err":5.55111466548983e-07,"val":6.000000494642226e-10},{"cap":null,"cond":1.4918389201453812,"exact_tie":false,"in":["z","z"],"op":"atan2","region":"examples/viewer_kernels/kernels.hpp:run_complex_logdiv:260","rel_err":3.312547836354665e-16,"val":0.6435011095932843},{"cap":null,"cond":1,"exact_tie":false,"in":["w","w"],"op":"div","region":"","rel_err":2.220446049250313e-16,"val":-0.49999950000050003},{"cap":null,"cond":1,"exact_tie":false,"in":[6,"w"],"op":"mul","region":"","rel_err":3.3306690738754696e-16,"val":0.24999975000025002},{"cap":null,"cond":1,"exact_tie":false,"in":["w",7],"op":"add","region":"","rel_err":4.440892098500626e-16,"val":1.25000075000025},{"cap":null,"cond":1,"exact_tie":false,"in":["z",6],"op":"mul","region":"","rel_err":3.3306690738754696e-16,"val":-0.2999997005002995},{"cap":null,"cond":2.1999980832030643,"exact_tie":false,"in":["z",9],"op":"add","region":"","rel_err":9.769954104413012e-16,"val":0.5000002994997006},{"cap":null,"cond":1,"exact_tie":false,"in":[10,8],"op":"div","region":"","rel_err":1.0880177129038168e-15,"val":0.39999999959968074},{"cap":null,"cond":1,"exact_tie":false,"in":["z",6],"op":"mul","region":"","rel_err":3.3306690738754696e-16,"val":-0.3999996000004},{"cap":null,"cond":1,"exact_tie":false,"in":["z",12],"op":"sub","region":"","rel_err":4.440892098500626e-16,"val":0.9999996010004},{"cap":null,"cond":1,"exact_tie":false,"in":[13,8],"op":"div","region":"","rel_err":5.551115123125783e-16,"val":0.7999992008006396},{"cap":null,"cond":1,"exact_tie":false,"in":[11],"label":"ext::blas_scale","op":"opaque","region":"examples/viewer_kernels/kernels.hpp:run_complex_logdiv:263","rel_err":1.1990400153663325e-15,"val":0.7999999991993615}],"rerun":"--unit complex_logdiv --sample-offset 0 --sample-count 1","sample":"0","sample_scope":"integral=complex_logdiv/sample=0","sources":["w","z"]},"edges":[{"dst":"examples/viewer_kernels/kernels.hpp:run_complex_logdiv:263","n":16,"src":""}],"functions":[{"file":"","key":"(unattributed)","name":"(unattributed)","regions":[""]},{"file":"examples/viewer_kernels/kernels.hpp","key":"examples/viewer_kernels/kernels.hpp:run_complex_logdiv","name":"run_complex_logdiv","regions":["examples/viewer_kernels/kernels.hpp:run_complex_logdiv:260","examples/viewer_kernels/kernels.hpp:run_complex_logdiv:263"]}],"max_rel_err":5.55111466548983e-07,"name":"complex_logdiv","records":256,"regions":[{"abs_val_max":1.250012000063999,"abs_val_min":0.24999600006399897,"cap_counts":{},"exact_tie_count":0,"file":"","function":"(unattributed)","gate_a_count":0,"key":"","kind":"","line":null,"max_amp":2.1999980832030643,"max_cond":2.1999980832030643,"max_rel_err":1.0880177129038168e-15,"max_sensitivity":2.1999980832030643,"n":144,"nonfinite_count":0,"note":"no elevated conditioning or accumulated-error signal","ops":{"add":32,"div":48,"mul":48,"sub":16},"p50_rel_err":1e-16,"p99_rel_err":1e-15,"predictions":{"float":1.3113010425585892e-07},"range_ok":true,"region_local_vars":["w","z"],"rel_err_hist":{"buckets":{"-15":16,"-16":128},"total":144},"signal_class":"stable","zero_rel_err":0},{"abs_val_max":1.0000000192000003,"abs_val_min":6.000000494642226e-10,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:run_complex_logdiv","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:run_complex_logdiv:260","kind":"at","line":260,"max_amp":1666666529.2660596,"max_cond":1666666529.2660596,"max_rel_err":5.55111466548983e-07,"max_sensitivity":1666666529.2660596,"n":96,"nonfinite_count":0,"note":"elevated per-op cond 1.67e+09","ops":{"add":16,"atan2":16,"log":16,"mul":32,"sqrt":16},"p50_rel_err":1e-16,"p99_rel_err":1e-07,"predictions":{"float":99.34106643593667},"range_ok":true,"region_local_vars":["z"],"rel_err_hist":{"buckets":{"-16":80,"-7":5,"-8":11},"total":96},"signal_class":"log_near_root","zero_rel_err":0},{"abs_val_max":0.7999999991993615,"abs_val_min":0.7999999870364919,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:run_complex_logdiv","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:run_complex_logdiv:263","kind":"at","line":263,"max_amp":1.0,"max_cond":1.0,"max_rel_err":1.1990400153663325e-15,"max_sensitivity":1.0,"n":16,"nonfinite_count":0,"note":"no elevated conditioning or accumulated-error signal","ops":{"opaque":16},"p50_rel_err":1e-15,"p99_rel_err":1e-15,"predictions":{"float":5.960464477539063e-08},"range_ok":true,"region_local_vars":[],"rel_err_hist":{"buckets":{"-15":16},"total":16},"signal_class":"stable","zero_rel_err":0}],"samples":16,"variables":{"w":{"is_source_var":true,"max_amp":2.1999980832030643,"max_sensitivity":2.1999980832030643,"n_samples":16,"predictions":{"float":1.3113010425585892e-07}},"z":{"is_source_var":true,"max_amp":833333264.6330298,"max_sensitivity":833333264.6330298,"n_samples":16,"predictions":{"float":49.670533217968334}}}},{"chains":[],"class_counts":{"cancellation_cascade":2,"log_near_root":2},"drilldown":{"max_rel_err":1.3575088442282481e+82,"nodes":[{"cap":null,"cond":1,"exact_tie":false,"in":["_lit@examples/viewer_kernels/kernels.hpp:122~0","_lit@examples/viewer_kernels/kernels.hpp:118~0"],"op":"sub","region":"examples/viewer_kernels/kernels.hpp:kahan_step:108","rel_err":2.220446049250313e-16,"val":1},{"cap":null,"cond":1,"exact_tie":false,"in":["acc",0],"op":"add","region":"examples/viewer_kernels/kernels.hpp:kahan_step:109","rel_err":3.3306690738754696e-16,"val":100000001},{"cap":null,"cond":200000001,"exact_tie":false,"in":[1,"acc"],"op":"sub","region":"examples/viewer_kernels/kernels.hpp:kahan_step:110","rel_err":8.881784241410173e-08,"val":1},{"cap":null,"cond":1,"exact_tie":true,"in":[2,0],"op":"sub","region":"examples/viewer_kernels/kernels.hpp:kahan_step:111","rel_err":8.881784252512404e-08,"val":0},{"cap":null,"cond":1,"exact_tie":false,"in":["_lit@examples/viewer_kernels/kernels.hpp:122~1",3],"op":"sub","region":"examples/viewer_kernels/kernels.hpp:kahan_step:108","rel_err":8.881784263614634e-08,"val":0.2016},{"cap":null,"cond":1,"exact_tie":false,"in":[1,4],"op":"add","region":"examples/viewer_kernels/kernels.hpp:kahan_step:109","rel_err":8.881784274716864e-08,"val":100000001.2016},{"cap":null,"cond":992063501.6935565,"exact_tie":false,"in":[5,1],"op":"sub","region":"examples/viewer_kernels/kernels.hpp:kahan_step:110","rel_err":88.11294019876495,"val":0.20160000026226044},{"cap":null,"cond":1537403075.5123968,"exact_tie":false,"in":[6,4],"op":"sub","region":"examples/viewer_kernels/kernels.hpp:kahan_step:111","rel_err":135465105254.02113,"val":2.622604355906333e-10},{"cap":null,"cond":1.0000000001748404,"exact_tie":false,"in":["_lit@examples/viewer_kernels/kernels.hpp:122~2",7],"op":"sub","region":"examples/viewer_kernels/kernels.hpp:kahan_step:108","rel_err":135465105277.7059,"val":2.9999999997377396},{"cap":null,"cond":1,"exact_tie":false,"in":[5,8],"op":"add","region":"examples/viewer_kernels/kernels.hpp:kahan_step:109","rel_err":135465105277.7059,"val":100000004.2016},{"cap":null,"cond":66666668.46773333,"exact_tie":false,"in":[9,5],"op":"sub","region":"examples/viewer_kernels/kernels.hpp:kahan_step:110","rel_err":9.031007262495412e+18,"val":3},{"cap":null,"cond":22878021941.14876,"exact_tie":false,"in":[10,8],"op":"sub","region":"examples/viewer_kernels/kernels.hpp:kahan_step:111","rel_err":2.0661158230204387e+29,"val":2.622604355906333e-10},{"cap":null,"cond":1.000000001300895,"exact_tie":false,"in":["_lit@examples/viewer_kernels/kernels.hpp:122~3",11],"op":"sub","region":"examples/viewer_kernels/kernels.hpp:kahan_step:108","rel_err":2.0661158257082383e+29,"val":0.40319999973773957},{"cap":null,"cond":1,"exact_tie":false,"in":[9,12],"op":"add","region":"examples/viewer_kernels/kernels.hpp:kahan_step:109","rel_err":2.0661158257082383e+29,"val":100000004.6048},{"cap":null,"cond":496031767.22773063,"exact_tie":false,"in":[13,9],"op":"sub","region":"examples/viewer_kernels/kernels.hpp:kahan_step:110","rel_err":1.0248590843232394e+38,"val":0.4032000005245209},{"cap":null,"cond":1024935383.3415978,"exact_tie":false,"in":[14,12],"op":"sub","region":"examples/viewer_kernels/kernels.hpp:kahan_step:111","rel_err":1.0504143384619583e+47,"val":7.867813067718998e-10},{"cap":null,"cond":1.0000000003147125,"exact_tie":false,"in":["_lit@examples/viewer_kernels/kernels.hpp:122~4",15],"op":"sub","region":"examples/viewer_kernels/kernels.hpp:kahan_step:108","rel_err":1.0504143387925369e+47,"val":4.999999999213219},{"cap":null,"cond":1,"exact_tie":false,"in":[13,16],"op":"add","region":"examples/viewer_kernels/kernels.hpp:kahan_step:109","rel_err":1.0504143387925369e+47,"val":100000009.6048},{"cap":null,"cond":40000002.84192,"exact_tie":false,"in":[17,13],"op":"sub","region":"examples/viewer_kernels/kernels.hpp:kahan_step:110","rel_err":4.201657653689499e+54,"val":5},{"cap":null,"cond":12710012189.082645,"exact_tie":false,"in":[18,16],"op":"sub","region":"examples/viewer_kernels/kernels.hpp:kahan_step:111","rel_err":5.340311999274592e+64,"val":7.867813067718998e-10},{"cap":null,"cond":1.0000000026017901,"exact_tie":false,"in":["_lit@examples/viewer_kernels/kernels.hpp:122~5",19],"op":"sub","region":"examples/viewer_kernels/kernels.hpp:kahan_step:108","rel_err":5.340312013168963e+64,"val":0.6047999992132188},{"cap":null,"cond":1,"exact_tie":false,"in":[17,20],"op":"add","region":"examples/viewer_kernels/kernels.hpp:kahan_step:109","rel_err":5.340312013168963e+64,"val":100000010.2096},{"cap":null,"cond":330687863.01954526,"exact_tie":false,"in":[21,17],"op":"sub","region":"examples/viewer_kernels/kernels.hpp:kahan_step:110","rel_err":1.76597636749245e+73,"val":0.6048000007867813},{"cap":null,"cond":768701591.49174,"exact_tie":false,"in":[22,20],"op":"sub","region":"examples/viewer_kernels/kernels.hpp:kahan_step:111","rel_err":1.3575088442282481e+82,"val":1.5735625025214972e-09}],"rerun":"--unit kahan --sample-offset 8 --sample-count 1","sample":"8","sample_scope":"integral=kahan/sample=8","sources":["_lit@examples/viewer_kernels/kernels.hpp:118~0","_lit@examples/viewer_kernels/kernels.hpp:122~0","_lit@examples/viewer_kernels/kernels.hpp:122~1","_lit@examples/viewer_kernels/kernels.hpp:122~2","_lit@examples/viewer_kernels/kernels.hpp:122~3","_lit@examples/viewer_kernels/kernels.hpp:122~4","_lit@examples/viewer_kernels/kernels.hpp:122~5","acc"]},"edges":[{"dst":"examples/viewer_kernels/kernels.hpp:kahan_step:109","n":96,"src":"examples/viewer_kernels/kernels.hpp:kahan_step:108"},{"dst":"examples/viewer_kernels/kernels.hpp:kahan_step:111","n":96,"src":"examples/viewer_kernels/kernels.hpp:kahan_step:108"},{"dst":"examples/viewer_kernels/kernels.hpp:kahan_step:110","n":176,"src":"examples/viewer_kernels/kernels.hpp:kahan_step:109"},{"dst":"examples/viewer_kernels/kernels.hpp:kahan_step:111","n":96,"src":"examples/viewer_kernels/kernels.hpp:kahan_step:110"},{"dst":"examples/viewer_kernels/kernels.hpp:kahan_step:108","n":80,"src":"examples/viewer_kernels/kernels.hpp:kahan_step:111"}],"functions":[{"file":"examples/viewer_kernels/kernels.hpp","key":"examples/viewer_kernels/kernels.hpp:kahan_step","name":"kahan_step","regions":["examples/viewer_kernels/kernels.hpp:kahan_step:108","examples/viewer_kernels/kernels.hpp:kahan_step:109","examples/viewer_kernels/kernels.hpp:kahan_step:110","examples/viewer_kernels/kernels.hpp:kahan_step:111"]}],"max_rel_err":1.3575088442282481e+82,"name":"kahan","records":384,"regions":[{"abs_val_max":5.000000005960465,"abs_val_min":0.2,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:kahan_step","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:kahan_step:108","kind":"at","line":108,"max_amp":3.056838147225056e+97,"max_cond":1.0000000348185556,"max_rel_err":5.340312013168963e+64,"max_sensitivity":3.056838147225056e+97,"n":96,"nonfinite_count":0,"note":"rel_err 5.34e+64 with low per-op cond 1.00e+00 (accumulated cancellation)","ops":{"sub":96},"p50_rel_err":100000000000.0,"p99_rel_err":1e+64,"predictions":{"float":1.8220175190121269e+90},"range_ok":true,"region_local_vars":[],"rel_err_hist":{"buckets":{"-16":16,"-8":16,"10":6,"11":1,"26":8,"27":6,"28":1,"29":1,"43":5,"44":8,"45":2,"47":1,"60":7,"61":5,"62":2,"63":1,"64":1,"9":9},"total":96},"signal_class":"cancellation_cascade","zero_rel_err":0},{"abs_val_max":100000010.218,"abs_val_min":100000001.0,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:kahan_step","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:kahan_step:109","kind":"at","line":109,"max_amp":3.056838147225056e+97,"max_cond":1.0,"max_rel_err":5.340312013168963e+64,"max_sensitivity":3.056838147225056e+97,"n":96,"nonfinite_count":0,"note":"rel_err 5.34e+64 with low per-op cond 1.00e+00 (accumulated cancellation)","ops":{"add":96},"p50_rel_err":100000000000.0,"p99_rel_err":1e+64,"predictions":{"float":1.8220175190121269e+90},"range_ok":true,"region_local_vars":["acc"],"rel_err_hist":{"buckets":{"-16":16,"-8":16,"10":6,"11":1,"26":8,"27":6,"28":1,"29":1,"43":5,"44":8,"45":2,"47":1,"60":7,"61":5,"62":2,"63":1,"64":1,"9":9},"total":96},"signal_class":"cancellation_cascade","zero_rel_err":0},{"abs_val_max":5.0,"abs_val_min":0.20000000298023224,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:kahan_step","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:kahan_step:110","kind":"at","line":110,"max_amp":1.5284190659704326e+89,"max_cond":999999996.0988388,"max_rel_err":1.76597636749245e+73,"max_sensitivity":3.056838147225056e+97,"n":96,"nonfinite_count":0,"note":"elevated per-op cond 1.00e+09","ops":{"sub":96},"p50_rel_err":1e+18,"p99_rel_err":1e+73,"predictions":{"float":1.8220175190121269e+90},"range_ok":true,"region_local_vars":["acc"],"rel_err_hist":{"buckets":{"-8":16,"1":16,"17":11,"18":5,"35":11,"36":4,"38":1,"50":1,"51":9,"52":5,"54":1,"68":2,"69":8,"70":4,"72":1,"73":1},"total":96},"signal_class":"log_near_root","zero_rel_err":0},{"abs_val_max":7.033348126128658e-09,"abs_val_min":1.1920925357955525e-10,"cap_counts":{},"exact_tie_count":16,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:kahan_step","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:kahan_step:111","kind":"at","line":111,"max_amp":1.5284190659704326e+89,"max_cond":83885909999.34451,"max_rel_err":1.3575088442282481e+82,"max_sensitivity":1.5284190659704326e+89,"n":96,"nonfinite_count":0,"note":"elevated per-op cond 8.39e+10","ops":{"sub":96},"p50_rel_err":1e+29,"p99_rel_err":1e+82,"predictions":{"float":9.110087549510196e+81},"range_ok":true,"region_local_vars":[],"rel_err_hist":{"buckets":{"-8":16,"10":6,"11":1,"26":8,"27":6,"28":1,"29":1,"43":5,"44":8,"45":2,"47":1,"60":7,"61":5,"62":2,"63":1,"64":1,"77":7,"78":5,"79":1,"80":1,"82":2,"9":9},"total":96},"signal_class":"log_near_root","zero_rel_err":0}],"samples":16,"variables":{"acc":{"is_source_var":true,"max_amp":3.056838147225056e+97,"max_sensitivity":3.056838147225056e+97,"n_samples":16,"predictions":{"float":1.8220175190121269e+90}}}},{"chains":[],"class_counts":{"log_near_root":1,"stable":9},"drilldown":{"max_rel_err":1.0,"nodes":[{"cap":null,"cond":0,"exact_tie":false,"in":["a"],"op":"exp","region":"examples/viewer_kernels/kernels.hpp:lse_naive:178","rel_err":0,"val":1},{"cap":null,"cond":3,"exact_tie":false,"in":["b"],"op":"exp","region":"examples/viewer_kernels/kernels.hpp:lse_naive:179","rel_err":6.661338147750939e-16,"val":0.049787068367863944},{"cap":null,"cond":1,"exact_tie":false,"in":[0,1],"op":"add","region":"examples/viewer_kernels/kernels.hpp:lse_naive:180","rel_err":7.771561172376096e-16,"val":1.0497870683678638},{"cap":null,"cond":20.581488136522132,"exact_tie":false,"in":[2],"op":"log","region":"examples/viewer_kernels/kernels.hpp:lse_naive:181","rel_err":1.8280033608173103e-14,"val":0.04858735157374196},{"cap":null,"cond":0,"exact_tie":false,"in":["a"],"op":"exp","region":"examples/viewer_kernels/kernels.hpp:exp_log_roundtrip:187","rel_err":0,"val":1},{"cap":"log","cond":9007199254740992,"exact_tie":false,"in":[4],"op":"log","region":"examples/viewer_kernels/kernels.hpp:exp_log_roundtrip:188","rel_err":1,"val":0},{"cap":null,"cond":1,"exact_tie":false,"in":["b","a"],"op":"sub","region":"examples/viewer_kernels/kernels.hpp:lse_shifted:194","rel_err":2.220446049250313e-16,"val":-3},{"cap":null,"cond":3,"exact_tie":false,"in":[6],"op":"exp","region":"examples/viewer_kernels/kernels.hpp:lse_shifted:195","rel_err":9.992007221626409e-16,"val":0.049787068367863944},{"cap":null,"cond":0.9760950461682919,"exact_tie":false,"in":[7],"op":"log1p","region":"examples/viewer_kernels/kernels.hpp:lse_shifted:196","rel_err":1.0836831944785928e-15,"val":0.04858735157374206},{"cap":null,"cond":1,"exact_tie":false,"in":["a",8],"op":"add","region":"examples/viewer_kernels/kernels.hpp:lse_shifted:197","rel_err":1.1947054969411085e-15,"val":0.04858735157374206}],"rerun":"--unit log_sum_exp --sample-offset 0 --sample-count 1","sample":"0","sample_scope":"integral=log_sum_exp/sample=0","sources":["a","b"]},"edges":[{"dst":"examples/viewer_kernels/kernels.hpp:exp_log_roundtrip:188","n":16,"src":"examples/viewer_kernels/kernels.hpp:exp_log_roundtrip:187"},{"dst":"examples/viewer_kernels/kernels.hpp:lse_naive:180","n":16,"src":"examples/viewer_kernels/kernels.hpp:lse_naive:178"},{"dst":"examples/viewer_kernels/kernels.hpp:lse_naive:180","n":16,"src":"examples/viewer_kernels/kernels.hpp:lse_naive:179"},{"dst":"examples/viewer_kernels/kernels.hpp:lse_naive:181","n":16,"src":"examples/viewer_kernels/kernels.hpp:lse_naive:180"},{"dst":"examples/viewer_kernels/kernels.hpp:lse_shifted:195","n":16,"src":"examples/viewer_kernels/kernels.hpp:lse_shifted:194"},{"dst":"examples/viewer_kernels/kernels.hpp:lse_shifted:196","n":16,"src":"examples/viewer_kernels/kernels.hpp:lse_shifted:195"},{"dst":"examples/viewer_kernels/kernels.hpp:lse_shifted:197","n":16,"src":"examples/viewer_kernels/kernels.hpp:lse_shifted:196"}],"functions":[{"file":"examples/viewer_kernels/kernels.hpp","key":"examples/viewer_kernels/kernels.hpp:exp_log_roundtrip","name":"exp_log_roundtrip","regions":["examples/viewer_kernels/kernels.hpp:exp_log_roundtrip:187","examples/viewer_kernels/kernels.hpp:exp_log_roundtrip:188"]},{"file":"examples/viewer_kernels/kernels.hpp","key":"examples/viewer_kernels/kernels.hpp:lse_naive","name":"lse_naive","regions":["examples/viewer_kernels/kernels.hpp:lse_naive:178","examples/viewer_kernels/kernels.hpp:lse_naive:179","examples/viewer_kernels/kernels.hpp:lse_naive:180","examples/viewer_kernels/kernels.hpp:lse_naive:181"]},{"file":"examples/viewer_kernels/kernels.hpp","key":"examples/viewer_kernels/kernels.hpp:lse_shifted","name":"lse_shifted","regions":["examples/viewer_kernels/kernels.hpp:lse_shifted:194","examples/viewer_kernels/kernels.hpp:lse_shifted:195","examples/viewer_kernels/kernels.hpp:lse_shifted:196","examples/viewer_kernels/kernels.hpp:lse_shifted:197"]}],"max_rel_err":1.0,"name":"log_sum_exp","records":160,"regions":[{"abs_val_max":1.0,"abs_val_min":0.99999840000128,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:exp_log_roundtrip","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:exp_log_roundtrip:187","kind":"at","line":187,"max_amp":9007199254740992.0,"max_cond":1.6e-06,"max_rel_err":3.552713678800501e-22,"max_sensitivity":9007199254740992.0,"n":16,"nonfinite_count":0,"note":"no elevated conditioning or accumulated-error signal","ops":{"exp":16},"p50_rel_err":1e-22,"p99_rel_err":1e-22,"predictions":{"float":536870912.0},"range_ok":true,"region_local_vars":["a"],"rel_err_hist":{"buckets":{"-22":9,"-23":3},"total":12},"signal_class":"stable","zero_rel_err":4},{"abs_val_max":1.599999999958179e-06,"abs_val_min":2.0000000002173536e-07,"cap_counts":{"log":4},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:exp_log_roundtrip","gate_a_count":4,"key":"examples/viewer_kernels/kernels.hpp:exp_log_roundtrip:188","kind":"at","line":188,"max_amp":1.0,"max_cond":4999999.999456616,"max_rel_err":1.0,"max_sensitivity":9007199254740992.0,"n":16,"nonfinite_count":0,"note":"elevated per-op cond 5.00e+06","ops":{"log":16},"p50_rel_err":1e-10,"p99_rel_err":1.0,"predictions":{"float":536870912.0},"range_ok":true,"region_local_vars":[],"rel_err_hist":{"buckets":{"-10":8,"-11":4,"0":4},"total":16},"signal_class":"log_near_root","zero_rel_err":0},{"abs_val_max":1.0,"abs_val_min":0.99999840000128,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:lse_naive","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:lse_naive:178","kind":"at","line":178,"max_amp":5210.322978360829,"max_cond":1.6e-06,"max_rel_err":3.552713678800501e-22,"max_sensitivity":1703.2501722249003,"n":16,"nonfinite_count":0,"note":"no elevated conditioning or accumulated-error signal","ops":{"exp":16},"p50_rel_err":1e-22,"p99_rel_err":1e-22,"predictions":{"float":0.00010152162147908809},"range_ok":true,"region_local_vars":["a"],"rel_err_hist":{"buckets":{"-22":9,"-23":3},"total":12},"signal_class":"stable","zero_rel_err":4},{"abs_val_max":0.049787068367863944,"abs_val_min":0.00019354509955809383,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:lse_naive","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:lse_naive:179","kind":"at","line":179,"max_amp":5210.322978360829,"max_cond":8.55,"max_rel_err":1.898481372109018e-15,"max_sensitivity":44548.261464985095,"n":16,"nonfinite_count":0,"note":"no elevated conditioning or accumulated-error signal","ops":{"exp":16},"p50_rel_err":1e-15,"p99_rel_err":1e-15,"predictions":{"float":0.0026552832999816593},"range_ok":true,"region_local_vars":["b"],"rel_err_hist":{"buckets":{"-15":11,"-16":5},"total":16},"signal_class":"stable","zero_rel_err":0},{"abs_val_max":1.0497870683678638,"abs_val_min":1.000191945100838,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:lse_naive","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:lse_naive:180","kind":"at","line":180,"max_amp":5210.322978360829,"max_cond":1.0,"max_rel_err":2.0095036745715335e-15,"max_sensitivity":5210.322978360829,"n":16,"nonfinite_count":0,"note":"no elevated conditioning or accumulated-error signal","ops":{"add":16},"p50_rel_err":1e-15,"p99_rel_err":1e-15,"predictions":{"float":0.00031055945029025253},"range_ok":true,"region_local_vars":[],"rel_err_hist":{"buckets":{"-15":13,"-16":3},"total":16},"signal_class":"stable","zero_rel_err":0},{"abs_val_max":0.04858735157374196,"abs_val_min":0.0001919266817341524,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:lse_naive","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:lse_naive:181","kind":"at","line":181,"max_amp":1.0,"max_cond":5210.322978360829,"max_rel_err":1.1048625224351555e-11,"max_sensitivity":5210.322978360829,"n":16,"nonfinite_count":0,"note":"no elevated conditioning or accumulated-error signal","ops":{"log":16},"p50_rel_err":1e-13,"p99_rel_err":1e-11,"predictions":{"float":0.00031055945029025253},"range_ok":true,"region_local_vars":[],"rel_err_hist":{"buckets":{"-11":1,"-12":5,"-13":6,"-14":4},"total":16},"signal_class":"stable","zero_rel_err":0},{"abs_val_max":8.549998400000002,"abs_val_min":3.0,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:lse_shifted","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:lse_shifted:194","kind":"at","line":194,"max_amp":8.691711743817661,"max_cond":1.0000003742690757,"max_rel_err":2.2204468802946036e-16,"max_sensitivity":8.691714996856582,"n":16,"nonfinite_count":0,"note":"no elevated conditioning or accumulated-error signal","ops":{"sub":16},"p50_rel_err":1e-16,"p99_rel_err":1e-16,"predictions":{"float":5.18066584876572e-07},"range_ok":true,"region_local_vars":["a","b"],"rel_err_hist":{"buckets":{"-16":16},"total":16},"signal_class":"stable","zero_rel_err":0},{"abs_val_max":0.049787068367863944,"abs_val_min":0.00019354540923050071,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:lse_shifted","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:lse_shifted:195","kind":"at","line":195,"max_amp":1.016574663197324,"max_cond":8.549998400000002,"max_rel_err":2.847722235799211e-15,"max_sensitivity":8.691711743817661,"n":16,"nonfinite_count":0,"note":"no elevated conditioning or accumulated-error signal","ops":{"exp":16},"p50_rel_err":1e-15,"p99_rel_err":1e-15,"predictions":{"float":5.180663909803427e-07},"range_ok":true,"region_local_vars":[],"rel_err_hist":{"buckets":{"-15":15,"-16":1},"total":16},"signal_class":"stable","zero_rel_err":0},{"abs_val_max":0.04858735157374206,"abs_val_min":0.00019352668173415862,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:lse_shifted","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:lse_shifted:196","kind":"at","line":196,"max_amp":1.0166730335307543,"max_cond":0.9999032429009269,"max_rel_err":2.958458258723306e-15,"max_sensitivity":1.016574663197324,"n":16,"nonfinite_count":0,"note":"no elevated conditioning or accumulated-error signal","ops":{"log1p":16},"p50_rel_err":1e-15,"p99_rel_err":1e-15,"predictions":{"float":6.059257168753886e-08},"range_ok":true,"region_local_vars":[],"rel_err_hist":{"buckets":{"-15":16},"total":16},"signal_class":"stable","zero_rel_err":0},{"abs_val_max":0.04858735157374206,"abs_val_min":0.0001919266817341586,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:lse_shifted","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:lse_shifted:197","kind":"at","line":197,"max_amp":1.0,"max_cond":1.0166730335307543,"max_rel_err":3.1206581135044712e-15,"max_sensitivity":1.0166730335307543,"n":16,"nonfinite_count":0,"note":"no elevated conditioning or accumulated-error signal","ops":{"add":16},"p50_rel_err":1e-15,"p99_rel_err":1e-15,"predictions":{"float":6.059843501631941e-08},"range_ok":true,"region_local_vars":["a"],"rel_err_hist":{"buckets":{"-15":16},"total":16},"signal_class":"stable","zero_rel_err":0}],"samples":16,"variables":{"a":{"is_source_var":true,"max_amp":9007199254740992.0,"max_sensitivity":9007199254740992.0,"n_samples":16,"predictions":{"float":536870912.0}},"b":{"is_source_var":true,"max_amp":44548.261464985095,"max_sensitivity":44548.261464985095,"n_samples":16,"predictions":{"float":0.0026552832999816593}}}},{"chains":[],"class_counts":{"log_near_root":1,"stable":2},"drilldown":{"max_rel_err":8.8817843042242e-08,"nodes":[{"cap":null,"cond":1,"exact_tie":false,"in":["sum_x","n"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:mean_of:79","rel_err":2.220446049250313e-16,"val":100},{"cap":null,"cond":1,"exact_tie":false,"in":["sum_x2","n"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:mean_of:79","rel_err":2.220446049250313e-16,"val":10000.0001},{"cap":null,"cond":1,"exact_tie":false,"in":[0,0],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:naive_variance:85","rel_err":3.3306690738754696e-16,"val":10000},{"cap":null,"cond":200000002.41444615,"exact_tie":false,"in":[1,2],"op":"sub","region":"kernels.hpp:87","rel_err":8.8817843042242e-08,"val":9.999999929277692e-05}],"rerun":"--unit naive_variance --sample-offset 0 --sample-count 1","sample":"0","sample_scope":"integral=naive_variance/sample=0","sources":["n","sum_x","sum_x2"]},"edges":[{"dst":"examples/viewer_kernels/kernels.hpp:naive_variance:85","n":32,"src":"examples/viewer_kernels/kernels.hpp:mean_of:79"},{"dst":"kernels.hpp:87","n":16,"src":"examples/viewer_kernels/kernels.hpp:mean_of:79"},{"dst":"kernels.hpp:87","n":16,"src":"examples/viewer_kernels/kernels.hpp:naive_variance:85"}],"functions":[{"file":"examples/viewer_kernels/kernels.hpp","key":"examples/viewer_kernels/kernels.hpp:mean_of","name":"mean_of","regions":["examples/viewer_kernels/kernels.hpp:mean_of:79"]},{"file":"examples/viewer_kernels/kernels.hpp","key":"examples/viewer_kernels/kernels.hpp:naive_variance","name":"naive_variance","regions":["examples/viewer_kernels/kernels.hpp:naive_variance:85","kernels.hpp:87"]}],"max_rel_err":8.8817843042242e-08,"name":"naive_variance","records":64,"regions":[{"abs_val_max":10030.022630000001,"abs_val_min":100.0,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:mean_of","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:mean_of:79","kind":"at","line":79,"max_amp":200000002.41444615,"max_cond":1.0,"max_rel_err":2.220446049250313e-16,"max_sensitivity":200000002.41444615,"n":32,"nonfinite_count":0,"note":"no elevated conditioning or accumulated-error signal","ops":{"div":32},"p50_rel_err":1e-16,"p99_rel_err":1e-16,"predictions":{"float":11.92092909899033},"range_ok":true,"region_local_vars":["n","sum_x","sum_x2"],"rel_err_hist":{"buckets":{"-16":32},"total":32},"signal_class":"stable","zero_rel_err":0},{"abs_val_max":10030.022500000001,"abs_val_min":10000.0,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:naive_variance","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:naive_variance:85","kind":"at","line":85,"max_amp":200000002.41444615,"max_cond":1.0,"max_rel_err":3.3306690738754696e-16,"max_sensitivity":200000002.41444615,"n":16,"nonfinite_count":0,"note":"no elevated conditioning or accumulated-error signal","ops":{"mul":16},"p50_rel_err":1e-16,"p99_rel_err":1e-16,"predictions":{"float":11.92092909899033},"range_ok":true,"region_local_vars":[],"rel_err_hist":{"buckets":{"-16":16},"total":16},"signal_class":"stable","zero_rel_err":0},{"abs_val_max":0.00013000000035390258,"abs_val_min":9.999999929277692e-05,"cap_counts":{},"exact_tie_count":0,"file":"kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:naive_variance","gate_a_count":0,"key":"kernels.hpp:87","kind":"line","line":87,"max_amp":1.0,"max_cond":200000002.41444615,"max_rel_err":8.8817843042242e-08,"max_sensitivity":200000002.41444615,"n":16,"nonfinite_count":0,"note":"elevated per-op cond 2.00e+08","ops":{"sub":16},"p50_rel_err":1e-08,"p99_rel_err":1e-08,"predictions":{"float":11.92092909899033},"range_ok":true,"region_local_vars":[],"rel_err_hist":{"buckets":{"-8":16},"total":16},"signal_class":"log_near_root","zero_rel_err":0}],"samples":16,"variables":{"n":{"is_source_var":true,"max_amp":200000002.41444615,"max_sensitivity":200000002.41444615,"n_samples":16,"predictions":{"float":11.92092909899033}},"sum_x":{"is_source_var":true,"max_amp":200000002.41444615,"max_sensitivity":200000002.41444615,"n_samples":16,"predictions":{"float":11.92092909899033}},"sum_x2":{"is_source_var":true,"max_amp":200000002.41444615,"max_sensitivity":200000002.41444615,"n_samples":16,"predictions":{"float":11.92092909899033}}}},{"chains":[],"class_counts":{"cancellation_cascade":7,"stable":1},"drilldown":{"max_rel_err":2.0,"nodes":[{"cap":null,"cond":1,"exact_tie":false,"in":["x","y"],"op":"hypot","region":"examples/viewer_kernels/kernels.hpp:phase_angle:212","rel_err":2.220446049250313e-16,"val":1},{"cap":"atan2","cond":9007199254740992,"exact_tie":false,"in":["y","x"],"op":"atan2","region":"examples/viewer_kernels/kernels.hpp:phase_angle:213","rel_err":2,"val":0},{"cap":null,"cond":1,"exact_tie":false,"in":[1,0],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:phase_angle:214","rel_err":2,"val":0},{"cap":"sin","cond":9007199254740992,"exact_tie":false,"in":["theta"],"op":"sin","region":"examples/viewer_kernels/kernels.hpp:resolve:218","rel_err":2,"val":1.2246467991473532e-16},{"cap":null,"cond":3.8473413874435795e-16,"exact_tie":false,"in":["theta"],"op":"cos","region":"examples/viewer_kernels/kernels.hpp:resolve:219","rel_err":8.542813983866314e-32,"val":-1},{"cap":null,"cond":1,"exact_tie":false,"in":[3,3],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:resolve:220","rel_err":2,"val":1.4997597826618576e-32},{"cap":null,"cond":1,"exact_tie":false,"in":[4,4],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:resolve:221","rel_err":1.1102230246251573e-16,"val":1},{"cap":null,"cond":1,"exact_tie":false,"in":[5,6],"op":"add","region":"examples/viewer_kernels/kernels.hpp:resolve:222","rel_err":2,"val":1}],"rerun":"--unit polar_phase --sample-offset 0 --sample-count 1","sample":"0","sample_scope":"integral=polar_phase/sample=0","sources":["theta","x","y"]},"edges":[{"dst":"examples/viewer_kernels/kernels.hpp:phase_angle:214","n":16,"src":"examples/viewer_kernels/kernels.hpp:phase_angle:212"},{"dst":"examples/viewer_kernels/kernels.hpp:phase_angle:214","n":16,"src":"examples/viewer_kernels/kernels.hpp:phase_angle:213"},{"dst":"examples/viewer_kernels/kernels.hpp:resolve:220","n":32,"src":"examples/viewer_kernels/kernels.hpp:resolve:218"},{"dst":"examples/viewer_kernels/kernels.hpp:resolve:221","n":32,"src":"examples/viewer_kernels/kernels.hpp:resolve:219"},{"dst":"examples/viewer_kernels/kernels.hpp:resolve:222","n":16,"src":"examples/viewer_kernels/kernels.hpp:resolve:220"},{"dst":"examples/viewer_kernels/kernels.hpp:resolve:222","n":16,"src":"examples/viewer_kernels/kernels.hpp:resolve:221"}],"functions":[{"file":"examples/viewer_kernels/kernels.hpp","key":"examples/viewer_kernels/kernels.hpp:phase_angle","name":"phase_angle","regions":["examples/viewer_kernels/kernels.hpp:phase_angle:212","examples/viewer_kernels/kernels.hpp:phase_angle:213","examples/viewer_kernels/kernels.hpp:phase_angle:214"]},{"file":"examples/viewer_kernels/kernels.hpp","key":"examples/viewer_kernels/kernels.hpp:resolve","name":"resolve","regions":["examples/viewer_kernels/kernels.hpp:resolve:218","examples/viewer_kernels/kernels.hpp:resolve:219","examples/viewer_kernels/kernels.hpp:resolve:220","examples/viewer_kernels/kernels.hpp:resolve:221","examples/viewer_kernels/kernels.hpp:resolve:222"]}],"max_rel_err":2.0,"name":"polar_phase","records":128,"regions":[{"abs_val_max":1.1884864324004711,"abs_val_min":1.0,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:phase_angle","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:phase_angle:212","kind":"at","line":212,"max_amp":1.0,"max_cond":1.0,"max_rel_err":2.220446049250313e-16,"max_sensitivity":1.0,"n":16,"nonfinite_count":0,"note":"no elevated conditioning or accumulated-error signal","ops":{"hypot":16},"p50_rel_err":1e-16,"p99_rel_err":1e-16,"predictions":{"float":5.960464477539063e-08},"range_ok":true,"region_local_vars":["x","y"],"rel_err_hist":{"buckets":{"-16":16},"total":16},"signal_class":"stable","zero_rel_err":0},{"abs_val_max":0.2551823906208184,"abs_val_min":0.019799392566392866,"cap_counts":{"atan2":8},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:phase_angle","gate_a_count":8,"key":"examples/viewer_kernels/kernels.hpp:phase_angle:213","kind":"at","line":213,"max_amp":1.0,"max_cond":1.999477353050873,"max_rel_err":2.0,"max_sensitivity":9007199254740992.0,"n":16,"nonfinite_count":0,"note":"rel_err 2.00e+00 with low per-op cond 2.00e+00 (accumulated cancellation)","ops":{"atan2":16},"p50_rel_err":1e-16,"p99_rel_err":1.0,"predictions":{"float":536870912.0},"range_ok":true,"region_local_vars":["x","y"],"rel_err_hist":{"buckets":{"-16":8,"0":8},"total":16},"signal_class":"cancellation_cascade","zero_rel_err":0},{"abs_val_max":0.30328080904035987,"abs_val_min":0.020001306779585545,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:phase_angle","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:phase_angle:214","kind":"at","line":214,"max_amp":1.0,"max_cond":1.0,"max_rel_err":2.0,"max_sensitivity":1.0,"n":16,"nonfinite_count":0,"note":"rel_err 2.00e+00 with low per-op cond 1.00e+00 (accumulated cancellation)","ops":{"mul":16},"p50_rel_err":1e-16,"p99_rel_err":1.0,"predictions":{"float":5.960464477539063e-08},"range_ok":true,"region_local_vars":[],"rel_err_hist":{"buckets":{"-16":8,"0":8},"total":16},"signal_class":"cancellation_cascade","zero_rel_err":0},{"abs_val_max":1.0,"abs_val_min":1.2246467991473532e-16,"cap_counts":{"sin":8},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:resolve","gate_a_count":8,"key":"examples/viewer_kernels/kernels.hpp:resolve:218","kind":"at","line":218,"max_amp":1.0,"max_cond":9.618353468608949e-17,"max_rel_err":2.0,"max_sensitivity":9007199254740992.0,"n":16,"nonfinite_count":0,"note":"rel_err 2.00e+00 with low per-op cond 9.62e-17 (accumulated cancellation)","ops":{"sin":16},"p50_rel_err":1e-32,"p99_rel_err":1.0,"predictions":{"float":536870912.0},"range_ok":true,"region_local_vars":["theta"],"rel_err_hist":{"buckets":{"-32":8,"0":8},"total":16},"signal_class":"cancellation_cascade","zero_rel_err":0},{"abs_val_max":1.0,"abs_val_min":6.123233995736766e-17,"cap_counts":{"cos":8},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:resolve","gate_a_count":8,"key":"examples/viewer_kernels/kernels.hpp:resolve:219","kind":"at","line":219,"max_amp":1.0,"max_cond":3.8473413874435795e-16,"max_rel_err":2.0,"max_sensitivity":9007199254740992.0,"n":16,"nonfinite_count":0,"note":"rel_err 2.00e+00 with low per-op cond 3.85e-16 (accumulated cancellation)","ops":{"cos":16},"p50_rel_err":1e-32,"p99_rel_err":1.0,"predictions":{"float":536870912.0},"range_ok":true,"region_local_vars":["theta"],"rel_err_hist":{"buckets":{"-32":8,"0":8},"total":16},"signal_class":"cancellation_cascade","zero_rel_err":0},{"abs_val_max":1.0,"abs_val_min":1.4997597826618576e-32,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:resolve","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:resolve:220","kind":"at","line":220,"max_amp":1.0,"max_cond":1.0,"max_rel_err":2.0,"max_sensitivity":1.0,"n":16,"nonfinite_count":0,"note":"rel_err 2.00e+00 with low per-op cond 1.00e+00 (accumulated cancellation)","ops":{"mul":16},"p50_rel_err":1e-16,"p99_rel_err":1.0,"predictions":{"float":5.960464477539063e-08},"range_ok":true,"region_local_vars":[],"rel_err_hist":{"buckets":{"-16":8,"0":8},"total":16},"signal_class":"cancellation_cascade","zero_rel_err":0},{"abs_val_max":1.0,"abs_val_min":3.749399456654644e-33,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:resolve","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:resolve:221","kind":"at","line":221,"max_amp":1.0,"max_cond":1.0,"max_rel_err":2.0,"max_sensitivity":1.0,"n":16,"nonfinite_count":0,"note":"rel_err 2.00e+00 with low per-op cond 1.00e+00 (accumulated cancellation)","ops":{"mul":16},"p50_rel_err":1e-16,"p99_rel_err":1.0,"predictions":{"float":5.960464477539063e-08},"range_ok":true,"region_local_vars":[],"rel_err_hist":{"buckets":{"-16":8,"0":8},"total":16},"signal_class":"cancellation_cascade","zero_rel_err":0},{"abs_val_max":1.0,"abs_val_min":1.0,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:resolve","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:resolve:222","kind":"at","line":222,"max_amp":1.0,"max_cond":1.0,"max_rel_err":2.0,"max_sensitivity":1.0,"n":16,"nonfinite_count":0,"note":"rel_err 2.00e+00 with low per-op cond 1.00e+00 (accumulated cancellation)","ops":{"add":16},"p50_rel_err":1.0,"p99_rel_err":1.0,"predictions":{"float":5.960464477539063e-08},"range_ok":true,"region_local_vars":[],"rel_err_hist":{"buckets":{"0":16},"total":16},"signal_class":"cancellation_cascade","zero_rel_err":0}],"samples":16,"variables":{"theta":{"is_source_var":true,"max_amp":9007199254740992.0,"max_sensitivity":9007199254740992.0,"n_samples":16,"predictions":{"float":536870912.0}},"x":{"is_source_var":true,"max_amp":9007199254740992.0,"max_sensitivity":9007199254740992.0,"n_samples":16,"predictions":{"float":536870912.0}},"y":{"is_source_var":true,"max_amp":9007199254740992.0,"max_sensitivity":9007199254740992.0,"n_samples":16,"predictions":{"float":536870912.0}}}},{"chains":[],"class_counts":{"atan2_saturation":1,"stable":5},"drilldown":{"max_rel_err":5.0,"nodes":[{"cap":null,"cond":1,"exact_tie":false,"in":["h","h"],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:run_range_overflow:241","rel_err":2.220446049250313e-16,"val":9.999999999999998e+119},{"cap":null,"cond":1,"exact_tie":false,"in":["t","t"],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:run_range_overflow:243","rel_err":2.220446049250313e-16,"val":1e-100},{"cap":null,"cond":1,"exact_tie":false,"in":[0,0],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:run_range_overflow:244","rel_err":3.3306690738754696e-16,"val":9.999999999999996e+239},{"cap":null,"cond":1,"exact_tie":false,"in":[2,2],"op":"mul","region":"examples/viewer_kernels/kernels.hpp:run_range_overflow:245","rel_err":4.440892098500626e-16,"val":"inf"},{"cap":"nan","cond":9007199254740992,"exact_tie":false,"in":[3,3],"op":"sub","region":"examples/viewer_kernels/kernels.hpp:run_range_overflow:246","rel_err":5,"val":"nan"},{"cap":null,"cond":1,"exact_tie":false,"in":["zn","zn"],"op":"div","region":"examples/viewer_kernels/kernels.hpp:run_range_overflow:249","rel_err":2.220446049250313e-16,"val":"nan"}],"rerun":"--unit range_overflow --sample-offset 0 --sample-count 1","sample":"0","sample_scope":"integral=range_overflow/sample=0","sources":["h","t","zn"]},"edges":[{"dst":"examples/viewer_kernels/kernels.hpp:run_range_overflow:244","n":32,"src":"examples/viewer_kernels/kernels.hpp:run_range_overflow:241"},{"dst":"examples/viewer_kernels/kernels.hpp:run_range_overflow:245","n":32,"src":"examples/viewer_kernels/kernels.hpp:run_range_overflow:244"},{"dst":"examples/viewer_kernels/kernels.hpp:run_range_overflow:246","n":32,"src":"examples/viewer_kernels/kernels.hpp:run_range_overflow:245"}],"functions":[{"file":"examples/viewer_kernels/kernels.hpp","key":"examples/viewer_kernels/kernels.hpp:run_range_overflow","name":"run_range_overflow","regions":["examples/viewer_kernels/kernels.hpp:run_range_overflow:241","examples/viewer_kernels/kernels.hpp:run_range_overflow:243","examples/viewer_kernels/kernels.hpp:run_range_overflow:244","examples/viewer_kernels/kernels.hpp:run_range_overflow:245","examples/viewer_kernels/kernels.hpp:run_range_overflow:246","examples/viewer_kernels/kernels.hpp:run_range_overflow:249"]}],"max_rel_err":5.0,"name":"range_overflow","records":96,"regions":[{"abs_val_max":1.3225e+120,"abs_val_min":9.999999999999998e+119,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:run_range_overflow","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:run_range_overflow:241","kind":"at","line":241,"max_amp":9007199254740992.0,"max_cond":1.0,"max_rel_err":2.220446049250313e-16,"max_sensitivity":9007199254740992.0,"n":16,"nonfinite_count":0,"note":"no elevated conditioning or accumulated-error signal","ops":{"mul":16},"p50_rel_err":1e-16,"p99_rel_err":1e-16,"predictions":{"float":536870912.0},"range_ok":false,"region_local_vars":["h"],"rel_err_hist":{"buckets":{"-16":16},"total":16},"signal_class":"stable","zero_rel_err":0},{"abs_val_max":1e-100,"abs_val_min":1e-100,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:run_range_overflow","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:run_range_overflow:243","kind":"at","line":243,"max_amp":1.0,"max_cond":1.0,"max_rel_err":2.220446049250313e-16,"max_sensitivity":1.0,"n":16,"nonfinite_count":0,"note":"no elevated conditioning or accumulated-error signal","ops":{"mul":16},"p50_rel_err":1e-16,"p99_rel_err":1e-16,"predictions":{"float":5.960464477539063e-08},"range_ok":false,"region_local_vars":["t"],"rel_err_hist":{"buckets":{"-16":16},"total":16},"signal_class":"stable","zero_rel_err":0},{"abs_val_max":1.74900625e+240,"abs_val_min":9.999999999999996e+239,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:run_range_overflow","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:run_range_overflow:244","kind":"at","line":244,"max_amp":9007199254740992.0,"max_cond":1.0,"max_rel_err":3.3306690738754696e-16,"max_sensitivity":9007199254740992.0,"n":16,"nonfinite_count":0,"note":"no elevated conditioning or accumulated-error signal","ops":{"mul":16},"p50_rel_err":1e-16,"p99_rel_err":1e-16,"predictions":{"float":536870912.0},"range_ok":false,"region_local_vars":[],"rel_err_hist":{"buckets":{"-16":16},"total":16},"signal_class":"stable","zero_rel_err":0},{"abs_val_max":1.7976931348623157e+308,"abs_val_min":1.7976931348623157e+308,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:run_range_overflow","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:run_range_overflow:245","kind":"at","line":245,"max_amp":9007199254740992.0,"max_cond":1.0,"max_rel_err":4.440892098500626e-16,"max_sensitivity":9007199254740992.0,"n":16,"nonfinite_count":16,"note":"no elevated conditioning or accumulated-error signal","ops":{"mul":16},"p50_rel_err":1e-16,"p99_rel_err":1e-16,"predictions":{"float":536870912.0},"range_ok":false,"region_local_vars":[],"rel_err_hist":{"buckets":{"-16":16},"total":16},"signal_class":"stable","zero_rel_err":0},{"abs_val_max":1.7976931348623157e+308,"abs_val_min":1.7976931348623157e+308,"cap_counts":{"nan":16},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:run_range_overflow","gate_a_count":16,"key":"examples/viewer_kernels/kernels.hpp:run_range_overflow:246","kind":"at","line":246,"max_amp":1.0,"max_cond":0.0,"max_rel_err":5.0,"max_sensitivity":9007199254740992.0,"n":16,"nonfinite_count":16,"note":"atan2 saturation cap (2**53) only; no genuine hotspot","ops":{"sub":16},"p50_rel_err":1.0,"p99_rel_err":1.0,"predictions":{"float":536870912.0},"range_ok":false,"region_local_vars":[],"rel_err_hist":{"buckets":{"0":16},"total":16},"signal_class":"atan2_saturation","zero_rel_err":0},{"abs_val_max":1.7976931348623157e+308,"abs_val_min":1.7976931348623157e+308,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:run_range_overflow","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:run_range_overflow:249","kind":"at","line":249,"max_amp":1.0,"max_cond":1.0,"max_rel_err":2.220446049250313e-16,"max_sensitivity":1.0,"n":16,"nonfinite_count":16,"note":"no elevated conditioning or accumulated-error signal","ops":{"div":16},"p50_rel_err":1e-16,"p99_rel_err":1e-16,"predictions":{"float":5.960464477539063e-08},"range_ok":false,"region_local_vars":["zn"],"rel_err_hist":{"buckets":{"-16":16},"total":16},"signal_class":"stable","zero_rel_err":0}],"samples":16,"variables":{"h":{"is_source_var":true,"max_amp":9007199254740992.0,"max_sensitivity":9007199254740992.0,"n_samples":16,"predictions":{"float":536870912.0}},"t":{"is_source_var":true,"max_amp":1.0,"max_sensitivity":1.0,"n_samples":16,"predictions":{"float":5.960464477539063e-08}},"zn":{"is_source_var":true,"max_amp":1.0,"max_sensitivity":1.0,"n_samples":16,"predictions":{"float":5.960464477539063e-08}}}},{"chains":[{"count":16,"max_cond":66666661151.64239,"max_rel_err":4.4408917311595165e-05,"max_sensitivity":199999983454.92715,"ops":{"sub":2},"predictions":{"float":11920.927968914935},"range_ok":true,"region_local_vars":["f0","f1","f2"],"spans":[{"file":"examples/viewer_kernels/kernels.hpp:second_difference","line_end":162,"line_start":162},{"file":"examples/viewer_kernels/kernels.hpp:second_difference","line_end":163,"line_start":163}]}],"class_counts":{"cancellation_cascade":1,"log_near_root":2},"drilldown":{"max_rel_err":4.4408917311595165e-05,"nodes":[{"cap":null,"cond":33333330577.321194,"exact_tie":false,"in":["f2","f1"],"op":"sub","region":"examples/viewer_kernels/kernels.hpp:second_difference:162","rel_err":7.40148621887675e-06,"val":6.000000496442226e-11},{"cap":null,"cond":66666661151.64239,"exact_tie":false,"in":["f1","f0"],"op":"sub","region":"examples/viewer_kernels/kernels.hpp:second_difference:163","rel_err":1.4802972437087367e-05,"val":3.000000248221113e-11},{"cap":null,"cond":3,"exact_tie":false,"in":[0,1],"op":"sub","region":"examples/viewer_kernels/kernels.hpp:second_difference:164","rel_err":4.4408917311595165e-05,"val":3.000000248221113e-11}],"rerun":"--unit second_difference --sample-offset 0 --sample-count 1","sample":"0","sample_scope":"integral=second_difference/sample=0","sources":["f0","f1","f2"]},"edges":[{"dst":"examples/viewer_kernels/kernels.hpp:second_difference:164","n":16,"src":"examples/viewer_kernels/kernels.hpp:second_difference:162"},{"dst":"examples/viewer_kernels/kernels.hpp:second_difference:164","n":16,"src":"examples/viewer_kernels/kernels.hpp:second_difference:163"}],"functions":[{"file":"examples/viewer_kernels/kernels.hpp","key":"examples/viewer_kernels/kernels.hpp:second_difference","name":"second_difference","regions":["examples/viewer_kernels/kernels.hpp:second_difference:162","examples/viewer_kernels/kernels.hpp:second_difference:163","examples/viewer_kernels/kernels.hpp:second_difference:164"]}],"max_rel_err":4.4408917311595165e-05,"name":"second_difference","records":48,"regions":[{"abs_val_max":6.900013893584855e-11,"abs_val_min":6.000000496442226e-11,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:second_difference","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:second_difference:162","kind":"at","line":162,"max_amp":3.00001383460727,"max_cond":33333330577.321194,"max_rel_err":7.40148621887675e-06,"max_sensitivity":99999991731.96358,"n":16,"nonfinite_count":0,"note":"elevated per-op cond 3.33e+10","ops":{"sub":16},"p50_rel_err":1e-06,"p99_rel_err":1e-06,"predictions":{"float":5960.4639847256885},"range_ok":true,"region_local_vars":["f1","f2"],"rel_err_hist":{"buckets":{"-6":16},"total":16},"signal_class":"log_near_root","zero_rel_err":0},{"abs_val_max":3.4499958445621814e-11,"abs_val_min":3.000000248221113e-11,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:second_difference","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:second_difference:163","kind":"at","line":163,"max_amp":3.00001383460727,"max_cond":66666661151.64239,"max_rel_err":1.4802972437087367e-05,"max_sensitivity":199999983454.92715,"n":16,"nonfinite_count":0,"note":"elevated per-op cond 6.67e+10","ops":{"sub":16},"p50_rel_err":1e-05,"p99_rel_err":1e-05,"predictions":{"float":11920.927968914935},"range_ok":true,"region_local_vars":["f0","f1"],"rel_err_hist":{"buckets":{"-5":16},"total":16},"signal_class":"log_near_root","zero_rel_err":0},{"abs_val_max":3.450018049022674e-11,"abs_val_min":3.000000248221113e-11,"cap_counts":{},"exact_tie_count":0,"file":"examples/viewer_kernels/kernels.hpp","function":"examples/viewer_kernels/kernels.hpp:second_difference","gate_a_count":0,"key":"examples/viewer_kernels/kernels.hpp:second_difference:164","kind":"at","line":164,"max_amp":1.0,"max_cond":3.00001383460727,"max_rel_err":4.4408917311595165e-05,"max_sensitivity":3.00001383460727,"n":16,"nonfinite_count":0,"note":"rel_err 4.44e-05 with low per-op cond 3.00e+00 (accumulated cancellation)","ops":{"sub":16},"p50_rel_err":1e-05,"p99_rel_err":1e-05,"predictions":{"float":1.788147589330238e-07},"range_ok":true,"region_local_vars":[],"rel_err_hist":{"buckets":{"-5":16},"total":16},"signal_class":"cancellation_cascade","zero_rel_err":0}],"samples":16,"variables":{"f0":{"is_source_var":true,"max_amp":199999983454.92715,"max_sensitivity":199999983454.92715,"n_samples":16,"predictions":{"float":11920.927968914935}},"f1":{"is_source_var":true,"max_amp":199999983454.92715,"max_sensitivity":199999983454.92715,"n_samples":16,"predictions":{"float":11920.927968914935}},"f2":{"is_source_var":true,"max_amp":99999991731.96358,"max_sensitivity":99999991731.96358,"n_samples":16,"predictions":{"float":5960.4639847256885}}}}],"view_model_schema":1}</script>
+
+<header class="app">
+  <h1>Tracked run viewer</h1>
+  <span class="meta" id="meta"></span>
+  <span class="spacer"></span>
+  <div class="tabs" role="tablist" id="tabs">
+    <button role="tab" data-tab="dag" aria-selected="true">DAG view</button>
+    <button role="tab" data-tab="report" aria-selected="false">Report</button>
+  </div>
+  <div class="toggle"><button id="theme" title="Cycle theme">Theme: auto</button></div>
+</header>
+
+<div class="filters" id="filters"></div>
+
+<main>
+  <div id="empty" class="empty hidden">
+    <p><b>No run loaded.</b></p>
+    <p>Generate a view with <code>tracked-view &lt;run_dir&gt; -o view.html</code>.</p>
+  </div>
+
+  <section id="tab-dag" class="layout">
+    <div>
+      <div class="card"><h2>Units</h2><div class="unit-list" id="units"></div></div>
+    </div>
+    <div id="dag-main"></div>
+  </section>
+
+  <section id="tab-report" class="hidden"></section>
+</main>
+
+<footer id="foot"></footer>
+<div id="tip" role="status"></div>
+
+<script>
+"use strict";
+/* ============================ model & helpers ============================ */
+const VM = JSON.parse(document.getElementById("vm").textContent);
+
+const CLASS_COLOR = {
+  local_cancellation:   "var(--class-local)",
+  cancellation_cascade: "var(--class-cascade)",
+  log_near_root:        "var(--class-root)",
+  atan2_saturation:     "var(--class-neutral)",
+  stable:               "var(--class-neutral)",
+};
+const CLASS_LABEL = {
+  local_cancellation: "local cancellation",
+  cancellation_cascade: "cancellation cascade",
+  log_near_root: "elevated conditioning",
+  atan2_saturation: "saturation cap only",
+  stable: "stable",
+};
+const DIGITS_TRACK = 16;
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;   // untrusted-safe
+  return e;
+}
+function svgEl(tag, attrs) {
+  const e = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  for (const k in attrs || {}) e.setAttribute(k, attrs[k]);
+  return e;
+}
+function basename(p) { const i = p.lastIndexOf("/"); return i < 0 ? p : p.slice(i + 1); }
+function fmt(x) {                       // numbers or v1 sentinel strings
+  if (x === null || x === undefined) return "–";
+  if (typeof x === "string") return x;  // "nan" / "inf" / "-inf"
+  if (x === 0) return "0";
+  const a = Math.abs(x);
+  if (a >= 1e4 || a < 1e-3) return x.toExponential(2);
+  return String(Math.round(x * 10000) / 10000);
+}
+function fmtInt(x) { return x === null || x === undefined ? "–" : x.toLocaleString("en-US"); }
+function isNum(x) { return typeof x === "number" && isFinite(x); }
+
+/* sequential ramp (single hue) between the two CSS anchor colors */
+function cssColor(varName) {
+  return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+}
+function hex2rgb(h) {
+  const n = parseInt(h.slice(1), 16);
+  return [n >> 16 & 255, n >> 8 & 255, n & 255];
+}
+function ramp(t) {                       // t in [0,1]
+  const a = hex2rgb(cssColor("--seq-lo")), b = hex2rgb(cssColor("--seq-hi"));
+  const m = a.map((v, i) => Math.round(v + (b[i] - v) * Math.max(0, Math.min(1, t))));
+  return `rgb(${m[0]},${m[1]},${m[2]})`;
+}
+function inkFor(rgbStr) {                // in-fill text: white/ink by luminance
+  const m = rgbStr.match(/\d+/g).map(Number);
+  const lum = 0.2126 * m[0] + 0.7152 * m[1] + 0.0722 * m[2];
+  return lum > 140 ? "#0b0b0b" : "#ffffff";
+}
+
+/* ============================ tooltip ============================ */
+const tip = document.getElementById("tip");
+function showTip(rows, x, y) {
+  tip.textContent = "";
+  for (const r of rows) {
+    if (r.title) { tip.appendChild(el("div", "t-title", r.title)); continue; }
+    const row = el("div", "t-row");
+    row.appendChild(el("span", "k", r.k));
+    row.appendChild(el("span", "v", r.v));
+    tip.appendChild(row);
+  }
+  tip.style.display = "block";
+  const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight;
+  tip.style.left = Math.min(x + pad, innerWidth - w - 8) + "px";
+  tip.style.top = Math.min(y + pad, innerHeight - h - 8) + "px";
+}
+function hideTip() { tip.style.display = "none"; }
+function attachTip(node, rowsFn) {       // pointer + keyboard, same content
+  node.addEventListener("pointermove", e => showTip(rowsFn(), e.clientX, e.clientY));
+  node.addEventListener("pointerleave", hideTip);
+  node.addEventListener("focus", () => {
+    const r = node.getBoundingClientRect();
+    showTip(rowsFn(), r.right, r.top);
+  });
+  node.addEventListener("blur", hideTip);
+}
+
+/* ============================ shared components ============================ */
+function classChip(cls) {
+  const c = el("span", "chip");
+  const sw = el("span", "sw");
+  sw.style.background = CLASS_COLOR[cls] || "var(--class-neutral)";
+  c.appendChild(sw);
+  c.appendChild(document.createTextNode(CLASS_LABEL[cls] || cls));
+  return c;
+}
+function badgeEl(kind, text) {           // status badges: icon + label, never color alone
+  const b = el("span", "badge " + kind);
+  const icons = { critical: "▲", serious: "✕", info: "◦" };
+  b.appendChild(el("span", "ic", icons[kind] || "◦"));
+  b.appendChild(document.createTextNode(text));
+  return b;
+}
+function regionBadges(r) {
+  const out = [];
+  if (r.range_ok === false)
+    out.push(badgeEl("critical", "range violation"));
+  if (r.nonfinite_count > 0)
+    out.push(badgeEl("serious", `non-finite ×${r.nonfinite_count}`));
+  const caps = r.cap_counts || {};
+  const capTotal = Object.values(caps).reduce((a, b) => a + b, 0);
+  if (capTotal > 0)
+    out.push(badgeEl("info", "cap " + Object.keys(caps).sort().map(k => `${k}×${caps[k]}`).join(" ")));
+  else if (r.gate_a_count > 0)
+    out.push(badgeEl("info", `cap ×${r.gate_a_count}`));
+  if (r.exact_tie_count > 0)
+    out.push(badgeEl("info", `exact ties ×${r.exact_tie_count}`));
+  return out;
+}
+function classLegend(extra) {
+  const lg = el("div", "legend");
+  lg.appendChild(el("span", "", "Signal class:"));
+  for (const cls of ["local_cancellation", "cancellation_cascade",
+                     "log_near_root", "atan2_saturation", "stable"])
+    lg.appendChild(classChip(cls));
+  for (const x of extra || []) lg.appendChild(x);
+  return lg;
+}
+function edgeKey(color, label) {
+  const k = el("span", "edge-key");
+  const s = svgEl("svg", { width: 22, height: 8 });
+  s.appendChild(svgEl("line", { x1: 1, y1: 4, x2: 21, y2: 4,
+    stroke: color, "stroke-width": 2, "stroke-linecap": "round" }));
+  k.appendChild(s);
+  k.appendChild(el("span", "", label));
+  return k;
+}
+
+/* rel_err decade histogram: domain clamped to [1e-17, 1) with labeled
+   overflow bins; single-hue bars; counts in tooltip + the region table */
+function histSVG(hist, zeroCount) {
+  const LO = -17, HI = 0;                 // decades
+  const bins = [];                        // {label, count}
+  let under = 0, over = 0;
+  const buckets = hist && hist.buckets ? hist.buckets : {};
+  const byDecade = {};
+  for (const k in buckets) {
+    const d = parseInt(k, 10);
+    if (d < LO) under += buckets[k];
+    else if (d >= HI) over += buckets[k];
+    else byDecade[d] = (byDecade[d] || 0) + buckets[k];
+  }
+  bins.push({ label: "<1e-17", count: under });
+  for (let d = LO; d < HI; d++) bins.push({ label: "1e" + d, count: byDecade[d] || 0 });
+  bins.push({ label: "≥1", count: over });
+
+  const max = Math.max(1, ...bins.map(b => b.count));
+  const bw = 12, gap = 2, plotH = 46, axisH = 14, w = bins.length * (bw + gap) + 6;
+  const svg = svgEl("svg", { width: w, height: plotH + axisH, role: "img",
+    "aria-label": "relative-error decade histogram" });
+  bins.forEach((b, i) => {
+    const h = b.count === 0 ? 0 : Math.max(2, Math.round(b.count / max * (plotH - 6)));
+    const x = 3 + i * (bw + gap), y = plotH - h;
+    const g = svgEl("g", { tabindex: 0 });
+    const hit = svgEl("rect", { x: x - 1, y: 0, width: bw + 2, height: plotH,
+      fill: "transparent" });
+    const bar = svgEl("rect", { x, y, width: bw, height: h, rx: 2,
+      fill: "var(--bar)" });
+    g.appendChild(hit); g.appendChild(bar);
+    attachTip(g, () => [{ title: "rel_err " + b.label },
+                        { k: "records", v: fmtInt(b.count) }]);
+    svg.appendChild(g);
+  });
+  svg.appendChild(svgEl("line", { x1: 0, y1: plotH + 0.5, x2: w, y2: plotH + 0.5,
+    stroke: "var(--axis)", "stroke-width": 1 }));
+  const lbls = [[0, "<1e-17"], [1 + (0 - LO) / 2, "1e-9"], [bins.length - 1, "≥1"]];
+  for (const [i, t] of [[0, "<1e-17"], [Math.round(bins.length / 2), "1e-9"],
+                        [bins.length - 1, "≥1"]]) {
+    const tx = svgEl("text", { x: 3 + i * (bw + gap) + bw / 2, y: plotH + 11,
+      "text-anchor": i === 0 ? "start" : (i === bins.length - 1 ? "end" : "middle"),
+      "font-size": 9, class: "sub" });
+    tx.textContent = t;
+    tx.setAttribute("x", i === 0 ? 3 : (i === bins.length - 1 ? w - 3
+      : 3 + i * (bw + gap) + bw / 2));
+    svg.appendChild(tx);
+  }
+  const wrap = el("div", "hist");
+  wrap.appendChild(svg);
+  if (zeroCount > 0)
+    wrap.appendChild(el("div", "meta", `exact (rel_err = 0 / unbucketed): ${zeroCount}`));
+  return wrap;
+}
+
+/* digits-lost meter: fill severity by digits, track = lighter step of the
+   fill's own family; explicit 16-digit ceiling with overflow label */
+function meterEl(digits, relErr) {
+  const frac = Math.max(0, Math.min(1, digits / DIGITS_TRACK));
+  let fill = "var(--class-local)", track = "rgba(42,120,214,0.18)";
+  if (digits >= 10) { fill = "var(--status-critical)"; track = "rgba(208,59,59,0.18)"; }
+  else if (digits >= 4) { fill = "var(--status-warning)"; track = "rgba(250,178,25,0.22)"; }
+  const m = el("div", "meter");
+  m.setAttribute("tabindex", "0");
+  const tr = el("div", "track"); tr.style.background = track;
+  const f = el("div", "fill"); f.style.width = (frac * 100).toFixed(1) + "%";
+  f.style.background = fill;
+  tr.appendChild(f); m.appendChild(tr);
+  const cap = el("div", "cap-line");
+  const lbl = digits >= DIGITS_TRACK
+    ? "all ~16 digits lost (rel_err ≥ 1)"
+    : `≈ ${digits.toFixed(1)} of ~16 digits lost`;
+  cap.appendChild(el("span", "", lbl));
+  cap.appendChild(el("span", "", "16"));
+  m.appendChild(cap);
+  attachTip(m, () => [{ title: "estimated digits lost" },
+    { k: "digits", v: digits.toFixed(2) },
+    { k: "max rel_err bound", v: fmt(relErr) }]);
+  return m;
+}
+
+function metricsRow(m) {
+  const row = el("div", "metrics");
+  const add = (k, v) => {
+    const s = el("span");
+    s.appendChild(document.createTextNode(k + " "));
+    const b = el("b", "", v);
+    s.appendChild(b);
+    row.appendChild(s);
+  };
+  add("max rel_err", fmt(m.max_rel_err));
+  if (m.p99_rel_err !== undefined && m.p99_rel_err !== null) add("p99", fmt(m.p99_rel_err));
+  add("max cond", fmt(m.max_cond));
+  add("sensitivity", fmt(m.max_sensitivity));
+  for (const f in m.predictions || {})
+    add(`predicted rel_err if ${f}`, fmt(m.predictions[f]));
+  if (m.n !== undefined) add("ops", fmtInt(m.n));
+  if (m.samples !== undefined) add("samples", fmtInt(m.samples));
+  return row;
+}
+
+function tableEl(headers, rows, numericCols) {
+  const t = el("table");
+  const thr = el("tr");
+  headers.forEach((h, i) => thr.appendChild(
+    el("th", (numericCols || []).includes(i) ? "num" : "", h)));
+  t.appendChild(thr);
+  for (const r of rows) {
+    const tr = el("tr");
+    r.forEach((c, i) => {
+      const td = el("td", (numericCols || []).includes(i) ? "num" : "");
+      if (c instanceof Node) td.appendChild(c); else td.textContent = c;
+      tr.appendChild(td);
+    });
+    t.appendChild(tr);
+  }
+  const wrap = el("div", "scroll-x");
+  wrap.appendChild(t);
+  return wrap;
+}
+
+/* ============================ DAG view ============================ */
+let currentUnit = null;
+let dagMode = "graph";                    // "graph" | "tables"
+
+function unitByName(name) { return VM.units.find(u => u.name === name); }
+
+function renderUnitList() {
+  const box = document.getElementById("units");
+  box.textContent = "";
+  for (const u of VM.units) {
+    const b = el("button");
+    b.setAttribute("aria-selected", String(u.name === currentUnit));
+    const worst = worstClass(u);
+    const top = el("div", "uname", u.name || "(unscoped)");
+    const sub = el("div", "usub",
+      `${u.samples} samples · max rel_err ${fmt(u.max_rel_err)}`);
+    const chipRow = el("div");
+    chipRow.appendChild(classChip(worst));
+    b.appendChild(top); b.appendChild(sub); b.appendChild(chipRow);
+    b.addEventListener("click", () => { currentUnit = u.name; renderDag(); });
+    box.appendChild(b);
+  }
+}
+function worstClass(u) {
+  const order = ["local_cancellation", "cancellation_cascade", "log_near_root",
+                 "atan2_saturation", "stable"];
+  for (const c of order) if (u.class_counts[c]) return c;
+  return "stable";
+}
+
+/* longest-path layering over the region dataflow graph; back edges (loops
+   across iterations) are ignored for layout, still drawn */
+function layerRegions(unit) {
+  const keys = unit.regions.map(r => r.key);
+  const idx = new Map(keys.map((k, i) => [k, i]));
+  const out = keys.map(() => []);
+  for (const e of unit.edges) {
+    const a = idx.get(e.src), b = idx.get(e.dst);
+    if (a !== undefined && b !== undefined) out[a].push(b);
+  }
+  const layer = new Array(keys.length).fill(0);
+  const state = new Array(keys.length).fill(0);   // 0=un,1=stack,2=done
+  const back = new Set();
+  function dfs(v) {
+    state[v] = 1;
+    for (const w of out[v]) {
+      if (state[w] === 1) { back.add(v + ">" + w); continue; }
+      if (state[w] === 0) dfs(w);
+      // v feeds w: w sits at least one layer right of v
+    }
+    state[v] = 2;
+  }
+  for (let v = 0; v < keys.length; v++) if (state[v] === 0) dfs(v);
+  // longest path via repeated relaxation on the acyclic subset
+  for (let pass = 0; pass < keys.length; pass++) {
+    let changed = false;
+    for (let v = 0; v < keys.length; v++)
+      for (const w of out[v]) {
+        if (back.has(v + ">" + w)) continue;
+        if (layer[w] < layer[v] + 1) { layer[w] = layer[v] + 1; changed = true; }
+      }
+    if (!changed) break;
+  }
+  return { layer, idx, back };
+}
+
+function renderDag() {
+  renderUnitList();
+  const main = document.getElementById("dag-main");
+  main.textContent = "";
+  const u = unitByName(currentUnit);
+  if (!u) return;
+
+  const card = el("div", "card");
+  const head = el("div");
+  head.style.display = "flex"; head.style.alignItems = "center";
+  head.style.gap = "10px"; head.style.flexWrap = "wrap";
+  const h = el("h2", "", `${u.name || "(unscoped)"} — ${u.samples} samples, ${fmtInt(u.records)} ops`);
+  h.style.flex = "1";
+  head.appendChild(h);
+  const toggle = el("div", "toggle");
+  for (const m of ["graph", "tables"]) {
+    const b = el("button", "", m === "graph" ? "Graph" : "Tables");
+    if (m === dagMode) b.style.fontWeight = "700";
+    b.addEventListener("click", () => { dagMode = m; renderDag(); });
+    toggle.appendChild(b);
+  }
+  head.appendChild(toggle);
+  card.appendChild(head);
+  card.appendChild(classLegend([
+    edgeKey("var(--axis)", "dataflow"),
+    edgeKey(cssColor("--class-cascade"), "cascade chain"),
+  ]));
+
+  if (dagMode === "graph") card.appendChild(regionGraph(u));
+  else {
+    card.appendChild(el("h2", "", "Regions"));
+    card.appendChild(regionsTable(u));
+    card.appendChild(el("h2", "section-gap", "Dataflow edges"));
+    card.appendChild(edgesTable(u));
+    card.appendChild(el("h2", "section-gap", "Function-call rollup"));
+    card.appendChild(fnRollupTable(u));
+    if (Object.keys(u.variables).length) {
+      card.appendChild(el("h2", "section-gap", "Named inputs"));
+      card.appendChild(variablesTable(u));
+    }
+  }
+  main.appendChild(card);
+
+  const detail = el("div", "card section-gap");
+  detail.id = "region-detail";
+  detail.appendChild(el("h2", "", "Region detail"));
+  main.appendChild(detail);
+
+  if (u.drilldown) main.appendChild(drilldownCard(u));
+
+  // default the detail panel to the unit's worst region
+  const worst = u.regions.reduce((a, b) => b.max_rel_err > a.max_rel_err ? b : a,
+    u.regions[0]);
+  if (worst) renderRegionDetail(u, worst, { scroll: false });
+}
+
+function regionGraph(u) {
+  const { layer, idx } = layerRegions(u);
+  // lanes = functions, in canonical order
+  const lanes = u.functions.map(f => f.key);
+  const laneOf = new Map();
+  for (const r of u.regions) laneOf.set(r.key, lanes.indexOf(r.function));
+
+  const NW = 168, XGAP = 68, YGAP = 14, PADX = 170, PADY = 26;
+  // node height: ordinal cue only (sqrt-clamped); exact n printed on the node
+  const nMax = Math.max(...u.regions.map(r => r.n), 1);
+  const hOf = r => Math.round(30 + 22 * Math.sqrt(r.n / nMax));
+
+  // stack regions per (lane, layer)
+  const cell = new Map();
+  const pos = new Map();
+  const laneHeights = new Array(lanes.length).fill(0);
+  for (const r of u.regions) {
+    const key = laneOf.get(r.key) + ":" + layer[idx.get(r.key)];
+    const k = cell.get(key) || 0;
+    cell.set(key, k + 1);
+    pos.set(r.key, { stack: k });
+  }
+  // compute lane heights: max total stacked height over layers
+  const stackH = new Map();
+  for (const r of u.regions) {
+    const li = laneOf.get(r.key), la = layer[idx.get(r.key)];
+    const key = li + ":" + la;
+    stackH.set(key, (stackH.get(key) || 0) + hOf(r) + YGAP);
+  }
+  for (const [key, hsum] of stackH) {
+    const li = parseInt(key.split(":")[0], 10);
+    laneHeights[li] = Math.max(laneHeights[li], hsum);
+  }
+  const laneY = [];
+  let acc = PADY;
+  for (let i = 0; i < lanes.length; i++) {
+    laneY.push(acc);
+    acc += Math.max(laneHeights[i], 44) + 22;
+  }
+  const maxLayer = Math.max(...u.regions.map(r => layer[idx.get(r.key)]), 0);
+  const W = PADX + (maxLayer + 1) * (NW + XGAP) + 20;
+  const H = acc + 6;
+
+  const svg = svgEl("svg", { width: W, height: H, role: "img",
+    "aria-label": "unit region dataflow graph" });
+
+  // lane separators + labels
+  lanes.forEach((fk, i) => {
+    const y = laneY[i] - 12;
+    if (i > 0) svg.appendChild(svgEl("line",
+      { x1: 0, y1: y, x2: W, y2: y, class: "lane-line" }));
+    const f = u.functions[i];
+    const t = svgEl("text", { x: 8, y: laneY[i] + 4, class: "lane-label" });
+    t.textContent = f.name + (f.file ? "  ·  " + basename(f.file) : "");
+    svg.appendChild(t);
+  });
+
+  // place nodes
+  const box = new Map();
+  const cellSeen = new Map();
+  for (const r of u.regions) {
+    const li = laneOf.get(r.key), la = layer[idx.get(r.key)];
+    const key = li + ":" + la;
+    const k = cellSeen.get(key) || 0;
+    cellSeen.set(key, k + 1);
+    let yOff = 0;
+    for (const rr of u.regions) {
+      if (rr === r) break;
+      if (laneOf.get(rr.key) === li && layer[idx.get(rr.key)] === la)
+        yOff += hOf(rr) + YGAP;
+    }
+    const x = PADX + la * (NW + XGAP);
+    const y = laneY[li] + yOff;
+    box.set(r.key, { x, y, w: NW, h: hOf(r) });
+  }
+
+  // edges under nodes
+  const edgeLayer = svgEl("g");
+  svg.appendChild(edgeLayer);
+  for (const e of u.edges) {
+    const a = box.get(e.src), b = box.get(e.dst);
+    if (!a || !b) continue;
+    const x1 = a.x + a.w, y1 = a.y + a.h / 2, x2 = b.x, y2 = b.y + b.h / 2;
+    const dx = Math.max(24, (x2 - x1) / 2);
+    const p = svgEl("path", { class: "edge", tabindex: 0,
+      d: `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}` });
+    attachTip(p, () => [{ title: "dataflow edge" },
+      { k: "from", v: shortRegion(e.src) }, { k: "to", v: shortRegion(e.dst) },
+      { k: "operand uses", v: fmtInt(e.n) }]);
+    edgeLayer.appendChild(p);
+  }
+  // cascade chain spans as chain edges linking consecutive spans
+  for (const c of u.chains) {
+    const keys = chainSpanRegionKeys(u, c);
+    for (let i = 0; i + 1 < keys.length; i++) {
+      const a = box.get(keys[i]), b = box.get(keys[i + 1]);
+      if (!a || !b) continue;
+      const x1 = a.x + a.w / 2, y1 = a.y + a.h, x2 = b.x + b.w / 2, y2 = b.y + b.h;
+      const p = svgEl("path", { class: "edge chain", tabindex: 0,
+        d: `M ${x1} ${y1} C ${x1} ${y1 + 26}, ${x2} ${y2 + 26}, ${x2} ${y2}` });
+      attachTip(p, () => [{ title: "cascade chain" },
+        { k: "spans", v: c.spans.map(s => basename(s.file) + ":" + s.line_start).join(" · ") },
+        { k: "samples", v: fmtInt(c.count) },
+        { k: "max rel_err", v: fmt(c.max_rel_err) }]);
+      edgeLayer.appendChild(p);
+    }
+  }
+
+  // nodes
+  for (const r of u.regions) {
+    const b = box.get(r.key);
+    const g = svgEl("g", { class: "node", tabindex: 0, role: "button",
+      transform: `translate(${b.x},${b.y})`,
+      "aria-label": "region " + r.key });
+    g.appendChild(svgEl("rect", { class: "box", width: b.w, height: b.h }));
+    g.appendChild(svgEl("rect", { class: "accent", x: 3, y: 3, width: 4,
+      height: b.h - 6, fill: CLASS_COLOR[r.signal_class] }));
+    const t1 = svgEl("text", { x: 13, y: 16, "font-size": 11, "font-weight": 650 });
+    t1.textContent = shortRegion(r.key);
+    g.appendChild(t1);
+    const t2 = svgEl("text", { x: 13, y: b.h - 7, "font-size": 10, class: "sub" });
+    const capN = r.cap_counts
+      ? Object.values(r.cap_counts).reduce((a, x) => a + x, 0) : r.gate_a_count;
+    t2.textContent = `n=${r.n}` + (r.range_ok === false ? "  ▲range" : "")
+      + (capN ? `  cap×${capN}` : "") + (r.exact_tie_count ? "  =tie" : "");
+    g.appendChild(t2);
+    attachTip(g, () => [{ title: shortRegion(r.key) },
+      { k: "class", v: CLASS_LABEL[r.signal_class] },
+      { k: "ops", v: fmtInt(r.n) },
+      { k: "max rel_err", v: fmt(r.max_rel_err) },
+      { k: "max cond", v: fmt(r.max_cond) },
+      { k: "function", v: r.function === "(unattributed)" ? r.function
+          : r.function.split(":").pop() }]);
+    const open = () => renderRegionDetail(u, r);
+    g.addEventListener("click", open);
+    g.addEventListener("keydown", ev => {
+      if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); open(); }
+    });
+    svg.appendChild(g);
+  }
+
+  const wrap = el("div", "graph-wrap");
+  wrap.appendChild(svg);
+  return wrap;
+}
+
+function shortLeaf(s) {                   // "_lit@dir/file.hpp:12~0" -> "_lit@file.hpp:12~0"
+  const at = s.indexOf("@");
+  if (at < 0) return s;
+  return s.slice(0, at + 1) + basename(s.slice(at + 1));
+}
+function shortRegion(key) {
+  if (!key) return "(unattributed)";
+  const parts = key.split(":");
+  if (parts.length >= 3) {
+    return basename(parts.slice(0, -2).join(":")) + ":" + parts[parts.length - 1];
+  }
+  return basename(parts.slice(0, -1).join(":")) + ":" + parts[parts.length - 1];
+}
+function chainSpanRegionKeys(u, c) {
+  // map chain spans back to region keys via file:line reconstruction
+  const keys = [];
+  for (const s of c.spans) {
+    const want = s.file + ":" + s.line_start;
+    const hit = u.regions.find(r => r.key === want
+      || r.key === s.file + ":" + s.line_start);
+    if (hit) keys.push(hit.key);
+  }
+  return keys;
+}
+
+function renderRegionDetail(u, r, opts) {
+  const d = document.getElementById("region-detail");
+  d.textContent = "";
+  d.appendChild(el("h2", "", "Region detail"));
+  const title = el("div");
+  const strong = el("b", "", r.key || "(unattributed ops)");
+  title.appendChild(strong);
+  d.appendChild(title);
+  const row = el("div", "hotspot-row");
+  row.style.display = "flex"; row.style.gap = "8px"; row.style.flexWrap = "wrap";
+  row.style.margin = "6px 0";
+  row.appendChild(classChip(r.signal_class));
+  for (const b of regionBadges(r)) row.appendChild(b);
+  d.appendChild(row);
+  d.appendChild(el("div", "meta", r.note));
+
+  const kv = el("dl", "kv section-gap");
+  const pairs = [
+    ["kind", r.kind || "(operator ops)"],
+    ["function", r.function],
+    ["ops (n)", fmtInt(r.n)],
+    ["op mix", Object.keys(r.ops).sort().map(k => `${k}×${r.ops[k]}`).join("  ")],
+    ["max cond", fmt(r.max_cond)],
+    ["numeric 1/u gate count", fmtInt(r.gate_a_count)],
+    ["max rel_err", fmt(r.max_rel_err)],
+    ["p50 / p99 rel_err", fmt(r.p50_rel_err) + "  /  " + fmt(r.p99_rel_err)],
+    ["max amplification", fmt(r.max_amp)],
+    ["sensitivity (cond×amp)", fmt(r.max_sensitivity)],
+    ["|val| range", fmt(r.abs_val_min) + " … " + fmt(r.abs_val_max)],
+    ["value-range guard", r.range_ok ? "ok" : "VIOLATED"],
+    ["region-local inputs", r.region_local_vars.join(", ") || "–"],
+  ];
+  for (const f in r.predictions)
+    pairs.push([`predicted rel_err if ${f}`, fmt(r.predictions[f])]);
+  for (const [k, v] of pairs) {
+    kv.appendChild(el("dt", "", k));
+    kv.appendChild(el("dd", "", v));
+  }
+  d.appendChild(kv);
+  d.appendChild(el("h2", "section-gap", "rel_err distribution (decades)"));
+  d.appendChild(histSVG(r.rel_err_hist, r.zero_rel_err));
+  const bt = Object.keys(r.rel_err_hist.buckets || {})
+    .map(k => [parseInt(k, 10), r.rel_err_hist.buckets[k]])
+    .sort((a, b) => a[0] - b[0]);
+  if (bt.length)
+    d.appendChild(tableEl(["decade", "records"],
+      bt.map(([dk, c]) => ["1e" + dk, fmtInt(c)]), [1]));
+  if (!opts || opts.scroll !== false)
+    d.scrollIntoView({ block: "nearest", behavior: "smooth" });
+}
+
+/* -------- tables (the chart twins) -------- */
+function regionsTable(u) {
+  return tableEl(
+    ["region", "kind", "function", "class", "n", "max cond", "max rel_err",
+     "p99", "sens", "range", "caps", "ties", "non-finite"],
+    u.regions.map(r => [
+      r.key || "(unattributed)", r.kind || "–",
+      r.function === "(unattributed)" ? r.function : r.function.split(":").pop(),
+      CLASS_LABEL[r.signal_class],
+      fmtInt(r.n), fmt(r.max_cond), fmt(r.max_rel_err), fmt(r.p99_rel_err),
+      fmt(r.max_sensitivity), r.range_ok ? "ok" : "VIOLATED",
+      r.cap_counts === null ? "n/a"
+        : Object.keys(r.cap_counts).sort().map(k => `${k}×${r.cap_counts[k]}`).join(" ") || "0",
+      r.exact_tie_count === null ? "n/a" : fmtInt(r.exact_tie_count),
+      r.nonfinite_count === null ? "n/a" : fmtInt(r.nonfinite_count),
+    ]), [4, 5, 6, 7, 8, 11, 12]);
+}
+function edgesTable(u) {
+  if (!u.edges.length) return el("div", "meta", "no cross-region dataflow");
+  return tableEl(["from", "to", "operand uses"],
+    u.edges.map(e => [shortRegion(e.src), shortRegion(e.dst), fmtInt(e.n)]), [2]);
+}
+function fnRollupTable(u) {
+  const fnOf = new Map(u.regions.map(r => [r.key, r.function]));
+  const roll = new Map();
+  for (const e of u.edges) {
+    const a = fnOf.get(e.src), b = fnOf.get(e.dst);
+    if (a === undefined || b === undefined || a === b) continue;
+    const k = a + " " + b;
+    roll.set(k, (roll.get(k) || 0) + e.n);
+  }
+  if (!roll.size) return el("div", "meta", "no cross-function dataflow");
+  const rows = [...roll.entries()].sort()
+    .map(([k, n]) => {
+      const [a, b] = k.split(" ");
+      const nm = x => x === "(unattributed)" ? x : x.split(":").pop();
+      return [nm(a), nm(b), fmtInt(n)];
+    });
+  return tableEl(["caller / producer", "consumer", "operand uses"], rows, [2]);
+}
+function variablesTable(u) {
+  const names = Object.keys(u.variables).sort();
+  return tableEl(
+    ["input", "kind", "sensitivity", "samples", "predicted rel_err (targets)"],
+    names.map(n => {
+      const v = u.variables[n];
+      const preds = Object.keys(v.predictions)
+        .map(f => `${f}: ${fmt(v.predictions[f])}`).join("  ");
+      return [n, v.is_source_var ? "source" : "constant",
+              fmt(v.max_sensitivity), fmtInt(v.n_samples), preds];
+    }), [2, 3]);
+}
+
+/* -------- drill-down -------- */
+function drilldownCard(u) {
+  const dd = u.drilldown;
+  const card = el("div", "card section-gap");
+  const h = el("h2", "", `Per-sample op-level DAG — sample ${dd.sample ?? "?"} `
+    + `(argmax rel_err ${fmt(dd.max_rel_err)})`);
+  card.appendChild(h);
+  if (dd.rerun) {
+    const line = el("div", "code-line mono",
+      "gen driver rerun (bit-identical slice): " + dd.rerun);
+    card.appendChild(line);
+  }
+  const legend = el("div", "legend");
+  legend.appendChild(el("span", "", "node fill = log10(cond), finite & uncapped:"));
+  const bar = svgEl("svg", { width: 90, height: 10 });
+  for (let i = 0; i < 9; i++)
+    bar.appendChild(svgEl("rect", { x: i * 10, y: 0, width: 10, height: 10,
+      fill: ramp(i / 8) }));
+  const lw = el("span", "edge-key"); lw.appendChild(bar);
+  legend.appendChild(lw);
+  legend.appendChild(el("span", "", "low → high"));
+  legend.appendChild(badgeEl("info", "cap = saturated (outside ramp)"));
+  legend.appendChild(badgeEl("serious", "non-finite value"));
+  card.appendChild(legend);
+  card.appendChild(opDagSVG(u, dd));
+  card.appendChild(el("h2", "section-gap", "Ops table"));
+  card.appendChild(opsTable(dd));
+  return card;
+}
+
+function opDagSVG(u, dd) {
+  const nodes = dd.nodes;
+  // layering: longest path from leaves via "in" indices
+  const layer = nodes.map(() => 0);
+  nodes.forEach((n, i) => {
+    for (const o of n.in) if (typeof o === "number")
+      layer[i] = Math.max(layer[i], layer[o] + 1);
+  });
+  // sources occupy layer -1 conceptually; draw them at x of layer 0 - 1
+  const perLayer = new Map();
+  const yIndex = nodes.map(() => 0);
+  nodes.forEach((n, i) => {
+    const k = perLayer.get(layer[i]) || 0;
+    yIndex[i] = k;
+    perLayer.set(layer[i], k + 1);
+  });
+  const srcIndex = new Map();
+  dd.sources.forEach((s, i) => srcIndex.set(s, i));
+
+  // ramp domain: finite, uncapped conds
+  let lo = Infinity, hi = -Infinity;
+  for (const n of nodes) {
+    if (n.cap || !isNum(n.cond) || n.cond <= 0) continue;
+    const l = Math.log10(n.cond);
+    lo = Math.min(lo, l); hi = Math.max(hi, l);
+  }
+  if (!isFinite(lo)) { lo = 0; hi = 1; }
+  if (hi - lo < 1e-9) hi = lo + 1;
+
+  const NX = 96, NY = 46, R = 11, PAD = 30, SRCX = 210;
+  const maxLayer = Math.max(...layer, 0);
+  const rows = Math.max(...[...perLayer.values()], dd.sources.length, 1);
+  const W = PAD + SRCX + (maxLayer + 1) * NX + 60;
+  const H = Math.max(rows * NY + 50, dd.sources.length * 34 + 50);
+  const svg = svgEl("svg", { width: W, height: H, role: "img",
+    "aria-label": "per-sample op DAG" });
+
+  const posOf = i => ({ x: PAD + SRCX + layer[i] * NX,
+                        y: 30 + yIndex[i] * NY });
+  const srcPos = s => ({ x: 22, y: 30 + (srcIndex.get(s) || 0) * 34 });
+
+  const edges = svgEl("g");
+  svg.appendChild(edges);
+  nodes.forEach((n, i) => {
+    const p = posOf(i);
+    for (const o of n.in) {
+      const q = typeof o === "number" ? posOf(o) : srcPos(o);
+      const path = svgEl("path", { class: "edge",
+        "stroke-width": 1.2, opacity: 0.55,
+        d: `M ${q.x + R} ${q.y} C ${q.x + 34} ${q.y}, ${p.x - 34} ${p.y}, ${p.x - R} ${p.y}` });
+      edges.appendChild(path);
+    }
+  });
+
+  // source leaves: squares, muted; direct-labeled (they are few)
+  for (const s of dd.sources) {
+    const p = srcPos(s);
+    const g = svgEl("g", { tabindex: 0, class: "node" });
+    g.appendChild(svgEl("rect", { x: p.x - 8, y: p.y - 8, width: 16, height: 16,
+      rx: 3, fill: "var(--wash)", stroke: "var(--axis)" }));
+    const t = svgEl("text", { x: p.x + 12, y: p.y + 4, "font-size": 10, class: "sub" });
+    const short = shortLeaf(s);
+    t.textContent = short.length > 26 ? "…" + short.slice(-24) : short;
+    g.appendChild(t);
+    attachTip(g, () => [{ title: "input leaf" }, { k: "id", v: s }]);
+    svg.appendChild(g);
+  }
+
+  nodes.forEach((n, i) => {
+    const p = posOf(i);
+    const g = svgEl("g", { class: "node", tabindex: 0,
+      "aria-label": `op ${n.op}` });
+    // 24px+ hit target around an 22px node
+    g.appendChild(svgEl("circle", { cx: p.x, cy: p.y, r: 16, fill: "transparent" }));
+    let fill, badge = null;
+    if (n.cap) { fill = "var(--wash)"; badge = "cap"; }
+    else if (!isNum(n.cond)) { fill = "var(--wash)"; badge = "nf"; }
+    else {
+      const t = (Math.log10(Math.max(n.cond, 1e-30)) - lo) / (hi - lo);
+      fill = ramp(t);
+    }
+    const c = svgEl("circle", { cx: p.x, cy: p.y, r: R, fill,
+      stroke: "var(--surface)", "stroke-width": 2 });
+    g.appendChild(c);
+    if (badge) {
+      const t = svgEl("text", { x: p.x, y: p.y + 3, "text-anchor": "middle",
+        "font-size": 8, "font-weight": 700 });
+      t.textContent = badge === "cap" ? "◦" : "✕";
+      g.appendChild(t);
+    }
+    const isSink = !nodes.some(m => m.in.includes(i));
+    const nonfinite = typeof n.val === "string";
+    if (isSink || n.cap || n.exact_tie || nonfinite) {   // selective direct labels
+      const t = svgEl("text", { x: p.x, y: p.y - R - 4, "text-anchor": "middle",
+        "font-size": 9, class: "sub" });
+      t.textContent = n.op + (n.exact_tie ? " =tie" : "") + (n.cap ? " cap:" + n.cap : "");
+      g.appendChild(t);
+    }
+    attachTip(g, () => [{ title: `${n.op} @ ${shortRegion(n.region)}` },
+      { k: "val", v: fmt(n.val) },
+      { k: "cond", v: fmt(n.cond) },
+      { k: "rel_err", v: fmt(n.rel_err) },
+      ...(n.cap ? [{ k: "cap", v: n.cap }] : []),
+      ...(n.exact_tie ? [{ k: "exact tie", v: "yes" }] : []),
+      ...(n.label ? [{ k: "opaque fn", v: n.label }] : [])]);
+    svg.appendChild(g);
+  });
+
+  const wrap = el("div", "graph-wrap");
+  wrap.appendChild(svg);
+  return wrap;
+}
+
+function opsTable(dd) {
+  return tableEl(
+    ["#", "op", "region", "inputs", "val", "cond", "rel_err", "flags"],
+    dd.nodes.map((n, i) => [
+      String(i), n.op + (n.label ? ` (${n.label})` : ""), shortRegion(n.region),
+      n.in.map(o => typeof o === "number" ? "#" + o : shortLeaf(o)).join(", "),
+      fmt(n.val), fmt(n.cond), fmt(n.rel_err),
+      [n.cap ? "cap:" + n.cap : "", n.exact_tie ? "exact_tie" : ""]
+        .filter(Boolean).join(" "),
+    ]), [0, 4, 5, 6]);
+}
+
+/* ============================ report view ============================ */
+let reportUnit = "*";
+
+function renderReport() {
+  const root = document.getElementById("tab-report");
+  root.textContent = "";
+
+  const kpis = el("div", "kpis");
+  const tile = (label, value) => {
+    const t = el("div", "tile");
+    t.appendChild(el("div", "label", label));
+    t.appendChild(el("div", "value", value));
+    return t;
+  };
+  kpis.appendChild(tile("units", fmtInt(VM.totals.units)));
+  kpis.appendChild(tile("samples", fmtInt(VM.totals.samples)));
+  kpis.appendChild(tile("ops journaled", fmtInt(VM.totals.records)));
+  kpis.appendChild(tile("hotspots", fmtInt(VM.report.hotspots_total)));
+  kpis.appendChild(tile("non-finite records",
+    VM.totals.nonfinite_records === null ? "n/a" : fmtInt(VM.totals.nonfinite_records)));
+  root.appendChild(kpis);
+
+  const filt = u => reportUnit === "*" || u === reportUnit;
+
+  const hsCard = el("div", "card");
+  const shown = VM.report.hotspots.filter(h => filt(h.unit));
+  hsCard.appendChild(el("h2", "",
+    `Ranked hotspots — showing ${shown.length} of ${VM.report.hotspots_total}`
+    + (VM.report.hotspots_total > VM.report.hotspots.length
+       ? ` (top ${VM.report.hotspots.length} distilled)` : "")));
+  hsCard.appendChild(classLegend());
+  const cards = el("div", "cards");
+  for (const h of shown) {
+    const c = el("div", "card hotspot");
+    c.appendChild(el("div", "rank", "#" + h.rank));
+    const body = el("div");
+    const loc = el("div", "loc");
+    loc.appendChild(el("span", "mono", shortLoc(h.location)));
+    loc.appendChild(document.createTextNode("  ·  " + (h.unit || "(unscoped)")
+      + (h.kind === "chain" ? "  ·  chain" : "")));
+    body.appendChild(loc);
+    const row = el("div", "row");
+    row.appendChild(classChip(h.signal_class));
+    if (h.metrics.range_ok === false)
+      row.appendChild(badgeEl("critical", "range violation"));
+    body.appendChild(row);
+    body.appendChild(el("div", "note", h.note));
+    body.appendChild(meterEl(h.metrics.digits_lost, h.metrics.max_rel_err));
+    body.appendChild(metricsRow(h.metrics));
+    const region = findRegion(h);
+    if (region) {
+      body.appendChild(histSVG(region.rel_err_hist, region.zero_rel_err));
+    }
+    c.appendChild(body);
+    cards.appendChild(c);
+  }
+  if (!shown.length) cards.appendChild(el("div", "meta", "no hotspots for this filter"));
+  hsCard.appendChild(cards);
+  root.appendChild(hsCard);
+
+  const ledCard = el("div", "card section-gap");
+  const rows = VM.report.ledger.filter(r => r.unit === "*" || filt(r.unit));
+  ledCard.appendChild(el("h2", "", `Decision ledger — ${rows.length} rows`));
+  ledCard.appendChild(tableEl(
+    ["unit", "subject", "kind", "verdict", "detail", "range", "caps", "ties"],
+    rows.map(r => [
+      r.unit === "*" ? "— run —" : (r.unit || "(unscoped)"),
+      r.subject, r.kind || "run", r.verdict, r.detail || "",
+      r.range || "", r.caps === null ? "n/a"
+        : r.caps === undefined ? ""
+        : Object.keys(r.caps).sort().map(k => `${k}×${r.caps[k]}`).join(" ") || "0",
+      r.exact_ties === null ? "n/a"
+        : r.exact_ties === undefined ? "" : String(r.exact_ties),
+    ]), [7]));
+  root.appendChild(ledCard);
+}
+function shortLoc(loc) {
+  return loc.split(";").map(s => shortRegion(s.trim())).join("; ");
+}
+function findRegion(h) {
+  if (h.kind !== "region") return null;
+  const u = unitByName(h.unit);
+  if (!u) return null;
+  return u.regions.find(r => r.key === h.location) || null;
+}
+
+/* ============================ chrome ============================ */
+function renderFilters(tab) {
+  const f = document.getElementById("filters");
+  f.textContent = "";
+  if (!VM || tab !== "report") return;
+  f.appendChild(el("span", "", "Unit:"));
+  const sel = document.createElement("select");
+  const optAll = document.createElement("option");
+  optAll.value = "*"; optAll.textContent = "all units";
+  sel.appendChild(optAll);
+  for (const u of VM.units) {
+    const o = document.createElement("option");
+    o.value = u.name; o.textContent = u.name || "(unscoped)";
+    sel.appendChild(o);
+  }
+  sel.value = reportUnit;
+  sel.addEventListener("change", () => { reportUnit = sel.value; renderReport(); });
+  f.appendChild(sel);
+  f.appendChild(el("span", "", "— scopes every card and table below"));
+}
+
+let currentTab = "dag";
+function switchTab(tab) {
+  currentTab = tab;
+  for (const b of document.querySelectorAll("#tabs button"))
+    b.setAttribute("aria-selected", String(b.dataset.tab === tab));
+  document.getElementById("tab-dag").classList.toggle("hidden", tab !== "dag");
+  document.getElementById("tab-report").classList.toggle("hidden", tab !== "report");
+  renderFilters(tab);
+  if (tab === "report") renderReport(); else renderDag();
+}
+document.getElementById("tabs").addEventListener("click", e => {
+  const b = e.target.closest("button");
+  if (b) switchTab(b.dataset.tab);
+});
+
+const themeBtn = document.getElementById("theme");
+const THEMES = ["auto", "light", "dark"];
+let themeIdx = 0;
+themeBtn.addEventListener("click", () => {
+  themeIdx = (themeIdx + 1) % THEMES.length;
+  const t = THEMES[themeIdx];
+  if (t === "auto") document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.setAttribute("data-theme", t);
+  themeBtn.textContent = "Theme: " + t;
+  // re-render: ramp colors are computed from CSS custom properties
+  if (VM) switchTab(currentTab);
+});
+
+/* ============================ boot ============================ */
+if (!VM || !VM.units || VM.units.length === 0) {
+  document.getElementById("empty").classList.remove("hidden");
+  document.getElementById("tab-dag").classList.add("hidden");
+  document.getElementById("tab-report").classList.add("hidden");
+  if (VM) document.getElementById("meta").textContent =
+    "empty run — " + (VM.provenance.journals || []).join(", ");
+} else {
+  const meta = document.getElementById("meta");
+  meta.textContent = (VM.provenance.journals || []).join(", ")
+    + (VM.library_versions.length ? "  ·  library " + VM.library_versions.join(", ") : "")
+    + (VM.legacy ? "  ·  legacy (pre-v1) read" : "");
+  const foot = document.getElementById("foot");
+  const cfg = VM.config;
+  foot.textContent = "Thresholds: local cancellation cond ≥ " + fmt(cfg.local_cancel_cond)
+    + " · elevated cond ≥ " + fmt(cfg.high_cond)
+    + " · cascade rel_err ≥ " + fmt(cfg.cascade_rel_err)
+    + " (per-op cond < " + fmt(cfg.cascade_cond_ceiling) + ")"
+    + " · saturation cap " + fmt(cfg.saturation_cap)
+    + " · range guard: " + cfg.range_name
+    + " — classes are mechanistic measurements (tracked-reduce), not remediation advice; "
+    + "“stable” means no elevated mechanism detected, not downcast-safe.";
+  currentUnit = VM.units.reduce((a, b) => b.max_rel_err > a.max_rel_err ? b : a,
+    VM.units[0]).name;
+  // deep-link support: #report / #light / #dark / #unit=<name> (comma-separable)
+  const hash = location.hash.slice(1).split(",");
+  for (const part of hash) {
+    if (part.startsWith("unit=") && unitByName(decodeURIComponent(part.slice(5))))
+      currentUnit = decodeURIComponent(part.slice(5));
+  }
+  for (const t of ["light", "dark"]) {
+    if (hash.includes(t)) {
+      document.documentElement.setAttribute("data-theme", t);
+      themeIdx = THEMES.indexOf(t);
+      themeBtn.textContent = "Theme: " + t;
+    }
+  }
+  switchTab(hash.includes("report") ? "report" : "dag");
+}
+</script>
+</body>
+</html>

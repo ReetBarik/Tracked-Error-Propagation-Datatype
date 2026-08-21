@@ -22,9 +22,11 @@ test = ["pytest", "libclang"]
 tracked-reduce = "tracked_tools.reduce.cli:main"
 tracked-line-inject = "tracked_tools.inject:main"
 tracked-boundary-patch = "tracked_tools.boundary:main"
+tracked-view = "tracked_tools.view.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["tracked_tools*"]
 
 [tool.setuptools.package-data]
 "tracked_tools.interop" = ["ruleset.txt"]
+"tracked_tools.view" = ["template.html"]

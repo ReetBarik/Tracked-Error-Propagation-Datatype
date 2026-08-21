@@ -360,6 +360,53 @@ def test_cap_gate_skew_row_for_non_double_cap(tmp_path):
     assert reg["gate_a_count"] == 0
 
 
+# ---------------------------------------------------------------------------
+# 4. HTML build, self-containment, committed-demo freshness
+# ---------------------------------------------------------------------------
+
+DEMO_HTML = REPO / "viewer" / "demo" / "view.html"
+
+
+def test_template_self_contained():
+    tpl = (Path(distill.__file__).parent / "template.html").read_text(encoding="utf-8")
+    assert "<script src" not in tpl and "<link" not in tpl
+    # the SVG namespace URI is a constant, not a network reference
+    stripped = tpl.replace("http://www.w3.org/2000/svg", "")
+    assert "http://" not in stripped and "https://" not in stripped
+    assert "fetch(" not in tpl and "XMLHttpRequest" not in tpl
+    assert "innerHTML" not in tpl, "untrusted strings must go through textContent"
+    # exactly one injection marker, inside the JSON script block
+    assert tpl.count("__TRACKED_VIEW_MODEL_JSON__") == 1
+
+
+def test_committed_demo_is_fresh(demo_model):
+    """viewer/demo/view.html == a fresh build over the committed fixtures.
+
+    Regenerate with:
+        tracked-view viewer/fixtures/demo -o viewer/demo/view.html
+    (Deterministic: canonical JSON + no version strings in the output.)
+    """
+    fresh = distill.build_html(demo_model)
+    committed = DEMO_HTML.read_text(encoding="utf-8")
+    assert committed == fresh, (
+        "committed demo is stale — regenerate: "
+        "tracked-view viewer/fixtures/demo -o viewer/demo/view.html")
+
+
+def test_cli_end_to_end(tmp_path):
+    from tracked_tools.view.cli import main
+    out = tmp_path / "v.html"
+    js = tmp_path / "m.json"
+    rc_ = main([str(REPO / "viewer" / "fixtures" / "demo"),
+                "-o", str(out), "--json", str(js)])
+    assert rc_ == 0
+    model = json.loads(js.read_text(encoding="utf-8"))
+    assert model["kind"] == "tracked_view_model"
+    html = out.read_text(encoding="utf-8")
+    assert "__TRACKED_VIEW_MODEL_JSON__" not in html
+    assert '"tracked_view_model"' in html
+
+
 def test_build_html_injects_model(demo_model, tmp_path):
     template = tmp_path / "t.html"
     template.write_text("<html><script id=\"vm\" type=\"application/json\">"
