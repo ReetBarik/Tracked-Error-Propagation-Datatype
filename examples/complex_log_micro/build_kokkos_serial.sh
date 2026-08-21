@@ -3,12 +3,15 @@
 # No GPU backend, no arch flags needed — runs on any x86 CPU.
 #
 # Usage:
-#   bash examples/cln_micro/build_kokkos_serial.sh
+#   bash examples/complex_log_micro/build_kokkos_serial.sh
 #
 # After this completes, build complex_log_micro with:
-#   cd examples/cln_micro
-#   cmake -B build -DKokkos_DIR=$HOME/kokkos-install/lib64/cmake/Kokkos
+#   cd examples/complex_log_micro
+#   cmake -B build -DCMAKE_PREFIX_PATH=$HOME/kokkos-install
 #   cmake --build build -j
+#
+# (CMAKE_PREFIX_PATH is portable: the Kokkos config lands under
+#  lib64/cmake/Kokkos on most Linux distros but lib/cmake/Kokkos on macOS.)
 
 set -euo pipefail
 
@@ -29,13 +32,15 @@ cmake -S "$BUILD_DIR/kokkos" -B "$BUILD_DIR/build" \
   -DKokkos_ENABLE_SERIAL=ON
 
 echo "Building and installing ..."
-cmake --build "$BUILD_DIR/build" -j"$(nproc)" --target install
+# nproc is Linux-only; fall back to sysctl on macOS, then to 4.
+NPROC=$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
+cmake --build "$BUILD_DIR/build" -j"$NPROC" --target install
 
 echo ""
 echo "Done. Kokkos installed to $INSTALL_PREFIX"
 echo ""
 echo "To build complex_log_micro:"
-echo "  cd examples/cln_micro"
-echo "  cmake -B build -DKokkos_DIR=$INSTALL_PREFIX/lib64/cmake/Kokkos"
+echo "  cd examples/complex_log_micro"
+echo "  cmake -B build -DCMAKE_PREFIX_PATH=$INSTALL_PREFIX"
 echo "  cmake --build build -j"
 echo "  ./build/complex_log_micro"
