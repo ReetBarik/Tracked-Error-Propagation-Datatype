@@ -95,7 +95,8 @@ if(TRACKED_BUILD_TESTS)
       test_provenance_v03
       test_literals
       test_operand_ids
-      test_schema_v1)
+      test_schema_v1
+      test_streaming)
     add_executable(${test_name} tests/tracked/${test_name}.cpp)
     target_link_libraries(${test_name} PRIVATE tracked::tracked Catch2::Catch2WithMain)
     catch_discover_tests(${test_name})

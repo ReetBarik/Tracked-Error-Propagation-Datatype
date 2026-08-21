@@ -138,7 +138,9 @@ CI runs the suite on ubuntu + macos (`.github/workflows/ci.yml`).
     per-op condition numbers.
   - `complex.hpp` — `tracked::Complex<T>`, full complex math decomposed into
     real ops so each is visible in the journal.
-  - `journal.hpp` — the JSONL journal and graph-walk helpers
+  - `journal.hpp` — the JSONL journal (schema in [docs/SCHEMA.md](docs/SCHEMA.md)),
+    incremental `flush_and_clear` for chunked drivers
+    ([docs/STREAMING.md](docs/STREAMING.md)), and graph-walk helpers
     (`tracked::journal` namespace).
 - **`tests/tracked/`** — Catch2 calibration suite: each test drives a known
   numerical pathology and asserts `Tracked<T>` surfaces it.

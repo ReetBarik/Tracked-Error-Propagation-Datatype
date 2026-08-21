@@ -223,6 +223,27 @@ inline void flush(const std::string& path) {
         detail::write_record(out, r);
 }
 
+// Incremental flush for chunked drivers (docs/STREAMING.md): write the calling
+// thread's buffered records to `out`, then clear the buffer and lookup caches
+// WITHOUT touching the callsite id counters — so the id sequence of a chunked
+// run is bit-identical to the monolithic run's, and peak memory is one chunk
+// instead of the whole journal.
+//
+// The v1 header is written when the stream is at position 0; for a
+// non-seekable sink (tellp() < 0) it is written on every call, which is still
+// a conforming v1 stream — a mid-stream header is a shard-boundary record
+// that readers validate and skip (docs/SCHEMA.md, concatenation rule).
+inline void flush_and_clear(std::ostream& out) {
+    if (out.tellp() <= std::streampos(0)) out << detail::header_line() << "\n";
+    for (const auto& r : detail::buf)
+        detail::write_record(out, r);
+    out.flush();
+    detail::buf.clear();
+    detail::id_index.clear();
+    detail::source_names.clear();
+    detail::caches_dirty = true;
+}
+
 // ---- Graph walk helpers -----------------------------------------------------
 //
 // The journal is a DAG: each record's `id` is a node, and `in` lists the ids of
