@@ -37,9 +37,10 @@ and must obey the shard-disjointness precondition of `docs/SCHEMA.md` —
 scope appears in more than one input (or reappears non-contiguously inside
 one input), and emits a ledger warning when unscoped records show up in a
 multi-journal read (unscoped units are excluded from the shard-invariance
-guarantee below). `--legacy` reads pre-v1 headerless journals; `--predict
-name=u` adds prediction target formats and `--saturation-cap X` overrides
-the 1/u gate for non-`double` journals, exactly as in `tracked-reduce`.
+guarantee below). `--legacy` reads pre-v1 headerless journals and `--predict
+name=u` adds prediction target formats, exactly as in `tracked-reduce`;
+`--saturation-cap X` (a `tracked-view` flag over the same `ReducerConfig`
+seam) overrides the 1/u gate for non-`double` journals.
 
 ## Fixtures (`viewer/fixtures/`)
 

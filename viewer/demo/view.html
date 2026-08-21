@@ -263,7 +263,10 @@
 <script>
 "use strict";
 /* ============================ model & helpers ============================ */
-const VM = JSON.parse(document.getElementById("vm").textContent);
+let VM = null;
+try {                              // standalone (marker un-replaced) -> empty state
+  VM = JSON.parse(document.getElementById("vm").textContent);
+} catch (e) { VM = null; }
 
 const CLASS_COLOR = {
   local_cancellation:   "var(--class-local)",
@@ -438,15 +441,15 @@ function histSVG(hist, zeroCount) {
   });
   svg.appendChild(svgEl("line", { x1: 0, y1: plotH + 0.5, x2: w, y2: plotH + 0.5,
     stroke: "var(--axis)", "stroke-width": 1 }));
-  const lbls = [[0, "<1e-17"], [1 + (0 - LO) / 2, "1e-9"], [bins.length - 1, "≥1"]];
-  for (const [i, t] of [[0, "<1e-17"], [Math.round(bins.length / 2), "1e-9"],
+  const mid = Math.round(bins.length / 2);
+  for (const [i, t] of [[0, "<1e-17"], [mid, bins[mid].label],
                         [bins.length - 1, "≥1"]]) {
-    const tx = svgEl("text", { x: 3 + i * (bw + gap) + bw / 2, y: plotH + 11,
+    const tx = svgEl("text", {
+      x: i === 0 ? 3 : (i === bins.length - 1 ? w - 3 : 3 + i * (bw + gap) + bw / 2),
+      y: plotH + 11,
       "text-anchor": i === 0 ? "start" : (i === bins.length - 1 ? "end" : "middle"),
       "font-size": 9, class: "sub" });
     tx.textContent = t;
-    tx.setAttribute("x", i === 0 ? 3 : (i === bins.length - 1 ? w - 3
-      : 3 + i * (bw + gap) + bw / 2));
     svg.appendChild(tx);
   }
   const wrap = el("div", "hist");
@@ -827,6 +830,12 @@ function renderRegionDetail(u, r, opts) {
   row.style.display = "flex"; row.style.gap = "8px"; row.style.flexWrap = "wrap";
   row.style.margin = "6px 0";
   row.appendChild(classChip(r.signal_class));
+  if (r.rung) {                      // AMP-adapter extension slot (viewer/README.md)
+    const rung = el("span", "chip");
+    rung.appendChild(el("b", "", "rung "));
+    rung.appendChild(document.createTextNode(String(r.rung)));
+    row.appendChild(rung);
+  }
   for (const b of regionBadges(r)) row.appendChild(b);
   d.appendChild(row);
   d.appendChild(el("div", "meta", r.note));
@@ -894,13 +903,14 @@ function fnRollupTable(u) {
   for (const e of u.edges) {
     const a = fnOf.get(e.src), b = fnOf.get(e.dst);
     if (a === undefined || b === undefined || a === b) continue;
-    const k = a + " " + b;
+    // JSON key: collision-free for any (a, b), incl. paths with spaces
+    const k = JSON.stringify([a, b]);
     roll.set(k, (roll.get(k) || 0) + e.n);
   }
   if (!roll.size) return el("div", "meta", "no cross-function dataflow");
   const rows = [...roll.entries()].sort()
     .map(([k, n]) => {
-      const [a, b] = k.split(" ");
+      const [a, b] = JSON.parse(k);
       const nm = x => x === "(unattributed)" ? x : x.split(":").pop();
       return [nm(a), nm(b), fmtInt(n)];
     });
@@ -1233,8 +1243,9 @@ if (!VM || !VM.units || VM.units.length === 0) {
     + "“stable” means no elevated mechanism detected, not downcast-safe.";
   currentUnit = VM.units.reduce((a, b) => b.max_rel_err > a.max_rel_err ? b : a,
     VM.units[0]).name;
-  // deep-link support: #report / #light / #dark / #unit=<name> (comma-separable)
+  // deep links: #report / #tables / #light / #dark / #unit=<name> (comma-separable)
   const hash = location.hash.slice(1).split(",");
+  if (hash.includes("tables")) dagMode = "tables";
   for (const part of hash) {
     if (part.startsWith("unit=") && unitByName(decodeURIComponent(part.slice(5))))
       currentUnit = decodeURIComponent(part.slice(5));

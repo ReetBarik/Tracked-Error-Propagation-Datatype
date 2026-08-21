@@ -11,7 +11,7 @@ self-contained: plain C++17, one driver, no dependencies.
 
 ## Layout
 
-- `demo/journal.jsonl` — one monolithic run: 8 units × 16 samples.
+- `demo/journal.jsonl` — one monolithic run: 9 units × 16 samples.
 - `demo_sharded/journal-000.jsonl`, `demo_sharded/journal-001.jsonl` — the
   **same run** split into two `--sample-offset`/`--sample-count` shards
   (samples 0–7 and 8–15). Shard ids carry shard-local `#<counter>`
@@ -37,7 +37,9 @@ regress):
 | `exact_tie` marker | `kahan` |
 | float range-guard violation | `range_overflow` |
 | non-finite sentinels (`"inf"`, `"nan"`) | `range_overflow` |
-| `line=` statement regions + `at` regions + operator-form records | `cancellation`, `naive_variance`, `kahan` |
+| `line=` statement regions | `cancellation`, `naive_variance`, `alternating_series`, `cascade` line scopes |
+| `at` regions (located named calls) | every unit |
+| operator-form records (empty `at`, anonymous `@?#` ids) | `complex_logdiv` (the loc-less real ops inside `Complex operator/`) |
 | multi-function units (call edges, swimlanes) | all except `range_overflow` |
 | complex decomposition rollup + `opaque` records | `complex_logdiv` |
 | pathological first-order bound (extreme-value formatting) | `kahan`, `alternating_series` |

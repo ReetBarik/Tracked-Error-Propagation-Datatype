@@ -90,13 +90,14 @@ int main(int argc, char** argv) {
         }
     }
 
-    std::ofstream stream;
-    if (chunk > 0) {
-        stream.open(out, std::ios::trunc);
-        if (!stream) {
-            std::fprintf(stderr, "cannot open %s\n", out.c_str());
-            return 1;
-        }
+    // One checked output path for both modes: flush_and_clear on a fresh
+    // stream is byte-identical to journal::flush(path) (docs/STREAMING.md;
+    // the chunk-equality ctest pins it), and unlike flush(path) it lets the
+    // driver detect an unwritable/failed output instead of exiting 0.
+    std::ofstream stream(out, std::ios::trunc);
+    if (!stream) {
+        std::fprintf(stderr, "cannot open %s\n", out.c_str());
+        return 1;
     }
 
     long total = 0, since_flush = 0;
@@ -121,14 +122,17 @@ int main(int argc, char** argv) {
         }
     }
 
-    if (chunk > 0) {
-        tracked::journal::flush_and_clear(stream);
+    const std::size_t buffered = tracked::journal::records().size();
+    tracked::journal::flush_and_clear(stream);
+    if (!stream) {
+        std::fprintf(stderr, "write failed: %s\n", out.c_str());
+        return 1;
+    }
+    if (chunk > 0)
         std::printf("%s: %ld samples (chunked, chunk-size %ld)\n",
                     out.c_str(), total, chunk);
-    } else {
+    else
         std::printf("%s: %ld samples, %zu records\n", out.c_str(), total,
-                    tracked::journal::records().size());
-        tracked::journal::flush(out);
-    }
+                    buffered);
     return 0;
 }

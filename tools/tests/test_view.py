@@ -212,13 +212,50 @@ def test_hotspots_ranked_and_capped(demo_model):
         assert 0.0 <= h["metrics"]["digits_lost"] <= 16.0
 
 
-def test_cascade_regions_superseded_by_chains(demo_model):
-    # second_difference's chain-covered cascade lines appear as chain
-    # hotspots, not duplicated region hotspots
-    sd_hot = [h for h in demo_model["report"]["hotspots"]
-              if h["unit"] == "second_difference"]
-    kinds = {h["kind"] for h in sd_hot}
-    assert "chain" in kinds or not sd_hot
+def test_no_hotspot_duplicates_chain_covered_cascade_region(demo_model):
+    """Invariant over the whole model: a cascade-class region hotspot never
+    shares a line with a chain-group span in its unit (chains supersede)."""
+    covered = {u["name"]: {(s["file"], s["line_start"])
+                           for c in u["chains"] for s in c["spans"]}
+               for u in demo_model["units"]}
+    for h in demo_model["report"]["hotspots"]:
+        if h["kind"] != "region" or h["signal_class"] != "cancellation_cascade":
+            continue
+        span = rc._parse_region_span(h["location"])
+        if span is not None:
+            assert (span["file"], span["line_start"]) not in covered[h["unit"]]
+
+
+def test_chain_covered_cascade_region_superseded(tmp_path):
+    """Direct coverage of the supersede skip (no fixture region hits it):
+    a cancellation_cascade region on a chain-span line stays in
+    units[].regions but is excluded from report.hotspots."""
+    mk = lambda op, line, in_, val, cond, rel: rec(
+        op=op, ident=f"{op}@f.h:{line}#1@integral=k/sample=0",
+        at=f"f.h:fn:{line}", in_=in_, val=val, cond=cond, rel_err=rel)
+    r1 = mk("sub", 1, ("a", "b"), 1.0, 1e11, 2e-5)      # elevated, contributor
+    r1b = mk("mul", 9, ("a", "c"), -0.95, 1.0, 1e-16)   # benign internal
+    r2 = mk("sub", 2, ("sub@f.h:1#1@integral=k/sample=0",
+                       "mul@f.h:9#1@integral=k/sample=0"),
+            0.05, 39.0, 4e-4)                           # near-cancel: cascade class
+    r3 = mk("add", 3, ("sub@f.h:2#1@integral=k/sample=0", "a"),
+            1.05, 1.0, 4e-4)                            # benign sink: chain victim
+    j = write(tmp_path, [HEADER, r1, r1b, r2, r3])
+    model = distill.distill_run([j])
+    u = model["units"][0]
+
+    reg2 = next(r for r in u["regions"] if r["key"] == "f.h:fn:2")
+    assert reg2["signal_class"] == "cancellation_cascade"
+    span_lines = {(s["file"], s["line_start"])
+                  for c in u["chains"] for s in c["spans"]}
+    assert ("f.h:fn", 2) in span_lines, "r2's line must be a chain span"
+
+    locs = {(h["kind"], h["location"]) for h in model["report"]["hotspots"]}
+    assert ("region", "f.h:fn:2") not in locs, \
+        "chain-covered cascade region must be superseded in hotspots"
+    assert any(k == "chain" for k, _ in locs)
+    # ...but never dropped from the unit's region list
+    assert any(r["key"] == "f.h:fn:2" for r in u["regions"])
 
 
 def test_ledger_covers_regions_chains_and_run_rows(demo_model):

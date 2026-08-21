@@ -576,7 +576,11 @@ def _assemble(units: dict[str, _Unit], cfg: rc.ReducerConfig, paths, headers,
         # hotspot pool: regions + chain groups.  A cascade-class region whose
         # line a chain group covers is represented by the chain (the reducer
         # documents chains as the localized replacement); it stays in
-        # units[].regions.
+        # units[].regions.  The covered-line match compares span tuples built
+        # from region keys via the same _parse_region_span on both sides, so
+        # it holds within one attribution style; a source line that appears
+        # both as a line=-keyed region and an at-keyed region (mixed
+        # attribution across records) is treated as two distinct lines.
         for r in regions_out:
             if r["signal_class"] == "cancellation_cascade":
                 span = rc._parse_region_span(r["key"])
