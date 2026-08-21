@@ -96,12 +96,18 @@ if(TRACKED_BUILD_TESTS)
       test_literals
       test_operand_ids
       test_schema_v1
+      test_scope_constexpr_context
       test_streaming
       test_new_ops)
     add_executable(${test_name} tests/tracked/${test_name}.cpp)
     target_link_libraries(${test_name} PRIVATE tracked::tracked Catch2::Catch2WithMain)
     catch_discover_tests(${test_name})
   endforeach()
+
+  # test_scope_constexpr_context reproduces consumer headers that instrument
+  # `constexpr` functions (qcdloop's kokkosMaths.h); scope must be a literal
+  # type there, which needs C++20 (TRACKED_CONSTEXPR20 in tracked.hpp).
+  target_compile_features(test_scope_constexpr_context PRIVATE cxx_std_20)
 
   # Parity-fixture driver (not a ctest test; run manually to regenerate the
   # journals under tests/parity/fixtures/ — see gen_fixtures.cpp for the

@@ -33,7 +33,29 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <vector>
+
+// C++20's relaxed constexpr (constexpr destructors, std::is_constant_evaluated)
+// lets `scope` be a *literal type*, so consumers may define one inside a
+// `constexpr` function that is only ever evaluated at runtime.  Real headers do
+// this: qcdloop's kokkosMaths.h declares small helpers `constexpr`, and Clang —
+// unlike GCC — rejects a local of non-dependent, non-literal type in any
+// constexpr function at definition time, which would make such functions
+// impossible to instrument.  During constant evaluation the push/pop are no-ops
+// (there is no journal at compile time).  The gate needs constexpr std::string
+// too (a C++20 constexpr ctor requires literal parameter types): libc++ >= 15,
+// libstdc++ >= 12.  At C++17, or without those, the keyword vanishes and
+// behavior is unchanged.
+#if defined(__cpp_constexpr) && __cpp_constexpr >= 201907L \
+    && defined(__cpp_lib_is_constant_evaluated) \
+    && defined(__cpp_lib_constexpr_string) && __cpp_lib_constexpr_string >= 201907L
+#  define TRACKED_CONSTEXPR20 constexpr
+#  define TRACKED_IS_CONSTANT_EVALUATED() (::std::is_constant_evaluated())
+#else
+#  define TRACKED_CONSTEXPR20
+#  define TRACKED_IS_CONSTANT_EVALUATED() (false)
+#endif
 
 namespace tracked {
 
@@ -122,11 +144,15 @@ inline TrackedId make_id(std::string_view op, const SourceLocation& loc) {
 //   { tracked::scope s("s=1"); ... }   // ids get "@run=A/s=1"
 class scope {
 public:
-    explicit scope(std::string ctx) {
+    explicit TRACKED_CONSTEXPR20 scope(std::string ctx) {
+        if (TRACKED_IS_CONSTANT_EVALUATED()) return;  // no journal at compile time
         detail::validate_scope_component(ctx);   // throws std::invalid_argument
         detail::scope_stack.push_back(std::move(ctx));
     }
-    ~scope() { detail::scope_stack.pop_back(); }
+    TRACKED_CONSTEXPR20 ~scope() {
+        if (TRACKED_IS_CONSTANT_EVALUATED()) return;
+        detail::scope_stack.pop_back();
+    }
     scope(const scope&)            = delete;
     scope& operator=(const scope&) = delete;
 };
@@ -140,11 +166,13 @@ public:
 // block, so a declaration statement can be wrapped as
 // `push_scope("line=f.h:10"); T x = ...; pop_scope();` with `x` still in scope.
 // Same LIFO contract as `scope`: every push must be balanced by exactly one pop.
-inline void push_scope(std::string ctx) {
+inline TRACKED_CONSTEXPR20 void push_scope(std::string ctx) {
+    if (TRACKED_IS_CONSTANT_EVALUATED()) return;  // no journal at compile time
     detail::validate_scope_component(ctx);       // throws std::invalid_argument
     detail::scope_stack.push_back(std::move(ctx));
 }
-inline void pop_scope() {
+inline TRACKED_CONSTEXPR20 void pop_scope() {
+    if (TRACKED_IS_CONSTANT_EVALUATED()) return;
     assert(!detail::scope_stack.empty() && "pop_scope without matching push");
     detail::scope_stack.pop_back();
 }
