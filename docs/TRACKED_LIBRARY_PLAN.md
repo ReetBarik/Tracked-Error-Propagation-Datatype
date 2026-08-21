@@ -43,6 +43,14 @@ green **before** landing the Phase-2 schema break. Never change the format and t
 implementation in the same step — the harness is the regression net for the break; parity
 failures after a simultaneous change are undiagnosable.
 
+**Parity-fixture warning (verified by execution):** the committed AMP fixture journals
+(`runs/*/journal.jsonl`) are pre-v0.3 — no `id` field, flat `prov` (`in` exists but holds
+source names, not record ids) — and the current reducer reduces them to an **empty report**
+(every record lands in `no_id_records`), so a parity harness built on them is **vacuously
+green**. Generate fresh v0.3-schema journals for the harness (a small driver over example
+kernels, built with the pre-break library, committed to this repo as parity fixtures) and
+make the harness **assert the reduced reports are non-empty**.
+
 **Session A — library core + switchover** (one session, this order):
 P0 → P1 → P5 reducer port + parity harness (green on v0.3) → P2 schema break → P3 → P4 →
 P5 remaining tools (injector, C8, interop kit) → P7 AMP switchover → acceptance point 14 →
@@ -78,7 +86,9 @@ AMP-side machinery to migrate is listed in Phase 5 with exact source paths (AMP 
   `viewer/`).
 - Rewrite `README.md` consumer-first (install, find_package, quick start, schema doc link,
   tools, viewer). Current README is good; extend rather than replace.
-- GitHub: enable CI, rename repo LAST (after everything is green).
+- GitHub: enable CI. The repo rename is a **manual admin action for Reet** at the very end
+  (autonomous sessions must not attempt it — `gh` is not installed on this machine, and
+  nothing blocks on the rename: the old URL keeps working via GitHub redirect).
 
 ## Phase 1 — Packaging & CI
 
@@ -174,8 +184,12 @@ any-partition equality.
 ## Phase 6 — Viewer skeleton (`viewer/` + `tracked-view`)
 
 - **Data note (verified)**: the committed AMP fixture journals (`runs/{cancellation,kahan,
-  lnrat,cln,log_sum_exp,naive_variance}/journal.jsonl`, ~245 KB each) are OLD schema — no
-  `id`/`in`, flat `prov` — so they cannot feed the DAG view. First step: regenerate fixture
+  lnrat,cln,log_sum_exp,naive_variance}/journal.jsonl`, ~245 KB each) are pre-v0.3 — no
+  `id` field, flat `prov` (`in` holds source names, not record ids) — so they cannot feed
+  the DAG view. Do NOT try AMP's `regen_recall.sh` on this Mac (hardcoded cluster paths;
+  two fixtures need Kokkos, absent here) — use small in-repo example kernels + a v1-schema
+  driver instead, with regenerated fixtures living in THIS repo; AMP stays read-only in
+  Session B. First step: regenerate fixture
   journals with the v1 library (fixtures are plain C++; `scripts/regen_recall.sh` in AMP is
   the recipe; a small in-repo example kernel also works and keeps the viewer self-contained).
 - `tracked-view <run_dir> -o view.html`: a **distiller** (in `tools/`) producing a
