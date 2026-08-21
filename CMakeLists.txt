@@ -99,4 +99,13 @@ if(TRACKED_BUILD_TESTS)
     target_link_libraries(${test_name} PRIVATE tracked::tracked Catch2::Catch2WithMain)
     catch_discover_tests(${test_name})
   endforeach()
+
+  # Parity-fixture driver (not a ctest test; run manually to regenerate the
+  # journals under tests/parity/fixtures/ — see gen_fixtures.cpp for the
+  # schema-freeze warning before overwriting committed fixtures).
+  add_executable(gen_parity_fixtures tests/parity/gen_fixtures.cpp)
+  target_link_libraries(gen_parity_fixtures PRIVATE tracked::tracked)
+  # Repo-relative __FILE__ so the committed fixtures are machine-independent.
+  target_compile_options(gen_parity_fixtures PRIVATE
+    "-fmacro-prefix-map=${CMAKE_CURRENT_SOURCE_DIR}/=")
 endif()

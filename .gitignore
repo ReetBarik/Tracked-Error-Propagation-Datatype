@@ -4,3 +4,13 @@ build/
 
 # generated journal output from the example drivers
 *.jsonl
+
+# ...except the committed parity fixtures (frozen pre-v1 journals; see
+# tests/parity/gen_fixtures.cpp)
+!tests/parity/fixtures/*.jsonl
+
+# Python
+__pycache__/
+*.egg-info/
+.venv/
+

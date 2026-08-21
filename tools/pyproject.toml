@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tracked-tools"
+version = "1.0.0"
+description = "Analysis tools for Tracked<T> JSONL journals: stability reducer, line injector, boundary patcher, interop kit"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+
+[project.optional-dependencies]
+# libclang is only needed by tracked-line-inject
+inject = ["libclang"]
+test = ["pytest"]
+
+[project.scripts]
+tracked-reduce = "tracked_tools.reduce.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["tracked_tools*"]

@@ -1,0 +1,2592 @@
+{
+  "integrals": {
+    "cancellation": {
+      "cascade_chains": {
+        "cascade_cancellation_2d2396e6_167a1063": {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_2d2396e6_167a1063",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 74074189781.5126,
+          "max_rel_err": 1.644777420528878e-05,
+          "max_sensitivity": 74074189781.5126,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0010526575491313765,
+          "predicted_rel_err_if_float": 4415.165768951929,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_cancellation_34692559_f744e03f": {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_34692559_f744e03f",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 666656743006.0325,
+          "max_rel_err": 0.00014802753312149363,
+          "max_sensitivity": 666656743006.0325,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.009473762119768487,
+          "predicted_rel_err_if_float": 39735.838353993444,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_cancellation_37dd81c0_95854575": {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_37dd81c0_95854575",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 133333322302.28477,
+          "max_rel_err": 2.960594487406371e-05,
+          "max_sensitivity": 133333322302.28477,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.001894780471932972,
+          "predicted_rel_err_if_float": 7947.2853125503525,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_cancellation_41ecd544_d3b60621": {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_41ecd544_d3b60621",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 55555413895.65856,
+          "max_rel_err": 1.2335779930019122e-05,
+          "max_sensitivity": 55555413895.65856,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0007894899155141184,
+          "predicted_rel_err_if_float": 3311.360710600529,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_cancellation_59dd8d66_bf7feb54": {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_59dd8d66_bf7feb54",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 95237684558.82643,
+          "max_rel_err": 2.1147014041950392e-05,
+          "max_sensitivity": 95237684558.82643,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0013534088986777197,
+          "predicted_rel_err_if_float": 5676.608357359554,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_cancellation_7194b899_0c1322c3": {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_7194b899_0c1322c3",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 333328371503.5162,
+          "max_rel_err": 7.401376656091334e-05,
+          "max_sensitivity": 333328371503.5162,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.004736881059891348,
+          "predicted_rel_err_if_float": 19867.91917702652,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_cancellation_908df985_e841e6b6": {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_908df985_e841e6b6",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 60605974033.53281,
+          "max_rel_err": 1.345722956048352e-05,
+          "max_sensitivity": 60605974033.53281,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0008612626918638399,
+          "predicted_rel_err_if_float": 3612.397553535271,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_cancellation_944a95ce_ee0671ea": {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_944a95ce_ee0671ea",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 166667269670.35574,
+          "max_rel_err": 3.7007568047998816e-05,
+          "max_sensitivity": 166667269670.35574,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.002368484355064819,
+          "predicted_rel_err_if_float": 9934.14340438579,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_cancellation_b8ad5b10_288b1b13": {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_b8ad5b10_288b1b13",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 83333634835.67787,
+          "max_rel_err": 1.850378402416594e-05,
+          "max_sensitivity": 83333634835.67787,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0011842421775395148,
+          "predicted_rel_err_if_float": 4967.071702222697,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_cancellation_be4a0dcc_f574ca0a": {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_be4a0dcc_f574ca0a",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 222224396890.88928,
+          "max_rel_err": 4.934372841245189e-05,
+          "max_sensitivity": 222224396890.88928,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0031579986183898155,
+          "predicted_rel_err_if_float": 13245.606237106877,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_cancellation_c87e0708_1ff95fd4": {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_c87e0708_1ff95fd4",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 66666661151.64239,
+          "max_rel_err": 1.4802972437198389e-05,
+          "max_sensitivity": 66666661151.64239,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0009473902359735915,
+          "predicted_rel_err_if_float": 3973.6426563049786,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_cancellation_e7d22d60_61763dee": {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_e7d22d60_61763dee",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 111110827790.31711,
+          "max_rel_err": 2.4671559859705174e-05,
+          "max_sensitivity": 111110827790.31711,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0015789798310140257,
+          "predicted_rel_err_if_float": 6622.721421141452,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade"
+        }
+      },
+      "regions": {
+        "cancellation_kernel.hpp:12": {
+          "abs_val_max": 3.6000091796495326e-11,
+          "abs_val_min": 3.000044657142098e-12,
+          "gate_a_count": 0,
+          "integral": "cancellation",
+          "max_amp": 1.0,
+          "max_cond": 666656743006.0325,
+          "max_rel_err": 0.0001480275331213826,
+          "max_sensitivity": 666656743006.0325,
+          "n": 12,
+          "ops": {
+            "sub": 12
+          },
+          "prov_vars": [
+            "a",
+            "b"
+          ],
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "rel_err_hist": {
+            "buckets": {
+              "-4": 1,
+              "-5": 11
+            },
+            "total": 12
+          }
+        },
+        "tests/parity/gen_fixtures.cpp:k_cancellation:61": {
+          "abs_val_max": 2.000000000036,
+          "abs_val_min": 2.0000000000030003,
+          "gate_a_count": 0,
+          "integral": "cancellation",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 1.0,
+          "n": 12,
+          "ops": {
+            "add": 12
+          },
+          "prov_vars": [
+            "a",
+            "b"
+          ],
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "rel_err_hist": {
+            "buckets": {
+              "-16": 12
+            },
+            "total": 12
+          }
+        },
+        "tests/parity/gen_fixtures.cpp:k_cancellation:65": {
+          "abs_val_max": 1.800004589792366e-11,
+          "abs_val_min": 1.5000223285687987e-12,
+          "gate_a_count": 0,
+          "integral": "cancellation",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 0.00014802753312149363,
+          "max_sensitivity": 1.0,
+          "n": 12,
+          "ops": {
+            "div": 12
+          },
+          "prov_vars": [
+            "a",
+            "b"
+          ],
+          "region_local_vars": [],
+          "rel_err_hist": {
+            "buckets": {
+              "-4": 1,
+              "-5": 11
+            },
+            "total": 12
+          }
+        }
+      },
+      "variables": {
+        "a": {
+          "is_source_var": true,
+          "max_amp": 666656743006.0325,
+          "max_sensitivity": 666656743006.0325,
+          "n_consumers": 12
+        },
+        "b": {
+          "is_source_var": true,
+          "max_amp": 666656743006.0325,
+          "max_sensitivity": 666656743006.0325,
+          "n_consumers": 12
+        }
+      }
+    },
+    "cascade_range": {
+      "cascade_chains": {
+        "cascade_cascade_range_3ff42de4_f3f0150f": {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_3ff42de4_f3f0150f",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 18691571888.90361,
+          "max_rel_err": 6.22554404347118e-06,
+          "max_sensitivity": 18691571888.90361,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002656232125119631,
+          "predicted_rel_err_if_float": 1114.1045027317768,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_cascade_range_51faf860_67dd1355": {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_51faf860_67dd1355",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 19230752904.41034,
+          "max_rel_err": 6.405127396828083e-06,
+          "max_sensitivity": 19230752904.41034,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002732854355885243,
+          "predicted_rel_err_if_float": 1146.2421956306898,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_cascade_range_5b758eed_b1f271d7": {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_5b758eed_b1f271d7",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 18348640951.843376,
+          "max_rel_err": 6.111325096817014e-06,
+          "max_sensitivity": 18348640951.843376,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.000260749870788052,
+          "predicted_rel_err_if_float": 1093.6642260458098,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_cascade_range_67adf93c_cc8f8905": {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_67adf93c_cc8f8905",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 18018000493.3591,
+          "max_rel_err": 6.0011997018524556e-06,
+          "max_sensitivity": 18018000493.3591,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002560511872695642,
+          "predicted_rel_err_if_float": 1073.9565189694822,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_cascade_range_761dc891_52432a21": {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_761dc891_52432a21",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 18518536417.028275,
+          "max_rel_err": 6.167911653985317e-06,
+          "max_sensitivity": 18518536417.028275,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002631642305605663,
+          "predicted_rel_err_if_float": 1103.7907848971054,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_cascade_range_7f5dc920_9e14df08": {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_7f5dc920_9e14df08",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 18867907811.97978,
+          "max_rel_err": 6.284275704031487e-06,
+          "max_sensitivity": 18867907811.97978,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00026812909669586955,
+          "predicted_rel_err_if_float": 1124.6149427878725,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_cascade_range_8759d9fa_a6ec9b13": {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_8759d9fa_a6ec9b13",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 18181800801.48934,
+          "max_rel_err": 6.055756163910522e-06,
+          "max_sensitivity": 18181800801.48934,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002583789296507084,
+          "predicted_rel_err_if_float": 1083.7197781496848,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_cascade_range_884bde65_9f203213": {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_884bde65_9f203213",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 19802004519.5395,
+          "max_rel_err": 6.595392405619294e-06,
+          "max_sensitivity": 19802004519.5395,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002814034092969493,
+          "predicted_rel_err_if_float": 1180.2914452278317,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_cascade_range_89eac08e_e444fbeb": {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_89eac08e_e444fbeb",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 19417459612.918507,
+          "max_rel_err": 6.467313222819407e-06,
+          "max_sensitivity": 19417459612.918507,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00027593869749748743,
+          "predicted_rel_err_if_float": 1157.3707826685015,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_cascade_range_c50536b5_3832f417": {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_c50536b5_3832f417",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 19999984589.15086,
+          "max_rel_err": 6.66133301512912e-06,
+          "max_sensitivity": 19999984589.15086,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002842168753027019,
+          "predicted_rel_err_if_float": 1192.0919769496238,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_cascade_range_d10e195d_ef814250": {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_d10e195d_ef814250",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 19607827244.598568,
+          "max_rel_err": 6.5307183811697756e-06,
+          "max_sensitivity": 19607827244.598568,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00027864398425376987,
+          "predicted_rel_err_if_float": 1168.717577731524,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_cascade_range_e3f3db66_83d067b3": {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_e3f3db66_83d067b3",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 19047602521.066032,
+          "max_rel_err": 6.344126065060751e-06,
+          "max_sensitivity": 19047602521.066032,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002706827120997848,
+          "predicted_rel_err_if_float": 1135.3255820909758,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade"
+        }
+      },
+      "regions": {
+        "cascade_range_kernel.hpp:7": {
+          "abs_val_max": 1.1100011906324128e-50,
+          "abs_val_min": 1.0000008705631276e-50,
+          "gate_a_count": 0,
+          "integral": "cascade_range",
+          "max_amp": 1.0,
+          "max_cond": 19999984589.15086,
+          "max_rel_err": 6.6613330149070755e-06,
+          "max_sensitivity": 19999984589.15086,
+          "n": 12,
+          "ops": {
+            "sub": 12
+          },
+          "prov_vars": [
+            "rx",
+            "ry"
+          ],
+          "region_local_vars": [],
+          "rel_err_hist": {
+            "buckets": {
+              "-6": 12
+            },
+            "total": 12
+          }
+        },
+        "tests/parity/gen_fixtures.cpp:k_cascade_range:152": {
+          "abs_val_max": 1.0000001000777e-40,
+          "abs_val_min": 1.00000010007e-40,
+          "gate_a_count": 0,
+          "integral": "cascade_range",
+          "max_amp": 19999984589.15086,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 19999984589.15086,
+          "n": 12,
+          "ops": {
+            "mul": 12
+          },
+          "prov_vars": [
+            "rx"
+          ],
+          "region_local_vars": [
+            "rx"
+          ],
+          "rel_err_hist": {
+            "buckets": {
+              "-16": 12
+            },
+            "total": 12
+          }
+        },
+        "tests/parity/gen_fixtures.cpp:k_cascade_range:153": {
+          "abs_val_max": 1.0000000999699998e-40,
+          "abs_val_min": 1.0000000999666999e-40,
+          "gate_a_count": 0,
+          "integral": "cascade_range",
+          "max_amp": 19999984589.15086,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 19999984589.15086,
+          "n": 12,
+          "ops": {
+            "mul": 12
+          },
+          "prov_vars": [
+            "ry"
+          ],
+          "region_local_vars": [
+            "ry"
+          ],
+          "rel_err_hist": {
+            "buckets": {
+              "-16": 12
+            },
+            "total": 12
+          }
+        },
+        "tests/parity/gen_fixtures.cpp:k_cascade_range:157": {
+          "abs_val_max": 5.550005953162064e-51,
+          "abs_val_min": 5.000004352815638e-51,
+          "gate_a_count": 0,
+          "integral": "cascade_range",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 6.661333015018098e-06,
+          "max_sensitivity": 1.0,
+          "n": 12,
+          "ops": {
+            "mul": 12
+          },
+          "prov_vars": [
+            "rx",
+            "ry"
+          ],
+          "region_local_vars": [],
+          "rel_err_hist": {
+            "buckets": {
+              "-6": 12
+            },
+            "total": 12
+          }
+        },
+        "tests/parity/gen_fixtures.cpp:k_cascade_range:158": {
+          "abs_val_max": 1.6650017859486191e-50,
+          "abs_val_min": 1.5000013058446915e-50,
+          "gate_a_count": 0,
+          "integral": "cascade_range",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 6.66133301512912e-06,
+          "max_sensitivity": 1.0,
+          "n": 12,
+          "ops": {
+            "add": 12
+          },
+          "prov_vars": [
+            "rx",
+            "ry"
+          ],
+          "region_local_vars": [],
+          "rel_err_hist": {
+            "buckets": {
+              "-6": 12
+            },
+            "total": 12
+          }
+        }
+      },
+      "variables": {
+        "_lit@tests/parity/gen_fixtures.cpp:157#10@integral=cascade_range/sample=9": {
+          "is_source_var": false,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:157#11@integral=cascade_range/sample=10": {
+          "is_source_var": false,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:157#12@integral=cascade_range/sample=11": {
+          "is_source_var": false,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:157#1@integral=cascade_range/sample=0": {
+          "is_source_var": false,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:157#2@integral=cascade_range/sample=1": {
+          "is_source_var": false,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:157#3@integral=cascade_range/sample=2": {
+          "is_source_var": false,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:157#4@integral=cascade_range/sample=3": {
+          "is_source_var": false,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:157#5@integral=cascade_range/sample=4": {
+          "is_source_var": false,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:157#6@integral=cascade_range/sample=5": {
+          "is_source_var": false,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:157#7@integral=cascade_range/sample=6": {
+          "is_source_var": false,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:157#8@integral=cascade_range/sample=7": {
+          "is_source_var": false,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:157#9@integral=cascade_range/sample=8": {
+          "is_source_var": false,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 1
+        },
+        "rc": {
+          "is_source_var": false,
+          "max_amp": 19999984589.15086,
+          "max_sensitivity": 19999984589.15086,
+          "n_consumers": 12
+        },
+        "rx": {
+          "is_source_var": true,
+          "max_amp": 19999984589.15086,
+          "max_sensitivity": 19999984589.15086,
+          "n_consumers": 12
+        },
+        "ry": {
+          "is_source_var": true,
+          "max_amp": 19999984589.15086,
+          "max_sensitivity": 19999984589.15086,
+          "n_consumers": 12
+        }
+      }
+    },
+    "complex_logdiv": {
+      "cascade_chains": {},
+      "regions": {
+        "": {
+          "abs_val_max": 1.2500090000359996,
+          "abs_val_min": 0.2499970000359996,
+          "gate_a_count": 0,
+          "integral": "complex_logdiv",
+          "max_amp": 2.1999980832030643,
+          "max_cond": 2.1999980832030643,
+          "max_rel_err": 1.0880177129038168e-15,
+          "max_sensitivity": 2.1999980832030643,
+          "n": 108,
+          "ops": {
+            "add": 24,
+            "div": 36,
+            "mul": 36,
+            "sub": 12
+          },
+          "prov_vars": [
+            "w",
+            "z"
+          ],
+          "region_local_vars": [
+            "w",
+            "z"
+          ],
+          "rel_err_hist": {
+            "buckets": {
+              "-15": 12,
+              "-16": 96
+            },
+            "total": 108
+          }
+        },
+        "tests/parity/gen_fixtures.cpp:k_complex_logdiv:165": {
+          "abs_val_max": 1.0000000144000003,
+          "abs_val_min": 6.000000494642226e-10,
+          "gate_a_count": 0,
+          "integral": "complex_logdiv",
+          "max_amp": 1666666529.2660596,
+          "max_cond": 1666666529.2660596,
+          "max_rel_err": 5.55111466548983e-07,
+          "max_sensitivity": 1666666529.2660596,
+          "n": 72,
+          "ops": {
+            "add": 12,
+            "atan2": 12,
+            "log": 12,
+            "mul": 24,
+            "sqrt": 12
+          },
+          "prov_vars": [
+            "z"
+          ],
+          "region_local_vars": [
+            "z"
+          ],
+          "rel_err_hist": {
+            "buckets": {
+              "-16": 60,
+              "-7": 5,
+              "-8": 7
+            },
+            "total": 72
+          }
+        },
+        "tests/parity/gen_fixtures.cpp:k_complex_logdiv:168": {
+          "abs_val_max": 0.7999999991993615,
+          "abs_val_min": 0.7999999903080262,
+          "gate_a_count": 0,
+          "integral": "complex_logdiv",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 1.1990400153663325e-15,
+          "max_sensitivity": 1.0,
+          "n": 12,
+          "ops": {
+            "opaque": 12
+          },
+          "prov_vars": [
+            "w",
+            "z"
+          ],
+          "region_local_vars": [],
+          "rel_err_hist": {
+            "buckets": {
+              "-15": 12
+            },
+            "total": 12
+          }
+        }
+      },
+      "variables": {
+        "ext::blas_scale": {
+          "is_source_var": false,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 12
+        },
+        "w": {
+          "is_source_var": true,
+          "max_amp": 2.1999980832030643,
+          "max_sensitivity": 2.1999980832030643,
+          "n_consumers": 12
+        },
+        "z": {
+          "is_source_var": true,
+          "max_amp": 833333264.6330298,
+          "max_sensitivity": 833333264.6330298,
+          "n_consumers": 12
+        }
+      }
+    },
+    "kahan": {
+      "cascade_chains": {},
+      "regions": {
+        "": {
+          "abs_val_max": 2.283333333333333,
+          "abs_val_min": 2.7755575615628914e-17,
+          "gate_a_count": 8,
+          "integral": "kahan",
+          "max_amp": 2.785569921613791e+67,
+          "max_cond": 1.2009599006321328e+16,
+          "max_rel_err": 2.860658573903004e+52,
+          "max_sensitivity": 2.785569921613791e+67,
+          "n": 240,
+          "ops": {
+            "add": 60,
+            "sub": 180
+          },
+          "prov_vars": [
+            "acc"
+          ],
+          "region_local_vars": [
+            "acc"
+          ],
+          "rel_err_hist": {
+            "buckets": {
+              "-14": 4,
+              "-15": 24,
+              "-16": 72,
+              "1": 24,
+              "18": 12,
+              "19": 28,
+              "2": 32,
+              "20": 8,
+              "3": 4,
+              "35": 12,
+              "36": 12,
+              "4": 4,
+              "52": 4
+            },
+            "total": 240
+          }
+        },
+        "tests/parity/gen_fixtures.cpp:k_kahan:88": {
+          "abs_val_max": 1.0,
+          "abs_val_min": 0.14285714285714285,
+          "gate_a_count": 0,
+          "integral": "kahan",
+          "max_amp": 2.785569921613791e+67,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 2.785569921613791e+67,
+          "n": 60,
+          "ops": {
+            "div": 60
+          },
+          "prov_vars": [],
+          "region_local_vars": [],
+          "rel_err_hist": {
+            "buckets": {
+              "-16": 60
+            },
+            "total": 60
+          }
+        }
+      },
+      "variables": {
+        "_lit@tests/parity/gen_fixtures.cpp:85#10@integral=kahan/sample=9": {
+          "is_source_var": false,
+          "max_amp": 2.221843353344786e+51,
+          "max_sensitivity": 2.221843353344786e+51,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:85#11@integral=kahan/sample=10": {
+          "is_source_var": false,
+          "max_amp": 2.785569921613791e+67,
+          "max_sensitivity": 2.785569921613791e+67,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:85#12@integral=kahan/sample=11": {
+          "is_source_var": false,
+          "max_amp": 1.383095451149731e+51,
+          "max_sensitivity": 1.383095451149731e+51,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:85#1@integral=kahan/sample=0": {
+          "is_source_var": false,
+          "max_amp": 2.221843353344786e+51,
+          "max_sensitivity": 2.221843353344786e+51,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:85#2@integral=kahan/sample=1": {
+          "is_source_var": false,
+          "max_amp": 2.785569921613791e+67,
+          "max_sensitivity": 2.785569921613791e+67,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:85#3@integral=kahan/sample=2": {
+          "is_source_var": false,
+          "max_amp": 1.383095451149731e+51,
+          "max_sensitivity": 1.383095451149731e+51,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:85#4@integral=kahan/sample=3": {
+          "is_source_var": false,
+          "max_amp": 2.221843353344786e+51,
+          "max_sensitivity": 2.221843353344786e+51,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:85#5@integral=kahan/sample=4": {
+          "is_source_var": false,
+          "max_amp": 2.785569921613791e+67,
+          "max_sensitivity": 2.785569921613791e+67,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:85#6@integral=kahan/sample=5": {
+          "is_source_var": false,
+          "max_amp": 1.383095451149731e+51,
+          "max_sensitivity": 1.383095451149731e+51,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:85#7@integral=kahan/sample=6": {
+          "is_source_var": false,
+          "max_amp": 2.221843353344786e+51,
+          "max_sensitivity": 2.221843353344786e+51,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:85#8@integral=kahan/sample=7": {
+          "is_source_var": false,
+          "max_amp": 2.785569921613791e+67,
+          "max_sensitivity": 2.785569921613791e+67,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:85#9@integral=kahan/sample=8": {
+          "is_source_var": false,
+          "max_amp": 1.383095451149731e+51,
+          "max_sensitivity": 1.383095451149731e+51,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#10@integral=kahan/sample=1": {
+          "is_source_var": false,
+          "max_amp": 1.9695742370366966e+17,
+          "max_sensitivity": 1.9695742370366966e+17,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#11@integral=kahan/sample=2": {
+          "is_source_var": false,
+          "max_amp": 1.383095451149731e+51,
+          "max_sensitivity": 1.383095451149731e+51,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#12@integral=kahan/sample=2": {
+          "is_source_var": false,
+          "max_amp": 1.383095451149731e+51,
+          "max_sensitivity": 1.383095451149731e+51,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#13@integral=kahan/sample=2": {
+          "is_source_var": false,
+          "max_amp": 4.187848404874773e+34,
+          "max_sensitivity": 4.187848404874773e+34,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#14@integral=kahan/sample=2": {
+          "is_source_var": false,
+          "max_amp": 6.128558641280157e+33,
+          "max_sensitivity": 6.128558641280157e+33,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#15@integral=kahan/sample=2": {
+          "is_source_var": false,
+          "max_amp": 4.906779022582714e+16,
+          "max_sensitivity": 4.906779022582714e+16,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#16@integral=kahan/sample=3": {
+          "is_source_var": false,
+          "max_amp": 2.221843353344786e+51,
+          "max_sensitivity": 2.221843353344786e+51,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#17@integral=kahan/sample=3": {
+          "is_source_var": false,
+          "max_amp": 2.221843353344786e+51,
+          "max_sensitivity": 2.221843353344786e+51,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#18@integral=kahan/sample=3": {
+          "is_source_var": false,
+          "max_amp": 4.443686706689572e+50,
+          "max_sensitivity": 4.443686706689572e+50,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#19@integral=kahan/sample=3": {
+          "is_source_var": false,
+          "max_amp": 3.7001124719906237e+33,
+          "max_sensitivity": 3.7001124719906237e+33,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#1@integral=kahan/sample=0": {
+          "is_source_var": false,
+          "max_amp": 2.221843353344786e+51,
+          "max_sensitivity": 2.221843353344786e+51,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#20@integral=kahan/sample=3": {
+          "is_source_var": false,
+          "max_amp": 7.866287349140483e+16,
+          "max_sensitivity": 7.866287349140483e+16,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#21@integral=kahan/sample=4": {
+          "is_source_var": false,
+          "max_amp": 2.785569921613791e+67,
+          "max_sensitivity": 2.785569921613791e+67,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#22@integral=kahan/sample=4": {
+          "is_source_var": false,
+          "max_amp": 2.785569921613791e+67,
+          "max_sensitivity": 2.785569921613791e+67,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#23@integral=kahan/sample=4": {
+          "is_source_var": false,
+          "max_amp": 5.798632244397981e+50,
+          "max_sensitivity": 5.798632244397981e+50,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#24@integral=kahan/sample=4": {
+          "is_source_var": false,
+          "max_amp": 8.397097863997157e+33,
+          "max_sensitivity": 8.397097863997157e+33,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#25@integral=kahan/sample=4": {
+          "is_source_var": false,
+          "max_amp": 1.9695742370366966e+17,
+          "max_sensitivity": 1.9695742370366966e+17,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#26@integral=kahan/sample=5": {
+          "is_source_var": false,
+          "max_amp": 1.383095451149731e+51,
+          "max_sensitivity": 1.383095451149731e+51,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#27@integral=kahan/sample=5": {
+          "is_source_var": false,
+          "max_amp": 1.383095451149731e+51,
+          "max_sensitivity": 1.383095451149731e+51,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#28@integral=kahan/sample=5": {
+          "is_source_var": false,
+          "max_amp": 4.187848404874773e+34,
+          "max_sensitivity": 4.187848404874773e+34,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#29@integral=kahan/sample=5": {
+          "is_source_var": false,
+          "max_amp": 6.128558641280157e+33,
+          "max_sensitivity": 6.128558641280157e+33,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#2@integral=kahan/sample=0": {
+          "is_source_var": false,
+          "max_amp": 2.221843353344786e+51,
+          "max_sensitivity": 2.221843353344786e+51,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#30@integral=kahan/sample=5": {
+          "is_source_var": false,
+          "max_amp": 4.906779022582714e+16,
+          "max_sensitivity": 4.906779022582714e+16,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#31@integral=kahan/sample=6": {
+          "is_source_var": false,
+          "max_amp": 2.221843353344786e+51,
+          "max_sensitivity": 2.221843353344786e+51,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#32@integral=kahan/sample=6": {
+          "is_source_var": false,
+          "max_amp": 2.221843353344786e+51,
+          "max_sensitivity": 2.221843353344786e+51,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#33@integral=kahan/sample=6": {
+          "is_source_var": false,
+          "max_amp": 4.443686706689572e+50,
+          "max_sensitivity": 4.443686706689572e+50,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#34@integral=kahan/sample=6": {
+          "is_source_var": false,
+          "max_amp": 3.7001124719906237e+33,
+          "max_sensitivity": 3.7001124719906237e+33,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#35@integral=kahan/sample=6": {
+          "is_source_var": false,
+          "max_amp": 7.866287349140483e+16,
+          "max_sensitivity": 7.866287349140483e+16,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#36@integral=kahan/sample=7": {
+          "is_source_var": false,
+          "max_amp": 2.785569921613791e+67,
+          "max_sensitivity": 2.785569921613791e+67,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#37@integral=kahan/sample=7": {
+          "is_source_var": false,
+          "max_amp": 2.785569921613791e+67,
+          "max_sensitivity": 2.785569921613791e+67,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#38@integral=kahan/sample=7": {
+          "is_source_var": false,
+          "max_amp": 5.798632244397981e+50,
+          "max_sensitivity": 5.798632244397981e+50,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#39@integral=kahan/sample=7": {
+          "is_source_var": false,
+          "max_amp": 8.397097863997157e+33,
+          "max_sensitivity": 8.397097863997157e+33,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#3@integral=kahan/sample=0": {
+          "is_source_var": false,
+          "max_amp": 4.443686706689572e+50,
+          "max_sensitivity": 4.443686706689572e+50,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#40@integral=kahan/sample=7": {
+          "is_source_var": false,
+          "max_amp": 1.9695742370366966e+17,
+          "max_sensitivity": 1.9695742370366966e+17,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#41@integral=kahan/sample=8": {
+          "is_source_var": false,
+          "max_amp": 1.383095451149731e+51,
+          "max_sensitivity": 1.383095451149731e+51,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#42@integral=kahan/sample=8": {
+          "is_source_var": false,
+          "max_amp": 1.383095451149731e+51,
+          "max_sensitivity": 1.383095451149731e+51,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#43@integral=kahan/sample=8": {
+          "is_source_var": false,
+          "max_amp": 4.187848404874773e+34,
+          "max_sensitivity": 4.187848404874773e+34,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#44@integral=kahan/sample=8": {
+          "is_source_var": false,
+          "max_amp": 6.128558641280157e+33,
+          "max_sensitivity": 6.128558641280157e+33,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#45@integral=kahan/sample=8": {
+          "is_source_var": false,
+          "max_amp": 4.906779022582714e+16,
+          "max_sensitivity": 4.906779022582714e+16,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#46@integral=kahan/sample=9": {
+          "is_source_var": false,
+          "max_amp": 2.221843353344786e+51,
+          "max_sensitivity": 2.221843353344786e+51,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#47@integral=kahan/sample=9": {
+          "is_source_var": false,
+          "max_amp": 2.221843353344786e+51,
+          "max_sensitivity": 2.221843353344786e+51,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#48@integral=kahan/sample=9": {
+          "is_source_var": false,
+          "max_amp": 4.443686706689572e+50,
+          "max_sensitivity": 4.443686706689572e+50,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#49@integral=kahan/sample=9": {
+          "is_source_var": false,
+          "max_amp": 3.7001124719906237e+33,
+          "max_sensitivity": 3.7001124719906237e+33,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#4@integral=kahan/sample=0": {
+          "is_source_var": false,
+          "max_amp": 3.7001124719906237e+33,
+          "max_sensitivity": 3.7001124719906237e+33,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#50@integral=kahan/sample=9": {
+          "is_source_var": false,
+          "max_amp": 7.866287349140483e+16,
+          "max_sensitivity": 7.866287349140483e+16,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#51@integral=kahan/sample=10": {
+          "is_source_var": false,
+          "max_amp": 2.785569921613791e+67,
+          "max_sensitivity": 2.785569921613791e+67,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#52@integral=kahan/sample=10": {
+          "is_source_var": false,
+          "max_amp": 2.785569921613791e+67,
+          "max_sensitivity": 2.785569921613791e+67,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#53@integral=kahan/sample=10": {
+          "is_source_var": false,
+          "max_amp": 5.798632244397981e+50,
+          "max_sensitivity": 5.798632244397981e+50,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#54@integral=kahan/sample=10": {
+          "is_source_var": false,
+          "max_amp": 8.397097863997157e+33,
+          "max_sensitivity": 8.397097863997157e+33,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#55@integral=kahan/sample=10": {
+          "is_source_var": false,
+          "max_amp": 1.9695742370366966e+17,
+          "max_sensitivity": 1.9695742370366966e+17,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#56@integral=kahan/sample=11": {
+          "is_source_var": false,
+          "max_amp": 1.383095451149731e+51,
+          "max_sensitivity": 1.383095451149731e+51,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#57@integral=kahan/sample=11": {
+          "is_source_var": false,
+          "max_amp": 1.383095451149731e+51,
+          "max_sensitivity": 1.383095451149731e+51,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#58@integral=kahan/sample=11": {
+          "is_source_var": false,
+          "max_amp": 4.187848404874773e+34,
+          "max_sensitivity": 4.187848404874773e+34,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#59@integral=kahan/sample=11": {
+          "is_source_var": false,
+          "max_amp": 6.128558641280157e+33,
+          "max_sensitivity": 6.128558641280157e+33,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#5@integral=kahan/sample=0": {
+          "is_source_var": false,
+          "max_amp": 7.866287349140483e+16,
+          "max_sensitivity": 7.866287349140483e+16,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#60@integral=kahan/sample=11": {
+          "is_source_var": false,
+          "max_amp": 4.906779022582714e+16,
+          "max_sensitivity": 4.906779022582714e+16,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#6@integral=kahan/sample=1": {
+          "is_source_var": false,
+          "max_amp": 2.785569921613791e+67,
+          "max_sensitivity": 2.785569921613791e+67,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#7@integral=kahan/sample=1": {
+          "is_source_var": false,
+          "max_amp": 2.785569921613791e+67,
+          "max_sensitivity": 2.785569921613791e+67,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#8@integral=kahan/sample=1": {
+          "is_source_var": false,
+          "max_amp": 5.798632244397981e+50,
+          "max_sensitivity": 5.798632244397981e+50,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:88#9@integral=kahan/sample=1": {
+          "is_source_var": false,
+          "max_amp": 8.397097863997157e+33,
+          "max_sensitivity": 8.397097863997157e+33,
+          "n_consumers": 1
+        },
+        "acc": {
+          "is_source_var": true,
+          "max_amp": 2.785569921613791e+67,
+          "max_sensitivity": 2.785569921613791e+67,
+          "n_consumers": 12
+        },
+        "one": {
+          "is_source_var": false,
+          "max_amp": 2.785569921613791e+67,
+          "max_sensitivity": 2.785569921613791e+67,
+          "n_consumers": 12
+        }
+      }
+    },
+    "logsumexp": {
+      "cascade_chains": {},
+      "regions": {
+        "tests/parity/gen_fixtures.cpp:k_logsumexp:121": {
+          "abs_val_max": 0.999999900000005,
+          "abs_val_min": 0.99999880000072,
+          "gate_a_count": 0,
+          "integral": "logsumexp",
+          "max_amp": 10000015.761850491,
+          "max_cond": 1.2e-06,
+          "max_rel_err": 2.6645352591003756e-22,
+          "max_sensitivity": 1.001040713841853,
+          "n": 12,
+          "ops": {
+            "exp": 12
+          },
+          "prov_vars": [
+            "x1"
+          ],
+          "region_local_vars": [
+            "x1"
+          ],
+          "rel_err_hist": {
+            "buckets": {
+              "-22": 8,
+              "-23": 4
+            },
+            "total": 12
+          }
+        },
+        "tests/parity/gen_fixtures.cpp:k_logsumexp:122": {
+          "abs_val_max": 1.2000000000545874e-06,
+          "abs_val_min": 9.999999995136064e-08,
+          "gate_a_count": 0,
+          "integral": "logsumexp",
+          "max_amp": 1.0010407138873898,
+          "max_cond": 10000000.004863936,
+          "max_rel_err": 1.1102232472097669e-09,
+          "max_sensitivity": 10000015.761850491,
+          "n": 12,
+          "ops": {
+            "log": 12
+          },
+          "prov_vars": [
+            "x1"
+          ],
+          "region_local_vars": [],
+          "rel_err_hist": {
+            "buckets": {
+              "-10": 10,
+              "-11": 1,
+              "-9": 1
+            },
+            "total": 12
+          }
+        },
+        "tests/parity/gen_fixtures.cpp:k_logsumexp:124": {
+          "abs_val_max": 0.1353352832366127,
+          "abs_val_min": 0.002311173210602129,
+          "gate_a_count": 0,
+          "integral": "logsumexp",
+          "max_amp": 433.8563118296786,
+          "max_cond": 6.07,
+          "max_rel_err": 1.3478107518949401e-15,
+          "max_sensitivity": 2633.507812806149,
+          "n": 12,
+          "ops": {
+            "exp": 12
+          },
+          "prov_vars": [
+            "x2"
+          ],
+          "region_local_vars": [
+            "x2"
+          ],
+          "rel_err_hist": {
+            "buckets": {
+              "-15": 5,
+              "-16": 7
+            },
+            "total": 12
+          }
+        },
+        "tests/parity/gen_fixtures.cpp:k_logsumexp:125": {
+          "abs_val_max": 1.1353351832366179,
+          "abs_val_min": 1.002309973211322,
+          "gate_a_count": 0,
+          "integral": "logsumexp",
+          "max_amp": 433.8563118296786,
+          "max_cond": 1.0,
+          "max_rel_err": 1.4588330543574558e-15,
+          "max_sensitivity": 433.8563118296786,
+          "n": 12,
+          "ops": {
+            "add": 12
+          },
+          "prov_vars": [
+            "x1",
+            "x2"
+          ],
+          "region_local_vars": [],
+          "rel_err_hist": {
+            "buckets": {
+              "-15": 6,
+              "-16": 6
+            },
+            "total": 12
+          }
+        },
+        "tests/parity/gen_fixtures.cpp:k_logsumexp:126": {
+          "abs_val_max": 0.12692792296326538,
+          "abs_val_min": 0.0023073093247526016,
+          "gate_a_count": 0,
+          "integral": "logsumexp",
+          "max_amp": 1.0010407138873898,
+          "max_cond": 433.40526095573415,
+          "max_rel_err": 6.803835705853169e-13,
+          "max_sensitivity": 433.8563118296786,
+          "n": 12,
+          "ops": {
+            "log": 12
+          },
+          "prov_vars": [
+            "x1",
+            "x2"
+          ],
+          "region_local_vars": [],
+          "rel_err_hist": {
+            "buckets": {
+              "-13": 5,
+              "-14": 5,
+              "-15": 2
+            },
+            "total": 12
+          }
+        },
+        "tests/parity/gen_fixtures.cpp:k_logsumexp:127": {
+          "abs_val_max": 0.12692782296326544,
+          "abs_val_min": 0.002306109324752547,
+          "gate_a_count": 0,
+          "integral": "logsumexp",
+          "max_amp": 1.0,
+          "max_cond": 1.0010407138873898,
+          "max_rel_err": 1.1102251076095214e-09,
+          "max_sensitivity": 1.0010407138873898,
+          "n": 12,
+          "ops": {
+            "add": 12
+          },
+          "prov_vars": [
+            "x1",
+            "x2"
+          ],
+          "region_local_vars": [],
+          "rel_err_hist": {
+            "buckets": {
+              "-10": 10,
+              "-11": 1,
+              "-9": 1
+            },
+            "total": 12
+          }
+        }
+      },
+      "variables": {
+        "x1": {
+          "is_source_var": true,
+          "max_amp": 1.001040713841853,
+          "max_sensitivity": 1.001040713841853,
+          "n_consumers": 12
+        },
+        "x2": {
+          "is_source_var": true,
+          "max_amp": 2633.507812806149,
+          "max_sensitivity": 2633.507812806149,
+          "n_consumers": 12
+        }
+      }
+    },
+    "range_overflow": {
+      "cascade_chains": {},
+      "regions": {
+        "tests/parity/gen_fixtures.cpp:k_range_overflow:133": {
+          "abs_val_max": 1.2321000000000001e+120,
+          "abs_val_min": 9.999999999999998e+119,
+          "gate_a_count": 0,
+          "integral": "range_overflow",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 1.0,
+          "n": 12,
+          "ops": {
+            "mul": 12
+          },
+          "prov_vars": [
+            "h"
+          ],
+          "region_local_vars": [
+            "h"
+          ],
+          "rel_err_hist": {
+            "buckets": {
+              "-16": 12
+            },
+            "total": 12
+          }
+        },
+        "tests/parity/gen_fixtures.cpp:k_range_overflow:135": {
+          "abs_val_max": 1e-100,
+          "abs_val_min": 1e-100,
+          "gate_a_count": 0,
+          "integral": "range_overflow",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 1.0,
+          "n": 12,
+          "ops": {
+            "mul": 12
+          },
+          "prov_vars": [
+            "t"
+          ],
+          "region_local_vars": [
+            "t"
+          ],
+          "rel_err_hist": {
+            "buckets": {
+              "-16": 12
+            },
+            "total": 12
+          }
+        },
+        "tests/parity/gen_fixtures.cpp:k_range_overflow:136": {
+          "abs_val_max": 1.5180704100000002e+240,
+          "abs_val_min": 9.999999999999996e+239,
+          "gate_a_count": 0,
+          "integral": "range_overflow",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 3.3306690738754696e-16,
+          "max_sensitivity": 1.0,
+          "n": 12,
+          "ops": {
+            "mul": 12
+          },
+          "prov_vars": [
+            "h"
+          ],
+          "region_local_vars": [],
+          "rel_err_hist": {
+            "buckets": {
+              "-16": 12
+            },
+            "total": 12
+          }
+        },
+        "tests/parity/gen_fixtures.cpp:k_range_overflow:137": {
+          "abs_val_max": 1.7976931348623157e+308,
+          "abs_val_min": 1.7976931348623157e+308,
+          "gate_a_count": 0,
+          "integral": "range_overflow",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 4.440892098500626e-16,
+          "max_sensitivity": 1.0,
+          "n": 12,
+          "ops": {
+            "mul": 12
+          },
+          "prov_vars": [
+            "h"
+          ],
+          "region_local_vars": [],
+          "rel_err_hist": {
+            "buckets": {
+              "-16": 12
+            },
+            "total": 12
+          }
+        },
+        "tests/parity/gen_fixtures.cpp:k_range_overflow:140": {
+          "abs_val_max": null,
+          "abs_val_min": null,
+          "gate_a_count": 0,
+          "integral": "range_overflow",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 1.0,
+          "n": 12,
+          "ops": {
+            "div": 12
+          },
+          "prov_vars": [
+            "zn"
+          ],
+          "region_local_vars": [
+            "zn"
+          ],
+          "rel_err_hist": {
+            "buckets": {
+              "-16": 12
+            },
+            "total": 12
+          }
+        }
+      },
+      "variables": {
+        "h": {
+          "is_source_var": true,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 12
+        },
+        "t": {
+          "is_source_var": true,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 12
+        },
+        "zn": {
+          "is_source_var": true,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 12
+        }
+      }
+    },
+    "trig_gate": {
+      "cascade_chains": {},
+      "regions": {
+        "tests/parity/gen_fixtures.cpp:k_trig_gate:101": {
+          "abs_val_max": null,
+          "abs_val_min": null,
+          "gate_a_count": 6,
+          "integral": "trig_gate",
+          "max_amp": 1.0,
+          "max_cond": 0.0,
+          "max_rel_err": 2.0,
+          "max_sensitivity": 9007199254740992.0,
+          "n": 6,
+          "ops": {
+            "atan2": 6
+          },
+          "prov_vars": [
+            "one",
+            "z"
+          ],
+          "region_local_vars": [
+            "one",
+            "z"
+          ],
+          "rel_err_hist": {
+            "buckets": {
+              "0": 6
+            },
+            "total": 6
+          }
+        },
+        "tests/parity/gen_fixtures.cpp:k_trig_gate:104": {
+          "abs_val_max": null,
+          "abs_val_min": null,
+          "gate_a_count": 6,
+          "integral": "trig_gate",
+          "max_amp": 1.0,
+          "max_cond": 0.0,
+          "max_rel_err": 2.0,
+          "max_sensitivity": 9007199254740992.0,
+          "n": 6,
+          "ops": {
+            "log": 6
+          },
+          "prov_vars": [
+            "w"
+          ],
+          "region_local_vars": [
+            "w"
+          ],
+          "rel_err_hist": {
+            "buckets": {
+              "0": 6
+            },
+            "total": 6
+          }
+        },
+        "tests/parity/gen_fixtures.cpp:k_trig_gate:108": {
+          "abs_val_max": 0.01099955636554075,
+          "abs_val_min": 0.0009999996666668668,
+          "gate_a_count": 0,
+          "integral": "trig_gate",
+          "max_amp": 1.0,
+          "max_cond": 1.999998666667822,
+          "max_rel_err": 4.440889137908459e-16,
+          "max_sensitivity": 1.999998666667822,
+          "n": 6,
+          "ops": {
+            "atan2": 6
+          },
+          "prov_vars": [
+            "one",
+            "z"
+          ],
+          "region_local_vars": [
+            "one",
+            "z"
+          ],
+          "rel_err_hist": {
+            "buckets": {
+              "-16": 6
+            },
+            "total": 6
+          }
+        },
+        "tests/parity/gen_fixtures.cpp:k_trig_gate:111": {
+          "abs_val_max": 0.0010993954433010642,
+          "abs_val_min": 9.999500033329732e-05,
+          "gate_a_count": 0,
+          "integral": "trig_gate",
+          "max_amp": 1.0,
+          "max_cond": 10000.499991668185,
+          "max_rel_err": 2.220557069702741e-12,
+          "max_sensitivity": 10000.499991668185,
+          "n": 6,
+          "ops": {
+            "log": 6
+          },
+          "prov_vars": [
+            "w"
+          ],
+          "region_local_vars": [
+            "w"
+          ],
+          "rel_err_hist": {
+            "buckets": {
+              "-12": 1,
+              "-13": 5
+            },
+            "total": 6
+          }
+        },
+        "tests/parity/gen_fixtures.cpp:k_trig_gate:115": {
+          "abs_val_max": 1.2246467991473532e-16,
+          "abs_val_min": 1.2246467991473532e-16,
+          "gate_a_count": 12,
+          "integral": "trig_gate",
+          "max_amp": 1.0,
+          "max_cond": 0.0,
+          "max_rel_err": 2.0,
+          "max_sensitivity": 9007199254740992.0,
+          "n": 12,
+          "ops": {
+            "sin": 12
+          },
+          "prov_vars": [
+            "p"
+          ],
+          "region_local_vars": [
+            "p"
+          ],
+          "rel_err_hist": {
+            "buckets": {
+              "0": 12
+            },
+            "total": 12
+          }
+        }
+      },
+      "variables": {
+        "one": {
+          "is_source_var": true,
+          "max_amp": 9007199254740992.0,
+          "max_sensitivity": 9007199254740992.0,
+          "n_consumers": 12
+        },
+        "p": {
+          "is_source_var": true,
+          "max_amp": 9007199254740992.0,
+          "max_sensitivity": 9007199254740992.0,
+          "n_consumers": 12
+        },
+        "w": {
+          "is_source_var": true,
+          "max_amp": 9007199254740992.0,
+          "max_sensitivity": 9007199254740992.0,
+          "n_consumers": 12
+        },
+        "z": {
+          "is_source_var": true,
+          "max_amp": 9007199254740992.0,
+          "max_sensitivity": 9007199254740992.0,
+          "n_consumers": 12
+        }
+      }
+    },
+    "variance_cascade": {
+      "cascade_chains": {
+        "cascade_variance_cascade_33656b28_e6254bcc": {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_33656b28_e6254bcc",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 19230795840.58737,
+          "max_rel_err": 6.405141697447782e-06,
+          "max_sensitivity": 19230795840.58737,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00027328604574829813,
+          "predicted_rel_err_if_float": 1146.2447548262699,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_variance_cascade_51d31125_ff376921": {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_51d31125_ff376921",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 18018021212.864693,
+          "max_rel_err": 6.001206602834106e-06,
+          "max_sensitivity": 18018021212.864693,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00025605148171144794,
+          "predicted_rel_err_if_float": 1073.957753948253,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_variance_cascade_57906116_ce5e3994": {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_57906116_ce5e3994",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 19047616154.358578,
+          "max_rel_err": 6.344130605859336e-06,
+          "max_sensitivity": 19047616154.358578,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00027068290584052445,
+          "predicted_rel_err_if_float": 1135.326394698535,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_variance_cascade_6338fb1d_d6583d8b": {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_6338fb1d_d6583d8b",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 18691579798.828682,
+          "max_rel_err": 6.225546678005461e-06,
+          "max_sensitivity": 18691579798.828682,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002656233249187591,
+          "predicted_rel_err_if_float": 1114.104974200051,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_variance_cascade_690e222c_5ed47aeb": {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_690e222c_5ed47aeb",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 18518506655.032646,
+          "max_rel_err": 6.167901741249475e-06,
+          "max_sensitivity": 18518506655.032646,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00026316380761717037,
+          "predicted_rel_err_if_float": 1103.7890109439281,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_variance_cascade_7fab59f6_ece3eeb9": {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_7fab59f6_ece3eeb9",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 18348609219.07446,
+          "max_rel_err": 6.1113145276818074e-06,
+          "max_sensitivity": 18348609219.07446,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00026074941983828323,
+          "predicted_rel_err_if_float": 1093.6623346253907,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_variance_cascade_80c760a8_691fa68b": {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_80c760a8_691fa68b",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 19417479412.46748,
+          "max_rel_err": 6.46731981739395e-06,
+          "max_sensitivity": 19417479412.46748,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002759389788660013,
+          "predicted_rel_err_if_float": 1157.3719628135848,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_variance_cascade_9ada83c1_bcacffe0": {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_9ada83c1_bcacffe0",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 19607850305.595856,
+          "max_rel_err": 6.530726062024824e-06,
+          "max_sensitivity": 19607850305.595856,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002786443119702519,
+          "predicted_rel_err_if_float": 1168.7189522740755,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_variance_cascade_a881f9ec_926f7282": {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_a881f9ec_926f7282",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 18181824368.28512,
+          "max_rel_err": 6.055764013230309e-06,
+          "max_sensitivity": 18181824368.28512,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00025837926455501926,
+          "predicted_rel_err_if_float": 1083.7211828401755,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_variance_cascade_c93b6259_f3ab1958": {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_c93b6259_f3ab1958",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 20000014556.456436,
+          "max_rel_err": 6.6613429962469116e-06,
+          "max_sensitivity": 20000014556.456436,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00028421730116372766,
+          "predicted_rel_err_if_float": 1192.0937631402276,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_variance_cascade_e342c49a_56d92dac": {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_e342c49a_56d92dac",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 19801990988.33299,
+          "max_rel_err": 6.595387898822187e-06,
+          "max_sensitivity": 19801990988.33299,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00028140321700693944,
+          "predicted_rel_err_if_float": 1180.2906387050741,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade"
+        },
+        "cascade_variance_cascade_f53f930d_40a76c15": {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_f53f930d_40a76c15",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 18867918530.55272,
+          "max_rel_err": 6.284279274033428e-06,
+          "max_sensitivity": 18867918530.55272,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00026812924901595237,
+          "predicted_rel_err_if_float": 1124.615581664605,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade"
+        }
+      },
+      "regions": {
+        "tests/parity/gen_fixtures.cpp:k_variance_cascade:73": {
+          "abs_val_max": 100.00001000777,
+          "abs_val_min": 100.000010007,
+          "gate_a_count": 0,
+          "integral": "variance_cascade",
+          "max_amp": 20000014556.456436,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 20000014556.456436,
+          "n": 12,
+          "ops": {
+            "mul": 12
+          },
+          "prov_vars": [
+            "x"
+          ],
+          "region_local_vars": [
+            "x"
+          ],
+          "rel_err_hist": {
+            "buckets": {
+              "-16": 12
+            },
+            "total": 12
+          }
+        },
+        "tests/parity/gen_fixtures.cpp:k_variance_cascade:74": {
+          "abs_val_max": 100.000009997,
+          "abs_val_min": 100.00000999667,
+          "gate_a_count": 0,
+          "integral": "variance_cascade",
+          "max_amp": 20000014556.456436,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 20000014556.456436,
+          "n": 12,
+          "ops": {
+            "mul": 12
+          },
+          "prov_vars": [
+            "y"
+          ],
+          "region_local_vars": [
+            "y"
+          ],
+          "rel_err_hist": {
+            "buckets": {
+              "-16": 12
+            },
+            "total": 12
+          }
+        },
+        "tests/parity/gen_fixtures.cpp:k_variance_cascade:78": {
+          "abs_val_max": 5.549999571030639e-09,
+          "abs_val_min": 4.999996860988176e-09,
+          "gate_a_count": 0,
+          "integral": "variance_cascade",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 6.661342996135889e-06,
+          "max_sensitivity": 1.0,
+          "n": 12,
+          "ops": {
+            "mul": 12
+          },
+          "prov_vars": [
+            "x",
+            "y"
+          ],
+          "region_local_vars": [],
+          "rel_err_hist": {
+            "buckets": {
+              "-6": 12
+            },
+            "total": 12
+          }
+        },
+        "tests/parity/gen_fixtures.cpp:k_variance_cascade:79": {
+          "abs_val_max": 1.6649998713091918e-08,
+          "abs_val_min": 1.499999058296453e-08,
+          "gate_a_count": 0,
+          "integral": "variance_cascade",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 6.6613429962469116e-06,
+          "max_sensitivity": 1.0,
+          "n": 12,
+          "ops": {
+            "add": 12
+          },
+          "prov_vars": [
+            "x",
+            "y"
+          ],
+          "region_local_vars": [],
+          "rel_err_hist": {
+            "buckets": {
+              "-6": 12
+            },
+            "total": 12
+          }
+        },
+        "variance_kernel.hpp:31": {
+          "abs_val_max": 1.1099999142061279e-08,
+          "abs_val_min": 9.999993721976352e-09,
+          "gate_a_count": 0,
+          "integral": "variance_cascade",
+          "max_amp": 1.0,
+          "max_cond": 20000014556.456436,
+          "max_rel_err": 6.661342996024867e-06,
+          "max_sensitivity": 20000014556.456436,
+          "n": 12,
+          "ops": {
+            "sub": 12
+          },
+          "prov_vars": [
+            "x",
+            "y"
+          ],
+          "region_local_vars": [],
+          "rel_err_hist": {
+            "buckets": {
+              "-6": 12
+            },
+            "total": 12
+          }
+        }
+      },
+      "variables": {
+        "_lit@tests/parity/gen_fixtures.cpp:78#10@integral=variance_cascade/sample=9": {
+          "is_source_var": false,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:78#11@integral=variance_cascade/sample=10": {
+          "is_source_var": false,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:78#12@integral=variance_cascade/sample=11": {
+          "is_source_var": false,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:78#1@integral=variance_cascade/sample=0": {
+          "is_source_var": false,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:78#2@integral=variance_cascade/sample=1": {
+          "is_source_var": false,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:78#3@integral=variance_cascade/sample=2": {
+          "is_source_var": false,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:78#4@integral=variance_cascade/sample=3": {
+          "is_source_var": false,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:78#5@integral=variance_cascade/sample=4": {
+          "is_source_var": false,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:78#6@integral=variance_cascade/sample=5": {
+          "is_source_var": false,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:78#7@integral=variance_cascade/sample=6": {
+          "is_source_var": false,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:78#8@integral=variance_cascade/sample=7": {
+          "is_source_var": false,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 1
+        },
+        "_lit@tests/parity/gen_fixtures.cpp:78#9@integral=variance_cascade/sample=8": {
+          "is_source_var": false,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 1
+        },
+        "cal": {
+          "is_source_var": false,
+          "max_amp": 20000014556.456436,
+          "max_sensitivity": 20000014556.456436,
+          "n_consumers": 12
+        },
+        "x": {
+          "is_source_var": true,
+          "max_amp": 20000014556.456436,
+          "max_sensitivity": 20000014556.456436,
+          "n_consumers": 12
+        },
+        "y": {
+          "is_source_var": true,
+          "max_amp": 20000014556.456436,
+          "max_sensitivity": 20000014556.456436,
+          "n_consumers": 12
+        }
+      }
+    }
+  },
+  "kind": "stability_shard_report",
+  "no_id_records": 0,
+  "samples_seen": {
+    "cancellation": 12,
+    "cascade_range": 12,
+    "complex_logdiv": 12,
+    "kahan": 12,
+    "logsumexp": 12,
+    "range_overflow": 12,
+    "trig_gate": 12,
+    "variance_cascade": 12
+  },
+  "schema_version": 2
+}

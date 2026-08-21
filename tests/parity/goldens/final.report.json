@@ -1,0 +1,3788 @@
+{
+  "integrals": {
+    "cancellation": {
+      "cascade_chains": [
+        {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_0ffa90b2_fb89fb39",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 39215614735.77035,
+          "max_rel_err": 8.707615681007385e-06,
+          "max_sensitivity": 39215614735.77035,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0005572874035773672,
+          "predicted_rel_err_if_float": 2337.4327859741657,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_151a53ce_ec8dbbf1",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 44444440768.094925,
+          "max_rel_err": 9.868648291576615e-06,
+          "max_sensitivity": 44444440768.094925,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0006315934906537979,
+          "predicted_rel_err_if_float": 2649.0951042231873,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_18f59897_30e03e50",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 35087743733.06985,
+          "max_rel_err": 7.79104419503126e-06,
+          "max_sensitivity": 35087743733.06985,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0004986268284748952,
+          "predicted_rel_err_if_float": 2091.392501179567,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_2d2396e6_167a1063",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 74074189781.5126,
+          "max_rel_err": 1.644777420528878e-05,
+          "max_sensitivity": 74074189781.5126,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0010526575491313765,
+          "predicted_rel_err_if_float": 4415.165768951929,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_34692559_f744e03f",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 666656743006.0325,
+          "max_rel_err": 0.00014802753312149363,
+          "max_sensitivity": 666656743006.0325,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.009473762119768487,
+          "predicted_rel_err_if_float": 39735.838353993444,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_37dd81c0_95854575",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 133333322302.28477,
+          "max_rel_err": 2.960594487406371e-05,
+          "max_sensitivity": 133333322302.28477,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.001894780471932972,
+          "predicted_rel_err_if_float": 7947.2853125503525,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_41ecd544_d3b60621",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 55555413895.65856,
+          "max_rel_err": 1.2335779930019122e-05,
+          "max_sensitivity": 55555413895.65856,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0007894899155141184,
+          "predicted_rel_err_if_float": 3311.360710600529,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_59dd8d66_bf7feb54",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 95237684558.82643,
+          "max_rel_err": 2.1147014041950392e-05,
+          "max_sensitivity": 95237684558.82643,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0013534088986777197,
+          "predicted_rel_err_if_float": 5676.608357359554,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_7194b899_0c1322c3",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 333328371503.5162,
+          "max_rel_err": 7.401376656091334e-05,
+          "max_sensitivity": 333328371503.5162,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.004736881059891348,
+          "predicted_rel_err_if_float": 19867.91917702652,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_908df985_e841e6b6",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 60605974033.53281,
+          "max_rel_err": 1.345722956048352e-05,
+          "max_sensitivity": 60605974033.53281,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0008612626918638399,
+          "predicted_rel_err_if_float": 3612.397553535271,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_944a95ce_ee0671ea",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 166667269670.35574,
+          "max_rel_err": 3.7007568047998816e-05,
+          "max_sensitivity": 166667269670.35574,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.002368484355064819,
+          "predicted_rel_err_if_float": 9934.14340438579,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_b217901b_63c2fd02",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 51282163828.949165,
+          "max_rel_err": 1.138692780721077e-05,
+          "max_sensitivity": 51282163828.949165,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0007287633796543839,
+          "predicted_rel_err_if_float": 3056.655158337901,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_b63d19cb_4105c5b7",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 41666624670.78296,
+          "max_rel_err": 9.251849213694587e-06,
+          "max_sensitivity": 41666624670.78296,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0005921183496693481,
+          "predicted_rel_err_if_float": 2483.5243624915456,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_b849b89f_f5af4117",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 33333330576.321194,
+          "max_rel_err": 7.401486218765728e-06,
+          "max_sensitivity": 33333330576.321194,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00047369511799390116,
+          "predicted_rel_err_if_float": 1986.8213281822916,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_b8ad5b10_288b1b13",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 83333634835.67787,
+          "max_rel_err": 1.850378402416594e-05,
+          "max_sensitivity": 83333634835.67787,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0011842421775395148,
+          "predicted_rel_err_if_float": 4967.071702222697,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_bb6d6ce3_7fc2b305",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 37037094891.2563,
+          "max_rel_err": 8.223887102810923e-06,
+          "max_sensitivity": 37037094891.2563,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0005263287745727937,
+          "predicted_rel_err_if_float": 2207.5828845057667,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_be4a0dcc_f574ca0a",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 222224396890.88928,
+          "max_rel_err": 4.934372841245189e-05,
+          "max_sensitivity": 222224396890.88928,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0031579986183898155,
+          "predicted_rel_err_if_float": 13245.606237106877,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_c87e0708_1ff95fd4",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 66666661151.64239,
+          "max_rel_err": 1.4802972437198389e-05,
+          "max_sensitivity": 66666661151.64239,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0009473902359735915,
+          "predicted_rel_err_if_float": 3973.6426563049786,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_e7d22d60_61763dee",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 111110827790.31711,
+          "max_rel_err": 2.4671559859705174e-05,
+          "max_sensitivity": 111110827790.31711,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0015789798310140257,
+          "predicted_rel_err_if_float": 6622.721421141452,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "cancellation_kernel.hpp",
+              "line_end": 12,
+              "line_start": 12
+            }
+          ],
+          "chain_id": "cascade_cancellation_fb40eced_35150f49",
+          "integral": "cancellation",
+          "kind": "cascade_chain",
+          "max_cond": 47619094030.32574,
+          "max_rel_err": 1.0573562920962617e-05,
+          "max_sensitivity": 47619094030.32574,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0006767080269345021,
+          "predicted_rel_err_if_float": 2838.31918420349,
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        }
+      ],
+      "class_counts": {
+        "cancellation_cascade": 1,
+        "log_near_root": 1,
+        "stable": 1
+      },
+      "regions": {
+        "cancellation_kernel.hpp:12": {
+          "abs_val_max": 6.000000496442226e-11,
+          "abs_val_min": 3.000044657142098e-12,
+          "gate_a_count": 0,
+          "integral": "cancellation",
+          "max_amp": 1.0,
+          "max_cond": 666656743006.0325,
+          "max_rel_err": 0.0001480275331213826,
+          "max_sensitivity": 666656743006.0325,
+          "n": 20,
+          "non_localizable": false,
+          "note": "elevated per-op cond 6.67e+11",
+          "ops": {
+            "sub": 20
+          },
+          "p50_rel_err": 1e-05,
+          "p99_rel_err": 0.0001,
+          "predicted_rel_err_if_ff": 0.009473762119768487,
+          "predicted_rel_err_if_float": 39735.838353993444,
+          "prov_vars": [
+            "a",
+            "b"
+          ],
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "log_near_root",
+          "value_range_ok_for_float": true
+        },
+        "tests/parity/gen_fixtures.cpp:k_cancellation:61": {
+          "abs_val_max": 2.00000000006,
+          "abs_val_min": 2.0000000000030003,
+          "gate_a_count": 0,
+          "integral": "cancellation",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 1.0,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "add": 20
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-16,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "prov_vars": [
+            "a",
+            "b"
+          ],
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        },
+        "tests/parity/gen_fixtures.cpp:k_cancellation:65": {
+          "abs_val_max": 3.000000248131113e-11,
+          "abs_val_min": 1.5000223285687987e-12,
+          "gate_a_count": 0,
+          "integral": "cancellation",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 0.00014802753312149363,
+          "max_sensitivity": 1.0,
+          "n": 20,
+          "non_localizable": true,
+          "note": "rel_err 1.48e-04 with low per-op cond 1.00e+00 (accumulated cancellation)",
+          "ops": {
+            "div": 20
+          },
+          "p50_rel_err": 1e-05,
+          "p99_rel_err": 0.0001,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "prov_vars": [
+            "a",
+            "b"
+          ],
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        }
+      },
+      "samples": 20,
+      "top_regions_by_rel_err": [
+        {
+          "abs_val_max": 3.000000248131113e-11,
+          "abs_val_min": 1.5000223285687987e-12,
+          "gate_a_count": 0,
+          "integral": "cancellation",
+          "location": "tests/parity/gen_fixtures.cpp:k_cancellation:65",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 0.00014802753312149363,
+          "max_sensitivity": 1.0,
+          "n": 20,
+          "non_localizable": true,
+          "note": "rel_err 1.48e-04 with low per-op cond 1.00e+00 (accumulated cancellation)",
+          "ops": {
+            "div": 20
+          },
+          "p50_rel_err": 1e-05,
+          "p99_rel_err": 0.0001,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "prov_vars": [
+            "a",
+            "b"
+          ],
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "abs_val_max": 6.000000496442226e-11,
+          "abs_val_min": 3.000044657142098e-12,
+          "gate_a_count": 0,
+          "integral": "cancellation",
+          "location": "cancellation_kernel.hpp:12",
+          "max_amp": 1.0,
+          "max_cond": 666656743006.0325,
+          "max_rel_err": 0.0001480275331213826,
+          "max_sensitivity": 666656743006.0325,
+          "n": 20,
+          "non_localizable": false,
+          "note": "elevated per-op cond 6.67e+11",
+          "ops": {
+            "sub": 20
+          },
+          "p50_rel_err": 1e-05,
+          "p99_rel_err": 0.0001,
+          "predicted_rel_err_if_ff": 0.009473762119768487,
+          "predicted_rel_err_if_float": 39735.838353993444,
+          "prov_vars": [
+            "a",
+            "b"
+          ],
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "log_near_root",
+          "value_range_ok_for_float": true
+        },
+        {
+          "abs_val_max": 2.00000000006,
+          "abs_val_min": 2.0000000000030003,
+          "gate_a_count": 0,
+          "integral": "cancellation",
+          "location": "tests/parity/gen_fixtures.cpp:k_cancellation:61",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 1.0,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "add": 20
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-16,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "prov_vars": [
+            "a",
+            "b"
+          ],
+          "region_local_vars": [
+            "a",
+            "b"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        }
+      ],
+      "variables": {
+        "a": {
+          "is_source_var": true,
+          "max_amp": 666656743006.0325,
+          "max_sensitivity": 666656743006.0325,
+          "n_consumers": 20,
+          "predicted_rel_err_if_ff": 0.009473762119768487,
+          "predicted_rel_err_if_float": 39735.838353993444,
+          "value_range_checked": false
+        },
+        "b": {
+          "is_source_var": true,
+          "max_amp": 666656743006.0325,
+          "max_sensitivity": 666656743006.0325,
+          "n_consumers": 20,
+          "predicted_rel_err_if_ff": 0.009473762119768487,
+          "predicted_rel_err_if_float": 39735.838353993444,
+          "value_range_checked": false
+        }
+      }
+    },
+    "cascade_range": {
+      "cascade_chains": [
+        {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_2b89ad70_96c269d0",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 17391317159.370766,
+          "max_rel_err": 5.792472221889644e-06,
+          "max_sensitivity": 17391317159.370766,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00024714548145781756,
+          "predicted_rel_err_if_float": 1036.60328146045,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": false
+        },
+        {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_3846b8eb_33c189a0",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 17093998857.669298,
+          "max_rel_err": 5.6934453346322185e-06,
+          "max_sensitivity": 17093998857.669298,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002429203342681674,
+          "predicted_rel_err_if_float": 1018.8817297023116,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": false
+        },
+        {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_3ff42de4_f3f0150f",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 18691571888.90361,
+          "max_rel_err": 6.22554404347118e-06,
+          "max_sensitivity": 18691571888.90361,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002656232125119631,
+          "predicted_rel_err_if_float": 1114.1045027317768,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": false
+        },
+        {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_4c2b7171_f4ea38c2",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 17857157708.12811,
+          "max_rel_err": 5.947628292799969e-06,
+          "max_sensitivity": 17857157708.12811,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00025376547381665814,
+          "predicted_rel_err_if_float": 1064.3695418911045,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": false
+        },
+        {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_51faf860_67dd1355",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 19230752904.41034,
+          "max_rel_err": 6.405127396828083e-06,
+          "max_sensitivity": 19230752904.41034,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002732854355885243,
+          "predicted_rel_err_if_float": 1146.2421956306898,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": false
+        },
+        {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_57e03ce1_35eb1bd6",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 16806733066.538715,
+          "max_rel_err": 5.5977666059821185e-06,
+          "max_sensitivity": 16806733066.538715,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00023883804184576313,
+          "predicted_rel_err_if_float": 1001.7593542658517,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": false
+        },
+        {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_5b758eed_b1f271d7",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 18348640951.843376,
+          "max_rel_err": 6.111325096817014e-06,
+          "max_sensitivity": 18348640951.843376,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.000260749870788052,
+          "predicted_rel_err_if_float": 1093.6642260458098,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": false
+        },
+        {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_67adf93c_cc8f8905",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 18018000493.3591,
+          "max_rel_err": 6.0011997018524556e-06,
+          "max_sensitivity": 18018000493.3591,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002560511872695642,
+          "predicted_rel_err_if_float": 1073.9565189694822,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": false
+        },
+        {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_735cce5a_fa942354",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 17699097254.28718,
+          "max_rel_err": 5.8949835862589e-06,
+          "max_sensitivity": 17699097254.28718,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00025151929967090584,
+          "predicted_rel_err_if_float": 1054.948404686879,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": false
+        },
+        {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_761dc891_52432a21",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 18518536417.028275,
+          "max_rel_err": 6.167911653985317e-06,
+          "max_sensitivity": 18518536417.028275,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002631642305605663,
+          "predicted_rel_err_if_float": 1103.7907848971054,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": false
+        },
+        {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_7f5dc920_9e14df08",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 18867907811.97978,
+          "max_rel_err": 6.284275704031487e-06,
+          "max_sensitivity": 18867907811.97978,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00026812909669586955,
+          "predicted_rel_err_if_float": 1124.6149427878725,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": false
+        },
+        {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_8759d9fa_a6ec9b13",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 18181800801.48934,
+          "max_rel_err": 6.055756163910522e-06,
+          "max_sensitivity": 18181800801.48934,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002583789296507084,
+          "predicted_rel_err_if_float": 1083.7197781496848,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": false
+        },
+        {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_884bde65_9f203213",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 19802004519.5395,
+          "max_rel_err": 6.595392405619294e-06,
+          "max_sensitivity": 19802004519.5395,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002814034092969493,
+          "predicted_rel_err_if_float": 1180.2914452278317,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": false
+        },
+        {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_89eac08e_e444fbeb",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 19417459612.918507,
+          "max_rel_err": 6.467313222819407e-06,
+          "max_sensitivity": 19417459612.918507,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00027593869749748743,
+          "predicted_rel_err_if_float": 1157.3707826685015,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": false
+        },
+        {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_c00885a9_8dd5e9cc",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 17543873118.80866,
+          "max_rel_err": 5.843283563503163e-06,
+          "max_sensitivity": 17543873118.80866,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002493134320333277,
+          "predicted_rel_err_if_float": 1045.6963252311145,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": false
+        },
+        {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_c50536b5_3832f417",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 19999984589.15086,
+          "max_rel_err": 6.66133301512912e-06,
+          "max_sensitivity": 19999984589.15086,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002842168753027019,
+          "predicted_rel_err_if_float": 1192.0919769496238,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": false
+        },
+        {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_d10e195d_ef814250",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 19607827244.598568,
+          "max_rel_err": 6.5307183811697756e-06,
+          "max_sensitivity": 19607827244.598568,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00027864398425376987,
+          "predicted_rel_err_if_float": 1168.717577731524,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": false
+        },
+        {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_d9f5c39e_4b4088b7",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 16949163500.043724,
+          "max_rel_err": 5.645205469987499e-06,
+          "max_sensitivity": 16949163500.043724,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00024086210004332605,
+          "predicted_rel_err_if_float": 1010.2488696601226,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": false
+        },
+        {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_de7d1909_926e2671",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 17241391484.34309,
+          "max_rel_err": 5.742536940970185e-06,
+          "max_sensitivity": 17241391484.34309,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002450149094719207,
+          "predicted_rel_err_if_float": 1027.6670148577148,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": false
+        },
+        {
+          "chain": [
+            {
+              "file": "cascade_range_kernel.hpp",
+              "line_end": 7,
+              "line_start": 7
+            }
+          ],
+          "chain_id": "cascade_cascade_range_e3f3db66_83d067b3",
+          "integral": "cascade_range",
+          "kind": "cascade_chain",
+          "max_cond": 19047602521.066032,
+          "max_rel_err": 6.344126065060751e-06,
+          "max_sensitivity": 19047602521.066032,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002706827120997848,
+          "predicted_rel_err_if_float": 1135.3255820909758,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": false
+        }
+      ],
+      "class_counts": {
+        "cancellation_cascade": 2,
+        "log_near_root": 1,
+        "stable": 2
+      },
+      "regions": {
+        "cascade_range_kernel.hpp:7": {
+          "abs_val_max": 1.1899993842524284e-50,
+          "abs_val_min": 1.0000008705631276e-50,
+          "gate_a_count": 0,
+          "integral": "cascade_range",
+          "max_amp": 1.0,
+          "max_cond": 19999984589.15086,
+          "max_rel_err": 6.6613330149070755e-06,
+          "max_sensitivity": 19999984589.15086,
+          "n": 20,
+          "non_localizable": false,
+          "note": "elevated per-op cond 2.00e+10",
+          "ops": {
+            "sub": 20
+          },
+          "p50_rel_err": 1e-06,
+          "p99_rel_err": 1e-06,
+          "predicted_rel_err_if_ff": 0.0002842168753027019,
+          "predicted_rel_err_if_float": 1192.0919769496238,
+          "prov_vars": [
+            "rx",
+            "ry"
+          ],
+          "region_local_vars": [],
+          "signal_class": "log_near_root",
+          "value_range_ok_for_float": false
+        },
+        "tests/parity/gen_fixtures.cpp:k_cascade_range:152": {
+          "abs_val_max": 1.0000001000833e-40,
+          "abs_val_min": 1.00000010007e-40,
+          "gate_a_count": 0,
+          "integral": "cascade_range",
+          "max_amp": 19999984589.15086,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 19999984589.15086,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "mul": 20
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-16,
+          "predicted_rel_err_if_ff": 0.0002842168753027019,
+          "predicted_rel_err_if_float": 1192.0919769496238,
+          "prov_vars": [
+            "rx"
+          ],
+          "region_local_vars": [
+            "rx"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": false
+        },
+        "tests/parity/gen_fixtures.cpp:k_cascade_range:153": {
+          "abs_val_max": 1.0000000999699998e-40,
+          "abs_val_min": 1.0000000999643e-40,
+          "gate_a_count": 0,
+          "integral": "cascade_range",
+          "max_amp": 19999984589.15086,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 19999984589.15086,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "mul": 20
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-16,
+          "predicted_rel_err_if_ff": 0.0002842168753027019,
+          "predicted_rel_err_if_float": 1192.0919769496238,
+          "prov_vars": [
+            "ry"
+          ],
+          "region_local_vars": [
+            "ry"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": false
+        },
+        "tests/parity/gen_fixtures.cpp:k_cascade_range:157": {
+          "abs_val_max": 5.949996921262142e-51,
+          "abs_val_min": 5.000004352815638e-51,
+          "gate_a_count": 0,
+          "integral": "cascade_range",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 6.661333015018098e-06,
+          "max_sensitivity": 1.0,
+          "n": 20,
+          "non_localizable": true,
+          "note": "rel_err 6.66e-06 with low per-op cond 1.00e+00 (accumulated cancellation)",
+          "ops": {
+            "mul": 20
+          },
+          "p50_rel_err": 1e-06,
+          "p99_rel_err": 1e-06,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "prov_vars": [
+            "rx",
+            "ry"
+          ],
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": false
+        },
+        "tests/parity/gen_fixtures.cpp:k_cascade_range:158": {
+          "abs_val_max": 1.7849990763786426e-50,
+          "abs_val_min": 1.5000013058446915e-50,
+          "gate_a_count": 0,
+          "integral": "cascade_range",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 6.66133301512912e-06,
+          "max_sensitivity": 1.0,
+          "n": 20,
+          "non_localizable": true,
+          "note": "rel_err 6.66e-06 with low per-op cond 1.00e+00 (accumulated cancellation)",
+          "ops": {
+            "add": 20
+          },
+          "p50_rel_err": 1e-06,
+          "p99_rel_err": 1e-06,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "prov_vars": [
+            "rx",
+            "ry"
+          ],
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": false
+        }
+      },
+      "samples": 20,
+      "top_regions_by_rel_err": [
+        {
+          "abs_val_max": 1.7849990763786426e-50,
+          "abs_val_min": 1.5000013058446915e-50,
+          "gate_a_count": 0,
+          "integral": "cascade_range",
+          "location": "tests/parity/gen_fixtures.cpp:k_cascade_range:158",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 6.66133301512912e-06,
+          "max_sensitivity": 1.0,
+          "n": 20,
+          "non_localizable": true,
+          "note": "rel_err 6.66e-06 with low per-op cond 1.00e+00 (accumulated cancellation)",
+          "ops": {
+            "add": 20
+          },
+          "p50_rel_err": 1e-06,
+          "p99_rel_err": 1e-06,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "prov_vars": [
+            "rx",
+            "ry"
+          ],
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": false
+        },
+        {
+          "abs_val_max": 5.949996921262142e-51,
+          "abs_val_min": 5.000004352815638e-51,
+          "gate_a_count": 0,
+          "integral": "cascade_range",
+          "location": "tests/parity/gen_fixtures.cpp:k_cascade_range:157",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 6.661333015018098e-06,
+          "max_sensitivity": 1.0,
+          "n": 20,
+          "non_localizable": true,
+          "note": "rel_err 6.66e-06 with low per-op cond 1.00e+00 (accumulated cancellation)",
+          "ops": {
+            "mul": 20
+          },
+          "p50_rel_err": 1e-06,
+          "p99_rel_err": 1e-06,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "prov_vars": [
+            "rx",
+            "ry"
+          ],
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": false
+        },
+        {
+          "abs_val_max": 1.1899993842524284e-50,
+          "abs_val_min": 1.0000008705631276e-50,
+          "gate_a_count": 0,
+          "integral": "cascade_range",
+          "location": "cascade_range_kernel.hpp:7",
+          "max_amp": 1.0,
+          "max_cond": 19999984589.15086,
+          "max_rel_err": 6.6613330149070755e-06,
+          "max_sensitivity": 19999984589.15086,
+          "n": 20,
+          "non_localizable": false,
+          "note": "elevated per-op cond 2.00e+10",
+          "ops": {
+            "sub": 20
+          },
+          "p50_rel_err": 1e-06,
+          "p99_rel_err": 1e-06,
+          "predicted_rel_err_if_ff": 0.0002842168753027019,
+          "predicted_rel_err_if_float": 1192.0919769496238,
+          "prov_vars": [
+            "rx",
+            "ry"
+          ],
+          "region_local_vars": [],
+          "signal_class": "log_near_root",
+          "value_range_ok_for_float": false
+        },
+        {
+          "abs_val_max": 1.0000001000833e-40,
+          "abs_val_min": 1.00000010007e-40,
+          "gate_a_count": 0,
+          "integral": "cascade_range",
+          "location": "tests/parity/gen_fixtures.cpp:k_cascade_range:152",
+          "max_amp": 19999984589.15086,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 19999984589.15086,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "mul": 20
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-16,
+          "predicted_rel_err_if_ff": 0.0002842168753027019,
+          "predicted_rel_err_if_float": 1192.0919769496238,
+          "prov_vars": [
+            "rx"
+          ],
+          "region_local_vars": [
+            "rx"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": false
+        },
+        {
+          "abs_val_max": 1.0000000999699998e-40,
+          "abs_val_min": 1.0000000999643e-40,
+          "gate_a_count": 0,
+          "integral": "cascade_range",
+          "location": "tests/parity/gen_fixtures.cpp:k_cascade_range:153",
+          "max_amp": 19999984589.15086,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 19999984589.15086,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "mul": 20
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-16,
+          "predicted_rel_err_if_ff": 0.0002842168753027019,
+          "predicted_rel_err_if_float": 1192.0919769496238,
+          "prov_vars": [
+            "ry"
+          ],
+          "region_local_vars": [
+            "ry"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": false
+        }
+      ],
+      "variables": {
+        "rx": {
+          "is_source_var": true,
+          "max_amp": 19999984589.15086,
+          "max_sensitivity": 19999984589.15086,
+          "n_consumers": 20,
+          "predicted_rel_err_if_ff": 0.0002842168753027019,
+          "predicted_rel_err_if_float": 1192.0919769496238,
+          "value_range_checked": false
+        },
+        "ry": {
+          "is_source_var": true,
+          "max_amp": 19999984589.15086,
+          "max_sensitivity": 19999984589.15086,
+          "n_consumers": 20,
+          "predicted_rel_err_if_ff": 0.0002842168753027019,
+          "predicted_rel_err_if_float": 1192.0919769496238,
+          "value_range_checked": false
+        }
+      }
+    },
+    "complex_logdiv": {
+      "cascade_chains": [],
+      "class_counts": {
+        "log_near_root": 1,
+        "stable": 2
+      },
+      "regions": {
+        "": {
+          "abs_val_max": 1.2500150000999979,
+          "abs_val_min": 0.24999500009999803,
+          "gate_a_count": 0,
+          "integral": "complex_logdiv",
+          "max_amp": 2.1999980832030643,
+          "max_cond": 2.1999980832030643,
+          "max_rel_err": 1.0880177129038168e-15,
+          "max_sensitivity": 2.1999980832030643,
+          "n": 180,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "add": 40,
+            "div": 60,
+            "mul": 60,
+            "sub": 20
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-15,
+          "predicted_rel_err_if_ff": 3.126385313412164e-14,
+          "predicted_rel_err_if_float": 1.3113010425585892e-07,
+          "prov_vars": [
+            "w",
+            "z"
+          ],
+          "region_local_vars": [
+            "w",
+            "z"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        },
+        "tests/parity/gen_fixtures.cpp:k_complex_logdiv:165": {
+          "abs_val_max": 1.0000000240000004,
+          "abs_val_min": 6.000000494642226e-10,
+          "gate_a_count": 0,
+          "integral": "complex_logdiv",
+          "max_amp": 1666666529.2660596,
+          "max_cond": 1666666529.2660596,
+          "max_rel_err": 5.55111466548983e-07,
+          "max_sensitivity": 1666666529.2660596,
+          "n": 120,
+          "non_localizable": false,
+          "note": "elevated per-op cond 1.67e+09",
+          "ops": {
+            "add": 20,
+            "atan2": 20,
+            "log": 20,
+            "mul": 40,
+            "sqrt": 20
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-07,
+          "predicted_rel_err_if_ff": 2.3684755906089942e-05,
+          "predicted_rel_err_if_float": 99.34106643593667,
+          "prov_vars": [
+            "z"
+          ],
+          "region_local_vars": [
+            "z"
+          ],
+          "signal_class": "log_near_root",
+          "value_range_ok_for_float": true
+        },
+        "tests/parity/gen_fixtures.cpp:k_complex_logdiv:168": {
+          "abs_val_max": 0.7999999991993615,
+          "abs_val_min": 0.7999999837445203,
+          "gate_a_count": 0,
+          "integral": "complex_logdiv",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 1.1990400153663325e-15,
+          "max_sensitivity": 1.0,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "opaque": 20
+          },
+          "p50_rel_err": 1e-15,
+          "p99_rel_err": 1e-15,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "prov_vars": [
+            "w",
+            "z"
+          ],
+          "region_local_vars": [],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        }
+      },
+      "samples": 20,
+      "top_regions_by_rel_err": [
+        {
+          "abs_val_max": 1.0000000240000004,
+          "abs_val_min": 6.000000494642226e-10,
+          "gate_a_count": 0,
+          "integral": "complex_logdiv",
+          "location": "tests/parity/gen_fixtures.cpp:k_complex_logdiv:165",
+          "max_amp": 1666666529.2660596,
+          "max_cond": 1666666529.2660596,
+          "max_rel_err": 5.55111466548983e-07,
+          "max_sensitivity": 1666666529.2660596,
+          "n": 120,
+          "non_localizable": false,
+          "note": "elevated per-op cond 1.67e+09",
+          "ops": {
+            "add": 20,
+            "atan2": 20,
+            "log": 20,
+            "mul": 40,
+            "sqrt": 20
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-07,
+          "predicted_rel_err_if_ff": 2.3684755906089942e-05,
+          "predicted_rel_err_if_float": 99.34106643593667,
+          "prov_vars": [
+            "z"
+          ],
+          "region_local_vars": [
+            "z"
+          ],
+          "signal_class": "log_near_root",
+          "value_range_ok_for_float": true
+        },
+        {
+          "abs_val_max": 0.7999999991993615,
+          "abs_val_min": 0.7999999837445203,
+          "gate_a_count": 0,
+          "integral": "complex_logdiv",
+          "location": "tests/parity/gen_fixtures.cpp:k_complex_logdiv:168",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 1.1990400153663325e-15,
+          "max_sensitivity": 1.0,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "opaque": 20
+          },
+          "p50_rel_err": 1e-15,
+          "p99_rel_err": 1e-15,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "prov_vars": [
+            "w",
+            "z"
+          ],
+          "region_local_vars": [],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        },
+        {
+          "abs_val_max": 1.2500150000999979,
+          "abs_val_min": 0.24999500009999803,
+          "gate_a_count": 0,
+          "integral": "complex_logdiv",
+          "location": "",
+          "max_amp": 2.1999980832030643,
+          "max_cond": 2.1999980832030643,
+          "max_rel_err": 1.0880177129038168e-15,
+          "max_sensitivity": 2.1999980832030643,
+          "n": 180,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "add": 40,
+            "div": 60,
+            "mul": 60,
+            "sub": 20
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-15,
+          "predicted_rel_err_if_ff": 3.126385313412164e-14,
+          "predicted_rel_err_if_float": 1.3113010425585892e-07,
+          "prov_vars": [
+            "w",
+            "z"
+          ],
+          "region_local_vars": [
+            "w",
+            "z"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        }
+      ],
+      "variables": {
+        "w": {
+          "is_source_var": true,
+          "max_amp": 2.1999980832030643,
+          "max_sensitivity": 2.1999980832030643,
+          "n_consumers": 20,
+          "predicted_rel_err_if_ff": 3.126385313412164e-14,
+          "predicted_rel_err_if_float": 1.3113010425585892e-07,
+          "value_range_checked": false
+        },
+        "z": {
+          "is_source_var": true,
+          "max_amp": 833333264.6330298,
+          "max_sensitivity": 833333264.6330298,
+          "n_consumers": 20,
+          "predicted_rel_err_if_ff": 1.1842377953044971e-05,
+          "predicted_rel_err_if_float": 49.670533217968334,
+          "value_range_checked": false
+        }
+      }
+    },
+    "kahan": {
+      "cascade_chains": [],
+      "class_counts": {
+        "local_cancellation": 1,
+        "stable": 1
+      },
+      "regions": {
+        "": {
+          "abs_val_max": 2.283333333333333,
+          "abs_val_min": 2.7755575615628914e-17,
+          "gate_a_count": 13,
+          "integral": "kahan",
+          "max_amp": 2.785569921613791e+67,
+          "max_cond": 1.2009599006321328e+16,
+          "max_rel_err": 2.860658573903004e+52,
+          "max_sensitivity": 2.785569921613791e+67,
+          "n": 400,
+          "non_localizable": false,
+          "note": "local cond 1.20e+16 exceeds 1e15 (|a-b|->0)",
+          "ops": {
+            "add": 100,
+            "sub": 300
+          },
+          "p50_rel_err": 10.0,
+          "p99_rel_err": 1e+52,
+          "predicted_rel_err_if_ff": 3.958532945509022e+53,
+          "predicted_rel_err_if_float": 1.660329056748027e+60,
+          "prov_vars": [
+            "acc"
+          ],
+          "region_local_vars": [
+            "acc"
+          ],
+          "signal_class": "local_cancellation",
+          "value_range_ok_for_float": true
+        },
+        "tests/parity/gen_fixtures.cpp:k_kahan:88": {
+          "abs_val_max": 1.0,
+          "abs_val_min": 0.14285714285714285,
+          "gate_a_count": 0,
+          "integral": "kahan",
+          "max_amp": 2.785569921613791e+67,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 2.785569921613791e+67,
+          "n": 100,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "div": 100
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-16,
+          "predicted_rel_err_if_ff": 3.958532945509022e+53,
+          "predicted_rel_err_if_float": 1.660329056748027e+60,
+          "prov_vars": [],
+          "region_local_vars": [],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        }
+      },
+      "samples": 20,
+      "top_regions_by_rel_err": [
+        {
+          "abs_val_max": 2.283333333333333,
+          "abs_val_min": 2.7755575615628914e-17,
+          "gate_a_count": 13,
+          "integral": "kahan",
+          "location": "",
+          "max_amp": 2.785569921613791e+67,
+          "max_cond": 1.2009599006321328e+16,
+          "max_rel_err": 2.860658573903004e+52,
+          "max_sensitivity": 2.785569921613791e+67,
+          "n": 400,
+          "non_localizable": false,
+          "note": "local cond 1.20e+16 exceeds 1e15 (|a-b|->0)",
+          "ops": {
+            "add": 100,
+            "sub": 300
+          },
+          "p50_rel_err": 10.0,
+          "p99_rel_err": 1e+52,
+          "predicted_rel_err_if_ff": 3.958532945509022e+53,
+          "predicted_rel_err_if_float": 1.660329056748027e+60,
+          "prov_vars": [
+            "acc"
+          ],
+          "region_local_vars": [
+            "acc"
+          ],
+          "signal_class": "local_cancellation",
+          "value_range_ok_for_float": true
+        },
+        {
+          "abs_val_max": 1.0,
+          "abs_val_min": 0.14285714285714285,
+          "gate_a_count": 0,
+          "integral": "kahan",
+          "location": "tests/parity/gen_fixtures.cpp:k_kahan:88",
+          "max_amp": 2.785569921613791e+67,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 2.785569921613791e+67,
+          "n": 100,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "div": 100
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-16,
+          "predicted_rel_err_if_ff": 3.958532945509022e+53,
+          "predicted_rel_err_if_float": 1.660329056748027e+60,
+          "prov_vars": [],
+          "region_local_vars": [],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        }
+      ],
+      "variables": {
+        "acc": {
+          "is_source_var": true,
+          "max_amp": 2.785569921613791e+67,
+          "max_sensitivity": 2.785569921613791e+67,
+          "n_consumers": 20,
+          "predicted_rel_err_if_ff": 3.958532945509022e+53,
+          "predicted_rel_err_if_float": 1.660329056748027e+60,
+          "value_range_checked": false
+        }
+      }
+    },
+    "logsumexp": {
+      "cascade_chains": [],
+      "class_counts": {
+        "log_near_root": 1,
+        "stable": 5
+      },
+      "regions": {
+        "tests/parity/gen_fixtures.cpp:k_logsumexp:121": {
+          "abs_val_max": 0.999999900000005,
+          "abs_val_min": 0.999998000002,
+          "gate_a_count": 0,
+          "integral": "logsumexp",
+          "max_amp": 10000015.761850491,
+          "max_cond": 2e-06,
+          "max_rel_err": 4.440892098500626e-22,
+          "max_sensitivity": 1.0345555750531052,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "exp": 20
+          },
+          "p50_rel_err": 1e-22,
+          "p99_rel_err": 1e-22,
+          "predicted_rel_err_if_ff": 1.470191897188194e-14,
+          "predicted_rel_err_if_float": 6.166431755144031e-08,
+          "prov_vars": [
+            "x1"
+          ],
+          "region_local_vars": [
+            "x1"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        },
+        "tests/parity/gen_fixtures.cpp:k_logsumexp:122": {
+          "abs_val_max": 1.9999999999893993e-06,
+          "abs_val_min": 9.999999995136064e-08,
+          "gate_a_count": 0,
+          "integral": "logsumexp",
+          "max_amp": 1.0345555750476219,
+          "max_cond": 10000000.004863936,
+          "max_rel_err": 1.1102232472097669e-09,
+          "max_sensitivity": 10000015.761850491,
+          "n": 20,
+          "non_localizable": false,
+          "note": "elevated per-op cond 1.00e+07",
+          "ops": {
+            "log": 20
+          },
+          "p50_rel_err": 1e-10,
+          "p99_rel_err": 1e-09,
+          "predicted_rel_err_if_ff": 1.421087711413874e-07,
+          "predicted_rel_err_if_float": 0.5960473872334058,
+          "prov_vars": [
+            "x1"
+          ],
+          "region_local_vars": [],
+          "signal_class": "log_near_root",
+          "value_range_ok_for_float": true
+        },
+        "tests/parity/gen_fixtures.cpp:k_logsumexp:124": {
+          "abs_val_max": 0.1353352832366127,
+          "abs_val_min": 0.00011976249317201468,
+          "gate_a_count": 0,
+          "integral": "logsumexp",
+          "max_amp": 8785.619634363262,
+          "max_cond": 9.03,
+          "max_rel_err": 2.0050627824730326e-15,
+          "max_sensitivity": 79334.14529830025,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "exp": 20
+          },
+          "p50_rel_err": 1e-15,
+          "p99_rel_err": 1e-15,
+          "predicted_rel_err_if_ff": 1.127406012788871e-09,
+          "predicted_rel_err_if_float": 0.004728683549064413,
+          "prov_vars": [
+            "x2"
+          ],
+          "region_local_vars": [
+            "x2"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        },
+        "tests/parity/gen_fixtures.cpp:k_logsumexp:125": {
+          "abs_val_max": 1.1353351832366179,
+          "abs_val_min": 1.000117762495172,
+          "gate_a_count": 0,
+          "integral": "logsumexp",
+          "max_amp": 8785.619634363262,
+          "max_cond": 1.0,
+          "max_rel_err": 2.1160850849355482e-15,
+          "max_sensitivity": 8785.619634363262,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "add": 20
+          },
+          "p50_rel_err": 1e-15,
+          "p99_rel_err": 1e-15,
+          "predicted_rel_err_if_ff": 1.2485116420696246e-10,
+          "predicted_rel_err_if_float": 0.0005236637374379195,
+          "prov_vars": [
+            "x1",
+            "x2"
+          ],
+          "region_local_vars": [],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        },
+        "tests/parity/gen_fixtures.cpp:k_logsumexp:126": {
+          "abs_val_max": 0.12692792296326538,
+          "abs_val_min": 0.00011775556171373007,
+          "gate_a_count": 0,
+          "integral": "logsumexp",
+          "max_amp": 1.0345555750476219,
+          "max_cond": 8492.167889539283,
+          "max_rel_err": 1.8912969841817564e-11,
+          "max_sensitivity": 8785.619634363262,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "log": 20
+          },
+          "p50_rel_err": 1e-13,
+          "p99_rel_err": 1e-11,
+          "predicted_rel_err_if_ff": 1.2485116420696246e-10,
+          "predicted_rel_err_if_float": 0.0005236637374379195,
+          "prov_vars": [
+            "x1",
+            "x2"
+          ],
+          "region_local_vars": [],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        },
+        "tests/parity/gen_fixtures.cpp:k_logsumexp:127": {
+          "abs_val_max": 0.12692782296326544,
+          "abs_val_min": 0.00011575556171374067,
+          "gate_a_count": 0,
+          "integral": "logsumexp",
+          "max_amp": 1.0,
+          "max_cond": 1.0345555750476219,
+          "max_rel_err": 1.1102251076095214e-09,
+          "max_sensitivity": 1.0345555750476219,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "add": 20
+          },
+          "p50_rel_err": 1e-10,
+          "p99_rel_err": 1e-09,
+          "predicted_rel_err_if_ff": 1.4701918971804017e-14,
+          "predicted_rel_err_if_float": 6.166431755111348e-08,
+          "prov_vars": [
+            "x1",
+            "x2"
+          ],
+          "region_local_vars": [],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        }
+      },
+      "samples": 20,
+      "top_regions_by_rel_err": [
+        {
+          "abs_val_max": 0.12692782296326544,
+          "abs_val_min": 0.00011575556171374067,
+          "gate_a_count": 0,
+          "integral": "logsumexp",
+          "location": "tests/parity/gen_fixtures.cpp:k_logsumexp:127",
+          "max_amp": 1.0,
+          "max_cond": 1.0345555750476219,
+          "max_rel_err": 1.1102251076095214e-09,
+          "max_sensitivity": 1.0345555750476219,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "add": 20
+          },
+          "p50_rel_err": 1e-10,
+          "p99_rel_err": 1e-09,
+          "predicted_rel_err_if_ff": 1.4701918971804017e-14,
+          "predicted_rel_err_if_float": 6.166431755111348e-08,
+          "prov_vars": [
+            "x1",
+            "x2"
+          ],
+          "region_local_vars": [],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        },
+        {
+          "abs_val_max": 1.9999999999893993e-06,
+          "abs_val_min": 9.999999995136064e-08,
+          "gate_a_count": 0,
+          "integral": "logsumexp",
+          "location": "tests/parity/gen_fixtures.cpp:k_logsumexp:122",
+          "max_amp": 1.0345555750476219,
+          "max_cond": 10000000.004863936,
+          "max_rel_err": 1.1102232472097669e-09,
+          "max_sensitivity": 10000015.761850491,
+          "n": 20,
+          "non_localizable": false,
+          "note": "elevated per-op cond 1.00e+07",
+          "ops": {
+            "log": 20
+          },
+          "p50_rel_err": 1e-10,
+          "p99_rel_err": 1e-09,
+          "predicted_rel_err_if_ff": 1.421087711413874e-07,
+          "predicted_rel_err_if_float": 0.5960473872334058,
+          "prov_vars": [
+            "x1"
+          ],
+          "region_local_vars": [],
+          "signal_class": "log_near_root",
+          "value_range_ok_for_float": true
+        },
+        {
+          "abs_val_max": 0.12692792296326538,
+          "abs_val_min": 0.00011775556171373007,
+          "gate_a_count": 0,
+          "integral": "logsumexp",
+          "location": "tests/parity/gen_fixtures.cpp:k_logsumexp:126",
+          "max_amp": 1.0345555750476219,
+          "max_cond": 8492.167889539283,
+          "max_rel_err": 1.8912969841817564e-11,
+          "max_sensitivity": 8785.619634363262,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "log": 20
+          },
+          "p50_rel_err": 1e-13,
+          "p99_rel_err": 1e-11,
+          "predicted_rel_err_if_ff": 1.2485116420696246e-10,
+          "predicted_rel_err_if_float": 0.0005236637374379195,
+          "prov_vars": [
+            "x1",
+            "x2"
+          ],
+          "region_local_vars": [],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        },
+        {
+          "abs_val_max": 1.1353351832366179,
+          "abs_val_min": 1.000117762495172,
+          "gate_a_count": 0,
+          "integral": "logsumexp",
+          "location": "tests/parity/gen_fixtures.cpp:k_logsumexp:125",
+          "max_amp": 8785.619634363262,
+          "max_cond": 1.0,
+          "max_rel_err": 2.1160850849355482e-15,
+          "max_sensitivity": 8785.619634363262,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "add": 20
+          },
+          "p50_rel_err": 1e-15,
+          "p99_rel_err": 1e-15,
+          "predicted_rel_err_if_ff": 1.2485116420696246e-10,
+          "predicted_rel_err_if_float": 0.0005236637374379195,
+          "prov_vars": [
+            "x1",
+            "x2"
+          ],
+          "region_local_vars": [],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        },
+        {
+          "abs_val_max": 0.1353352832366127,
+          "abs_val_min": 0.00011976249317201468,
+          "gate_a_count": 0,
+          "integral": "logsumexp",
+          "location": "tests/parity/gen_fixtures.cpp:k_logsumexp:124",
+          "max_amp": 8785.619634363262,
+          "max_cond": 9.03,
+          "max_rel_err": 2.0050627824730326e-15,
+          "max_sensitivity": 79334.14529830025,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "exp": 20
+          },
+          "p50_rel_err": 1e-15,
+          "p99_rel_err": 1e-15,
+          "predicted_rel_err_if_ff": 1.127406012788871e-09,
+          "predicted_rel_err_if_float": 0.004728683549064413,
+          "prov_vars": [
+            "x2"
+          ],
+          "region_local_vars": [
+            "x2"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        },
+        {
+          "abs_val_max": 0.999999900000005,
+          "abs_val_min": 0.999998000002,
+          "gate_a_count": 0,
+          "integral": "logsumexp",
+          "location": "tests/parity/gen_fixtures.cpp:k_logsumexp:121",
+          "max_amp": 10000015.761850491,
+          "max_cond": 2e-06,
+          "max_rel_err": 4.440892098500626e-22,
+          "max_sensitivity": 1.0345555750531052,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "exp": 20
+          },
+          "p50_rel_err": 1e-22,
+          "p99_rel_err": 1e-22,
+          "predicted_rel_err_if_ff": 1.470191897188194e-14,
+          "predicted_rel_err_if_float": 6.166431755144031e-08,
+          "prov_vars": [
+            "x1"
+          ],
+          "region_local_vars": [
+            "x1"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        }
+      ],
+      "variables": {
+        "x1": {
+          "is_source_var": true,
+          "max_amp": 1.0345555750531052,
+          "max_sensitivity": 1.0345555750531052,
+          "n_consumers": 20,
+          "predicted_rel_err_if_ff": 1.470191897188194e-14,
+          "predicted_rel_err_if_float": 6.166431755144031e-08,
+          "value_range_checked": false
+        },
+        "x2": {
+          "is_source_var": true,
+          "max_amp": 79334.14529830025,
+          "max_sensitivity": 79334.14529830025,
+          "n_consumers": 20,
+          "predicted_rel_err_if_ff": 1.127406012788871e-09,
+          "predicted_rel_err_if_float": 0.004728683549064413,
+          "value_range_checked": false
+        }
+      }
+    },
+    "range_overflow": {
+      "cascade_chains": [],
+      "class_counts": {
+        "stable": 5
+      },
+      "regions": {
+        "tests/parity/gen_fixtures.cpp:k_range_overflow:133": {
+          "abs_val_max": 1.4161e+120,
+          "abs_val_min": 9.999999999999998e+119,
+          "gate_a_count": 0,
+          "integral": "range_overflow",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 1.0,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "mul": 20
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-16,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "prov_vars": [
+            "h"
+          ],
+          "region_local_vars": [
+            "h"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": false
+        },
+        "tests/parity/gen_fixtures.cpp:k_range_overflow:135": {
+          "abs_val_max": 1e-100,
+          "abs_val_min": 1e-100,
+          "gate_a_count": 0,
+          "integral": "range_overflow",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 1.0,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "mul": 20
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-16,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "prov_vars": [
+            "t"
+          ],
+          "region_local_vars": [
+            "t"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": false
+        },
+        "tests/parity/gen_fixtures.cpp:k_range_overflow:136": {
+          "abs_val_max": 2.00533921e+240,
+          "abs_val_min": 9.999999999999996e+239,
+          "gate_a_count": 0,
+          "integral": "range_overflow",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 3.3306690738754696e-16,
+          "max_sensitivity": 1.0,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "mul": 20
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-16,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "prov_vars": [
+            "h"
+          ],
+          "region_local_vars": [],
+          "signal_class": "stable",
+          "value_range_ok_for_float": false
+        },
+        "tests/parity/gen_fixtures.cpp:k_range_overflow:137": {
+          "abs_val_max": 1.7976931348623157e+308,
+          "abs_val_min": 1.7976931348623157e+308,
+          "gate_a_count": 0,
+          "integral": "range_overflow",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 4.440892098500626e-16,
+          "max_sensitivity": 1.0,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "mul": 20
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-16,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "prov_vars": [
+            "h"
+          ],
+          "region_local_vars": [],
+          "signal_class": "stable",
+          "value_range_ok_for_float": false
+        },
+        "tests/parity/gen_fixtures.cpp:k_range_overflow:140": {
+          "abs_val_max": null,
+          "abs_val_min": null,
+          "gate_a_count": 0,
+          "integral": "range_overflow",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 1.0,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "div": 20
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-16,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "prov_vars": [
+            "zn"
+          ],
+          "region_local_vars": [
+            "zn"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        }
+      },
+      "samples": 20,
+      "top_regions_by_rel_err": [
+        {
+          "abs_val_max": 1.7976931348623157e+308,
+          "abs_val_min": 1.7976931348623157e+308,
+          "gate_a_count": 0,
+          "integral": "range_overflow",
+          "location": "tests/parity/gen_fixtures.cpp:k_range_overflow:137",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 4.440892098500626e-16,
+          "max_sensitivity": 1.0,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "mul": 20
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-16,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "prov_vars": [
+            "h"
+          ],
+          "region_local_vars": [],
+          "signal_class": "stable",
+          "value_range_ok_for_float": false
+        },
+        {
+          "abs_val_max": 2.00533921e+240,
+          "abs_val_min": 9.999999999999996e+239,
+          "gate_a_count": 0,
+          "integral": "range_overflow",
+          "location": "tests/parity/gen_fixtures.cpp:k_range_overflow:136",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 3.3306690738754696e-16,
+          "max_sensitivity": 1.0,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "mul": 20
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-16,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "prov_vars": [
+            "h"
+          ],
+          "region_local_vars": [],
+          "signal_class": "stable",
+          "value_range_ok_for_float": false
+        },
+        {
+          "abs_val_max": 1.4161e+120,
+          "abs_val_min": 9.999999999999998e+119,
+          "gate_a_count": 0,
+          "integral": "range_overflow",
+          "location": "tests/parity/gen_fixtures.cpp:k_range_overflow:133",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 1.0,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "mul": 20
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-16,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "prov_vars": [
+            "h"
+          ],
+          "region_local_vars": [
+            "h"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": false
+        },
+        {
+          "abs_val_max": 1e-100,
+          "abs_val_min": 1e-100,
+          "gate_a_count": 0,
+          "integral": "range_overflow",
+          "location": "tests/parity/gen_fixtures.cpp:k_range_overflow:135",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 1.0,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "mul": 20
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-16,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "prov_vars": [
+            "t"
+          ],
+          "region_local_vars": [
+            "t"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": false
+        },
+        {
+          "abs_val_max": null,
+          "abs_val_min": null,
+          "gate_a_count": 0,
+          "integral": "range_overflow",
+          "location": "tests/parity/gen_fixtures.cpp:k_range_overflow:140",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 1.0,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "div": 20
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-16,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "prov_vars": [
+            "zn"
+          ],
+          "region_local_vars": [
+            "zn"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        }
+      ],
+      "variables": {
+        "h": {
+          "is_source_var": true,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 20,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "value_range_checked": false
+        },
+        "t": {
+          "is_source_var": true,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 20,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "value_range_checked": false
+        },
+        "zn": {
+          "is_source_var": true,
+          "max_amp": 1.0,
+          "max_sensitivity": 1.0,
+          "n_consumers": 20,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "value_range_checked": false
+        }
+      }
+    },
+    "trig_gate": {
+      "cascade_chains": [],
+      "class_counts": {
+        "atan2_saturation": 3,
+        "stable": 2
+      },
+      "regions": {
+        "tests/parity/gen_fixtures.cpp:k_trig_gate:101": {
+          "abs_val_max": null,
+          "abs_val_min": null,
+          "gate_a_count": 10,
+          "integral": "trig_gate",
+          "max_amp": 1.0,
+          "max_cond": 0.0,
+          "max_rel_err": 2.0,
+          "max_sensitivity": 9007199254740992.0,
+          "n": 10,
+          "non_localizable": false,
+          "note": "atan2 saturation cap (2**53) only; no genuine hotspot",
+          "ops": {
+            "atan2": 10
+          },
+          "p50_rel_err": 1.0,
+          "p99_rel_err": 1.0,
+          "predicted_rel_err_if_ff": 128.0,
+          "predicted_rel_err_if_float": 536870912.0,
+          "prov_vars": [
+            "one",
+            "z"
+          ],
+          "region_local_vars": [
+            "one",
+            "z"
+          ],
+          "signal_class": "atan2_saturation",
+          "value_range_ok_for_float": true
+        },
+        "tests/parity/gen_fixtures.cpp:k_trig_gate:104": {
+          "abs_val_max": null,
+          "abs_val_min": null,
+          "gate_a_count": 10,
+          "integral": "trig_gate",
+          "max_amp": 1.0,
+          "max_cond": 0.0,
+          "max_rel_err": 2.0,
+          "max_sensitivity": 9007199254740992.0,
+          "n": 10,
+          "non_localizable": false,
+          "note": "atan2 saturation cap (2**53) only; no genuine hotspot",
+          "ops": {
+            "log": 10
+          },
+          "p50_rel_err": 1.0,
+          "p99_rel_err": 1.0,
+          "predicted_rel_err_if_ff": 128.0,
+          "predicted_rel_err_if_float": 536870912.0,
+          "prov_vars": [
+            "w"
+          ],
+          "region_local_vars": [
+            "w"
+          ],
+          "signal_class": "atan2_saturation",
+          "value_range_ok_for_float": true
+        },
+        "tests/parity/gen_fixtures.cpp:k_trig_gate:108": {
+          "abs_val_max": 0.018997714161758807,
+          "abs_val_min": 0.0009999996666668668,
+          "gate_a_count": 0,
+          "integral": "trig_gate",
+          "max_amp": 1.0,
+          "max_cond": 1.999998666667822,
+          "max_rel_err": 4.440889137908459e-16,
+          "max_sensitivity": 1.999998666667822,
+          "n": 10,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "atan2": 10
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-16,
+          "predicted_rel_err_if_ff": 2.842169048261414e-14,
+          "predicted_rel_err_if_float": 1.1920921007799041e-07,
+          "prov_vars": [
+            "one",
+            "z"
+          ],
+          "region_local_vars": [
+            "one",
+            "z"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        },
+        "tests/parity/gen_fixtures.cpp:k_trig_gate:111": {
+          "abs_val_max": 0.0018981972830802655,
+          "abs_val_min": 9.999500033329732e-05,
+          "gate_a_count": 0,
+          "integral": "trig_gate",
+          "max_amp": 1.0,
+          "max_cond": 10000.499991668185,
+          "max_rel_err": 2.220557069702741e-12,
+          "max_sensitivity": 10000.499991668185,
+          "n": 10,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "log": 10
+          },
+          "p50_rel_err": 1e-13,
+          "p99_rel_err": 1e-12,
+          "predicted_rel_err_if_ff": 1.4211565246097542e-10,
+          "predicted_rel_err_if_float": 0.000596076249579679,
+          "prov_vars": [
+            "w"
+          ],
+          "region_local_vars": [
+            "w"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        },
+        "tests/parity/gen_fixtures.cpp:k_trig_gate:115": {
+          "abs_val_max": 1.2246467991473532e-16,
+          "abs_val_min": 1.2246467991473532e-16,
+          "gate_a_count": 20,
+          "integral": "trig_gate",
+          "max_amp": 1.0,
+          "max_cond": 0.0,
+          "max_rel_err": 2.0,
+          "max_sensitivity": 9007199254740992.0,
+          "n": 20,
+          "non_localizable": false,
+          "note": "atan2 saturation cap (2**53) only; no genuine hotspot",
+          "ops": {
+            "sin": 20
+          },
+          "p50_rel_err": 1.0,
+          "p99_rel_err": 1.0,
+          "predicted_rel_err_if_ff": 128.0,
+          "predicted_rel_err_if_float": 536870912.0,
+          "prov_vars": [
+            "p"
+          ],
+          "region_local_vars": [
+            "p"
+          ],
+          "signal_class": "atan2_saturation",
+          "value_range_ok_for_float": true
+        }
+      },
+      "samples": 20,
+      "top_regions_by_rel_err": [
+        {
+          "abs_val_max": null,
+          "abs_val_min": null,
+          "gate_a_count": 10,
+          "integral": "trig_gate",
+          "location": "tests/parity/gen_fixtures.cpp:k_trig_gate:101",
+          "max_amp": 1.0,
+          "max_cond": 0.0,
+          "max_rel_err": 2.0,
+          "max_sensitivity": 9007199254740992.0,
+          "n": 10,
+          "non_localizable": false,
+          "note": "atan2 saturation cap (2**53) only; no genuine hotspot",
+          "ops": {
+            "atan2": 10
+          },
+          "p50_rel_err": 1.0,
+          "p99_rel_err": 1.0,
+          "predicted_rel_err_if_ff": 128.0,
+          "predicted_rel_err_if_float": 536870912.0,
+          "prov_vars": [
+            "one",
+            "z"
+          ],
+          "region_local_vars": [
+            "one",
+            "z"
+          ],
+          "signal_class": "atan2_saturation",
+          "value_range_ok_for_float": true
+        },
+        {
+          "abs_val_max": null,
+          "abs_val_min": null,
+          "gate_a_count": 10,
+          "integral": "trig_gate",
+          "location": "tests/parity/gen_fixtures.cpp:k_trig_gate:104",
+          "max_amp": 1.0,
+          "max_cond": 0.0,
+          "max_rel_err": 2.0,
+          "max_sensitivity": 9007199254740992.0,
+          "n": 10,
+          "non_localizable": false,
+          "note": "atan2 saturation cap (2**53) only; no genuine hotspot",
+          "ops": {
+            "log": 10
+          },
+          "p50_rel_err": 1.0,
+          "p99_rel_err": 1.0,
+          "predicted_rel_err_if_ff": 128.0,
+          "predicted_rel_err_if_float": 536870912.0,
+          "prov_vars": [
+            "w"
+          ],
+          "region_local_vars": [
+            "w"
+          ],
+          "signal_class": "atan2_saturation",
+          "value_range_ok_for_float": true
+        },
+        {
+          "abs_val_max": 1.2246467991473532e-16,
+          "abs_val_min": 1.2246467991473532e-16,
+          "gate_a_count": 20,
+          "integral": "trig_gate",
+          "location": "tests/parity/gen_fixtures.cpp:k_trig_gate:115",
+          "max_amp": 1.0,
+          "max_cond": 0.0,
+          "max_rel_err": 2.0,
+          "max_sensitivity": 9007199254740992.0,
+          "n": 20,
+          "non_localizable": false,
+          "note": "atan2 saturation cap (2**53) only; no genuine hotspot",
+          "ops": {
+            "sin": 20
+          },
+          "p50_rel_err": 1.0,
+          "p99_rel_err": 1.0,
+          "predicted_rel_err_if_ff": 128.0,
+          "predicted_rel_err_if_float": 536870912.0,
+          "prov_vars": [
+            "p"
+          ],
+          "region_local_vars": [
+            "p"
+          ],
+          "signal_class": "atan2_saturation",
+          "value_range_ok_for_float": true
+        },
+        {
+          "abs_val_max": 0.0018981972830802655,
+          "abs_val_min": 9.999500033329732e-05,
+          "gate_a_count": 0,
+          "integral": "trig_gate",
+          "location": "tests/parity/gen_fixtures.cpp:k_trig_gate:111",
+          "max_amp": 1.0,
+          "max_cond": 10000.499991668185,
+          "max_rel_err": 2.220557069702741e-12,
+          "max_sensitivity": 10000.499991668185,
+          "n": 10,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "log": 10
+          },
+          "p50_rel_err": 1e-13,
+          "p99_rel_err": 1e-12,
+          "predicted_rel_err_if_ff": 1.4211565246097542e-10,
+          "predicted_rel_err_if_float": 0.000596076249579679,
+          "prov_vars": [
+            "w"
+          ],
+          "region_local_vars": [
+            "w"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        },
+        {
+          "abs_val_max": 0.018997714161758807,
+          "abs_val_min": 0.0009999996666668668,
+          "gate_a_count": 0,
+          "integral": "trig_gate",
+          "location": "tests/parity/gen_fixtures.cpp:k_trig_gate:108",
+          "max_amp": 1.0,
+          "max_cond": 1.999998666667822,
+          "max_rel_err": 4.440889137908459e-16,
+          "max_sensitivity": 1.999998666667822,
+          "n": 10,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "atan2": 10
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-16,
+          "predicted_rel_err_if_ff": 2.842169048261414e-14,
+          "predicted_rel_err_if_float": 1.1920921007799041e-07,
+          "prov_vars": [
+            "one",
+            "z"
+          ],
+          "region_local_vars": [
+            "one",
+            "z"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        }
+      ],
+      "variables": {
+        "one": {
+          "is_source_var": true,
+          "max_amp": 9007199254740992.0,
+          "max_sensitivity": 9007199254740992.0,
+          "n_consumers": 20,
+          "predicted_rel_err_if_ff": 128.0,
+          "predicted_rel_err_if_float": 536870912.0,
+          "value_range_checked": false
+        },
+        "p": {
+          "is_source_var": true,
+          "max_amp": 9007199254740992.0,
+          "max_sensitivity": 9007199254740992.0,
+          "n_consumers": 20,
+          "predicted_rel_err_if_ff": 128.0,
+          "predicted_rel_err_if_float": 536870912.0,
+          "value_range_checked": false
+        },
+        "w": {
+          "is_source_var": true,
+          "max_amp": 9007199254740992.0,
+          "max_sensitivity": 9007199254740992.0,
+          "n_consumers": 20,
+          "predicted_rel_err_if_ff": 128.0,
+          "predicted_rel_err_if_float": 536870912.0,
+          "value_range_checked": false
+        },
+        "z": {
+          "is_source_var": true,
+          "max_amp": 9007199254740992.0,
+          "max_sensitivity": 9007199254740992.0,
+          "n_consumers": 20,
+          "predicted_rel_err_if_ff": 128.0,
+          "predicted_rel_err_if_float": 536870912.0,
+          "value_range_checked": false
+        }
+      }
+    },
+    "variance_cascade": {
+      "cascade_chains": [
+        {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_07c665f4_5cf7a65a",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 17391318080.21277,
+          "max_rel_err": 5.792472528591642e-06,
+          "max_sensitivity": 17391318080.21277,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002471454945437695,
+          "predicted_rel_err_if_float": 1036.6033363469105,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_0dcb5800_cb626e0d",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 17857143165.750492,
+          "max_rel_err": 5.947623449215231e-06,
+          "max_sensitivity": 17857143165.750492,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002537652671570426,
+          "predicted_rel_err_if_float": 1064.3686750978525,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_33656b28_e6254bcc",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 19230795840.58737,
+          "max_rel_err": 6.405141697447782e-06,
+          "max_sensitivity": 19230795840.58737,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00027328604574829813,
+          "predicted_rel_err_if_float": 1146.2447548262699,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_51d31125_ff376921",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 18018021212.864693,
+          "max_rel_err": 6.001206602834106e-06,
+          "max_sensitivity": 18018021212.864693,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00025605148171144794,
+          "predicted_rel_err_if_float": 1073.957753948253,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_57906116_ce5e3994",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 19047616154.358578,
+          "max_rel_err": 6.344130605859336e-06,
+          "max_sensitivity": 19047616154.358578,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00027068290584052445,
+          "predicted_rel_err_if_float": 1135.326394698535,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_6338fb1d_d6583d8b",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 18691579798.828682,
+          "max_rel_err": 6.225546678005461e-06,
+          "max_sensitivity": 18691579798.828682,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002656233249187591,
+          "predicted_rel_err_if_float": 1114.104974200051,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_690e222c_5ed47aeb",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 18518506655.032646,
+          "max_rel_err": 6.167901741249475e-06,
+          "max_sensitivity": 18518506655.032646,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00026316380761717037,
+          "predicted_rel_err_if_float": 1103.7890109439281,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_7fab59f6_ece3eeb9",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 18348609219.07446,
+          "max_rel_err": 6.1113145276818074e-06,
+          "max_sensitivity": 18348609219.07446,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00026074941983828323,
+          "predicted_rel_err_if_float": 1093.6623346253907,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_80c760a8_691fa68b",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 19417479412.46748,
+          "max_rel_err": 6.46731981739395e-06,
+          "max_sensitivity": 19417479412.46748,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002759389788660013,
+          "predicted_rel_err_if_float": 1157.3719628135848,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_9411754a_939bf57e",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 16806725488.355028,
+          "max_rel_err": 5.597764081939914e-06,
+          "max_sensitivity": 16806725488.355028,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00023883793415329575,
+          "predicted_rel_err_if_float": 1001.758902570905,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_9ada83c1_bcacffe0",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 19607850305.595856,
+          "max_rel_err": 6.530726062024824e-06,
+          "max_sensitivity": 19607850305.595856,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002786443119702519,
+          "predicted_rel_err_if_float": 1168.7189522740755,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_9b70859b_c2245f48",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 17241390169.310413,
+          "max_rel_err": 5.742536502976319e-06,
+          "max_sensitivity": 17241390169.310413,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00024501489078418236,
+          "predicted_rel_err_if_float": 1027.6669364756592,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_a881f9ec_926f7282",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 18181824368.28512,
+          "max_rel_err": 6.055764013230309e-06,
+          "max_sensitivity": 18181824368.28512,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00025837926455501926,
+          "predicted_rel_err_if_float": 1083.7211828401755,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_bbae3522_2bf7d4c4",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 17543854484.929726,
+          "max_rel_err": 5.843277357174734e-06,
+          "max_sensitivity": 17543854484.929726,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.0002493131672299814,
+          "predicted_rel_err_if_float": 1045.69521456538,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_c93b6259_f3ab1958",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 20000014556.456436,
+          "max_rel_err": 6.6613429962469116e-06,
+          "max_sensitivity": 20000014556.456436,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00028421730116372766,
+          "predicted_rel_err_if_float": 1192.0937631402276,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_e342c49a_56d92dac",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 19801990988.33299,
+          "max_rel_err": 6.595387898822187e-06,
+          "max_sensitivity": 19801990988.33299,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00028140321700693944,
+          "predicted_rel_err_if_float": 1180.2906387050741,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_eadd0dfc_2965741b",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 17699112567.832607,
+          "max_rel_err": 5.894988686694116e-06,
+          "max_sensitivity": 17699112567.832607,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00025151951728947505,
+          "predicted_rel_err_if_float": 1054.9493174453144,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_ee26e493_acea93d6",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 16949157938.31744,
+          "max_rel_err": 5.645203617560525e-06,
+          "max_sensitivity": 16949157938.31744,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00024086202100644186,
+          "predicted_rel_err_if_float": 1010.2485381554031,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_f289feb5_255dff26",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 17094025175.372955,
+          "max_rel_err": 5.693454100188385e-06,
+          "max_sensitivity": 17094025175.372955,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00024292070826523052,
+          "predicted_rel_err_if_float": 1018.8832983596894,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "chain": [
+            {
+              "file": "variance_kernel.hpp",
+              "line_end": 31,
+              "line_start": 31
+            }
+          ],
+          "chain_id": "cascade_variance_cascade_f53f930d_40a76c15",
+          "integral": "variance_cascade",
+          "kind": "cascade_chain",
+          "max_cond": 18867918530.55272,
+          "max_rel_err": 6.284279274033428e-06,
+          "max_sensitivity": 18867918530.55272,
+          "n": 1,
+          "non_localizable": false,
+          "ops": {
+            "sub": 1
+          },
+          "predicted_rel_err_if_ff": 0.00026812924901595237,
+          "predicted_rel_err_if_float": 1124.615581664605,
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        }
+      ],
+      "class_counts": {
+        "cancellation_cascade": 2,
+        "log_near_root": 1,
+        "stable": 2
+      },
+      "regions": {
+        "tests/parity/gen_fixtures.cpp:k_variance_cascade:73": {
+          "abs_val_max": 100.00001000833001,
+          "abs_val_min": 100.000010007,
+          "gate_a_count": 0,
+          "integral": "variance_cascade",
+          "max_amp": 20000014556.456436,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 20000014556.456436,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "mul": 20
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-16,
+          "predicted_rel_err_if_ff": 0.00028421730116372766,
+          "predicted_rel_err_if_float": 1192.0937631402276,
+          "prov_vars": [
+            "x"
+          ],
+          "region_local_vars": [
+            "x"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        },
+        "tests/parity/gen_fixtures.cpp:k_variance_cascade:74": {
+          "abs_val_max": 100.000009997,
+          "abs_val_min": 100.00000999643001,
+          "gate_a_count": 0,
+          "integral": "variance_cascade",
+          "max_amp": 20000014556.456436,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 20000014556.456436,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "mul": 20
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-16,
+          "predicted_rel_err_if_ff": 0.00028421730116372766,
+          "predicted_rel_err_if_float": 1192.0937631402276,
+          "prov_vars": [
+            "y"
+          ],
+          "region_local_vars": [
+            "y"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        },
+        "tests/parity/gen_fixtures.cpp:k_variance_cascade:78": {
+          "abs_val_max": 5.949999604126788e-09,
+          "abs_val_min": 4.999996860988176e-09,
+          "gate_a_count": 0,
+          "integral": "variance_cascade",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 6.661342996135889e-06,
+          "max_sensitivity": 1.0,
+          "n": 20,
+          "non_localizable": true,
+          "note": "rel_err 6.66e-06 with low per-op cond 1.00e+00 (accumulated cancellation)",
+          "ops": {
+            "mul": 20
+          },
+          "p50_rel_err": 1e-06,
+          "p99_rel_err": 1e-06,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "prov_vars": [
+            "x",
+            "y"
+          ],
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        "tests/parity/gen_fixtures.cpp:k_variance_cascade:79": {
+          "abs_val_max": 1.7849998812380363e-08,
+          "abs_val_min": 1.499999058296453e-08,
+          "gate_a_count": 0,
+          "integral": "variance_cascade",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 6.6613429962469116e-06,
+          "max_sensitivity": 1.0,
+          "n": 20,
+          "non_localizable": true,
+          "note": "rel_err 6.66e-06 with low per-op cond 1.00e+00 (accumulated cancellation)",
+          "ops": {
+            "add": 20
+          },
+          "p50_rel_err": 1e-06,
+          "p99_rel_err": 1e-06,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "prov_vars": [
+            "x",
+            "y"
+          ],
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        "variance_kernel.hpp:31": {
+          "abs_val_max": 1.1899999208253575e-08,
+          "abs_val_min": 9.999993721976352e-09,
+          "gate_a_count": 0,
+          "integral": "variance_cascade",
+          "max_amp": 1.0,
+          "max_cond": 20000014556.456436,
+          "max_rel_err": 6.661342996024867e-06,
+          "max_sensitivity": 20000014556.456436,
+          "n": 20,
+          "non_localizable": false,
+          "note": "elevated per-op cond 2.00e+10",
+          "ops": {
+            "sub": 20
+          },
+          "p50_rel_err": 1e-06,
+          "p99_rel_err": 1e-06,
+          "predicted_rel_err_if_ff": 0.00028421730116372766,
+          "predicted_rel_err_if_float": 1192.0937631402276,
+          "prov_vars": [
+            "x",
+            "y"
+          ],
+          "region_local_vars": [],
+          "signal_class": "log_near_root",
+          "value_range_ok_for_float": true
+        }
+      },
+      "samples": 20,
+      "top_regions_by_rel_err": [
+        {
+          "abs_val_max": 1.7849998812380363e-08,
+          "abs_val_min": 1.499999058296453e-08,
+          "gate_a_count": 0,
+          "integral": "variance_cascade",
+          "location": "tests/parity/gen_fixtures.cpp:k_variance_cascade:79",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 6.6613429962469116e-06,
+          "max_sensitivity": 1.0,
+          "n": 20,
+          "non_localizable": true,
+          "note": "rel_err 6.66e-06 with low per-op cond 1.00e+00 (accumulated cancellation)",
+          "ops": {
+            "add": 20
+          },
+          "p50_rel_err": 1e-06,
+          "p99_rel_err": 1e-06,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "prov_vars": [
+            "x",
+            "y"
+          ],
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "abs_val_max": 5.949999604126788e-09,
+          "abs_val_min": 4.999996860988176e-09,
+          "gate_a_count": 0,
+          "integral": "variance_cascade",
+          "location": "tests/parity/gen_fixtures.cpp:k_variance_cascade:78",
+          "max_amp": 1.0,
+          "max_cond": 1.0,
+          "max_rel_err": 6.661342996135889e-06,
+          "max_sensitivity": 1.0,
+          "n": 20,
+          "non_localizable": true,
+          "note": "rel_err 6.66e-06 with low per-op cond 1.00e+00 (accumulated cancellation)",
+          "ops": {
+            "mul": 20
+          },
+          "p50_rel_err": 1e-06,
+          "p99_rel_err": 1e-06,
+          "predicted_rel_err_if_ff": 1.4210854715202004e-14,
+          "predicted_rel_err_if_float": 5.960464477539063e-08,
+          "prov_vars": [
+            "x",
+            "y"
+          ],
+          "region_local_vars": [],
+          "signal_class": "cancellation_cascade",
+          "value_range_ok_for_float": true
+        },
+        {
+          "abs_val_max": 1.1899999208253575e-08,
+          "abs_val_min": 9.999993721976352e-09,
+          "gate_a_count": 0,
+          "integral": "variance_cascade",
+          "location": "variance_kernel.hpp:31",
+          "max_amp": 1.0,
+          "max_cond": 20000014556.456436,
+          "max_rel_err": 6.661342996024867e-06,
+          "max_sensitivity": 20000014556.456436,
+          "n": 20,
+          "non_localizable": false,
+          "note": "elevated per-op cond 2.00e+10",
+          "ops": {
+            "sub": 20
+          },
+          "p50_rel_err": 1e-06,
+          "p99_rel_err": 1e-06,
+          "predicted_rel_err_if_ff": 0.00028421730116372766,
+          "predicted_rel_err_if_float": 1192.0937631402276,
+          "prov_vars": [
+            "x",
+            "y"
+          ],
+          "region_local_vars": [],
+          "signal_class": "log_near_root",
+          "value_range_ok_for_float": true
+        },
+        {
+          "abs_val_max": 100.00001000833001,
+          "abs_val_min": 100.000010007,
+          "gate_a_count": 0,
+          "integral": "variance_cascade",
+          "location": "tests/parity/gen_fixtures.cpp:k_variance_cascade:73",
+          "max_amp": 20000014556.456436,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 20000014556.456436,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "mul": 20
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-16,
+          "predicted_rel_err_if_ff": 0.00028421730116372766,
+          "predicted_rel_err_if_float": 1192.0937631402276,
+          "prov_vars": [
+            "x"
+          ],
+          "region_local_vars": [
+            "x"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        },
+        {
+          "abs_val_max": 100.000009997,
+          "abs_val_min": 100.00000999643001,
+          "gate_a_count": 0,
+          "integral": "variance_cascade",
+          "location": "tests/parity/gen_fixtures.cpp:k_variance_cascade:74",
+          "max_amp": 20000014556.456436,
+          "max_cond": 1.0,
+          "max_rel_err": 2.220446049250313e-16,
+          "max_sensitivity": 20000014556.456436,
+          "n": 20,
+          "non_localizable": false,
+          "note": "no elevated conditioning or accumulated-error signal",
+          "ops": {
+            "mul": 20
+          },
+          "p50_rel_err": 1e-16,
+          "p99_rel_err": 1e-16,
+          "predicted_rel_err_if_ff": 0.00028421730116372766,
+          "predicted_rel_err_if_float": 1192.0937631402276,
+          "prov_vars": [
+            "y"
+          ],
+          "region_local_vars": [
+            "y"
+          ],
+          "signal_class": "stable",
+          "value_range_ok_for_float": true
+        }
+      ],
+      "variables": {
+        "x": {
+          "is_source_var": true,
+          "max_amp": 20000014556.456436,
+          "max_sensitivity": 20000014556.456436,
+          "n_consumers": 20,
+          "predicted_rel_err_if_ff": 0.00028421730116372766,
+          "predicted_rel_err_if_float": 1192.0937631402276,
+          "value_range_checked": false
+        },
+        "y": {
+          "is_source_var": true,
+          "max_amp": 20000014556.456436,
+          "max_sensitivity": 20000014556.456436,
+          "n_consumers": 20,
+          "predicted_rel_err_if_ff": 0.00028421730116372766,
+          "predicted_rel_err_if_float": 1192.0937631402276,
+          "value_range_checked": false
+        }
+      }
+    }
+  },
+  "kind": "stability_report",
+  "no_id_records": 0,
+  "samples_seen": {
+    "cancellation": 20,
+    "cascade_range": 20,
+    "complex_logdiv": 20,
+    "kahan": 20,
+    "logsumexp": 20,
+    "range_overflow": 20,
+    "trig_gate": 20,
+    "variance_cascade": 20
+  },
+  "schema_version": 2
+}

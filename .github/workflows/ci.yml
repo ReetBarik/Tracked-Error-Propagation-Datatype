@@ -21,3 +21,16 @@ jobs:
         run: cmake --build build -j 4
       - name: Test
         run: ctest --test-dir build --output-on-failure
+
+  python:
+    name: Python tools + schema differential tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install tracked-tools
+        run: pip install -e "tools[test]"
+      - name: Run tool tests (incl. reducer parity vs committed goldens)
+        run: pytest tools/tests -q
