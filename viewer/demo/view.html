@@ -136,16 +136,6 @@
     white-space: nowrap; }
   .chip .sw { width: 9px; height: 9px; border-radius: 3px; flex: none; }
   .chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
-
-  /* signal strip: click-to-locate chips for every non-stable region, so
-     signal discovery never requires scrolling the graph */
-  .signal-strip { display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
-    margin: 0 0 10px; }
-  .signal-strip .strip-label { font-size: 12px; color: var(--ink-2);
-    margin-right: 3px; }
-  button.sigchip { cursor: pointer; min-height: 24px;   /* 24px+ hit target */
-    padding-top: 3px; padding-bottom: 3px; }
-  button.sigchip:hover { background: var(--wash); }
   .badge { display: inline-flex; align-items: center; gap: 4px;
     font-size: 11px; border-radius: 999px; padding: 1px 8px;
     border: 1px solid var(--border); color: var(--ink-2); white-space: nowrap; }
@@ -174,7 +164,6 @@
     { stroke: var(--ink-3); }
   svg .node { cursor: pointer; outline: none; }
   svg .node:focus-visible rect.box { stroke: var(--ink); stroke-width: 1.5; }
-  svg .node.located rect.box { stroke: var(--ink); stroke-width: 2; }
   svg .accent { rx: 2; }
 
   /* detail panel & tables */
@@ -603,51 +592,6 @@ function renderUnitList() {
   }
 }
 
-/* Every non-stable region as a click-to-locate chip, severity-then-rel_err
-   ordered — finding the signals must not require scrolling the graph.
-   Clicking opens the region detail and centers the graph on its node. */
-function signalStrip(u) {
-  const sev = new Map(CLASS_ORDER.map((c, i) => [c, i]));
-  const hot = u.regions.filter(r => sev.has(r.signal_class))
-    .sort((a, b) => (sev.get(a.signal_class) - sev.get(b.signal_class))
-      || ((b.max_rel_err || 0) - (a.max_rel_err || 0)));
-  if (!hot.length) return null;
-  const wrap = el("div", "signal-strip");
-  wrap.appendChild(el("span", "strip-label", `Signals (${hot.length}):`));
-  for (const r of hot) {
-    const ri = u.regions.indexOf(r);
-    const b = el("button", "chip sigchip");
-    const sw = el("span", "sw");
-    sw.style.background = CLASS_COLOR[r.signal_class] || "var(--class-neutral)";
-    b.appendChild(sw);
-    b.appendChild(document.createTextNode(
-      `${CLASS_ABBREV[r.signal_class]} ${shortRegion(r.key)}`));
-    // accessible name starts with the visible text (WCAG 2.5.3 label-in-name)
-    const desc = `${CLASS_ABBREV[r.signal_class]} ${shortRegion(r.key)}`
-      + ` — ${CLASS_LABEL[r.signal_class]}, max rel_err ${fmt(r.max_rel_err)}`;
-    b.title = desc;
-    b.setAttribute("aria-label", desc);
-    b.addEventListener("click", () => {
-      const node = document.querySelector(`#dag-main [data-ri="${ri}"]`);
-      // with a graph node, keep the viewport on it; in tables mode (no
-      // node) scroll the detail panel instead so the click has visible effect
-      renderRegionDetail(u, r, { scroll: !node });
-      if (node) {
-        // instant (not smooth) scroll: the tip anchors to a
-        // getBoundingClientRect() snapshot, which must be post-scroll
-        node.scrollIntoView({ inline: "center", block: "nearest" });
-        node.focus({ preventScroll: true });
-        // transient ring: the scroll event hides any tooltip, so the located
-        // node needs an affordance that survives it
-        node.classList.add("located");
-        setTimeout(() => node.classList.remove("located"), 1600);
-      }
-    });
-    wrap.appendChild(b);
-  }
-  return wrap;
-}
-
 /* longest-path layering over the region dataflow graph; back edges (loops
    across iterations) are ignored for layout, still drawn */
 function layerRegions(unit) {
@@ -711,8 +655,6 @@ function renderDag() {
     edgeKey("var(--axis)", "dataflow"),
     edgeKey(cssColor("--class-cascade"), "cascade chain"),
   ]));
-  const strip = signalStrip(u);
-  if (strip) card.appendChild(strip);
 
   if (dagMode === "graph") card.appendChild(regionGraph(u));
   else {
@@ -855,7 +797,6 @@ function regionGraph(u) {
     const b = box.get(r.key);
     const g = svgEl("g", { class: "node", tabindex: 0, role: "button",
       transform: `translate(${b.x},${b.y})`,
-      "data-ri": u.regions.indexOf(r),      // signal-strip click-to-locate hook
       "aria-label": "region " + r.key });
     g.appendChild(svgEl("rect", { class: "box", width: b.w, height: b.h }));
     g.appendChild(svgEl("rect", { class: "accent", x: 3, y: 3, width: 4,
