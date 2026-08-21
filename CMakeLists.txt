@@ -111,4 +111,18 @@ if(TRACKED_BUILD_TESTS)
   # Repo-relative __FILE__ so the committed fixtures are machine-independent.
   target_compile_options(gen_parity_fixtures PRIVATE
     "-fmacro-prefix-map=${CMAKE_CURRENT_SOURCE_DIR}/=")
+
+  # Viewer-fixture driver (examples/viewer_kernels): regenerates the committed
+  # v1 journals under viewer/fixtures/ (see viewer/fixtures/README.md) and is
+  # the viewer's per-sample drill-down rerun.  The ctest asserts the
+  # flush_and_clear chunking byte-equality contract (docs/STREAMING.md).
+  add_executable(gen_viewer_fixtures examples/viewer_kernels/gen_viewer_fixtures.cpp)
+  target_link_libraries(gen_viewer_fixtures PRIVATE tracked::tracked)
+  target_compile_options(gen_viewer_fixtures PRIVATE
+    "-fmacro-prefix-map=${CMAKE_CURRENT_SOURCE_DIR}/=")
+  add_test(NAME viewer_chunk_byte_equality
+    COMMAND ${CMAKE_COMMAND}
+      -DDRIVER=$<TARGET_FILE:gen_viewer_fixtures>
+      -DWORK_DIR=${CMAKE_CURRENT_BINARY_DIR}/viewer_chunk_test
+      -P ${CMAKE_CURRENT_SOURCE_DIR}/examples/viewer_kernels/chunk_equality_test.cmake)
 endif()
