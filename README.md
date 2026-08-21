@@ -116,6 +116,8 @@ cd build && ctest --output-on-failure
 - **`examples/complex_log_micro/`** — optional Kokkos-based micro-driver
   demonstrating the **opaque-barrier** pattern for kernels that call framework
   math you can't see into. Not built by the top-level CMake; see its README.
+- **`viewer/`** — (placeholder) a zero-dependency single-file HTML viewer for
+  journal runs; see its README.
 - **`docs/`** — design records (`PLAN.md`, `PLAN-v1.1.md`, `PLAN-v0.3.md`,
   `PLAN-v0.4.md`), `PROVENANCE.md` (the provenance model, incl. literals), and
   `CONDITION_NUMBERS.md` (full derivations of every per-op condition number, the
@@ -142,7 +144,10 @@ cd build && ctest --output-on-failure
   `add`/`mul`/`sqrt`/etc. A complex-op view is recovered by grouping the
   journal by source location.
 
-## License / provenance
+## License
+
+MIT — see [LICENSE](LICENSE).
 
 The condition-number and error-propagation formulas are standard first-order
-numerical-analysis results. See `docs/` for the full design rationale.
+numerical-analysis results; `docs/CONDITION_NUMBERS.md` derives each one and
+cites the literature (Higham; Trefethen & Bau; Goldberg; Smith; Kahan).
