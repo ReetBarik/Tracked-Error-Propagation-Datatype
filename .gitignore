@@ -9,6 +9,9 @@ build/
 # tests/parity/gen_fixtures.cpp)
 !tests/parity/fixtures/*.jsonl
 
+# ...and the committed viewer fixtures (v1 journals; see viewer/fixtures/README.md)
+!viewer/fixtures/*/*.jsonl
+
 # Python
 __pycache__/
 *.egg-info/
