@@ -8,6 +8,10 @@ the AMP-equivalent policy config, reproduces the reference byte-for-byte
 (canonical JSON; floats compare equal because both run the identical Python
 arithmetic).
 
+After the v1 schema break, this harness runs the ported core in explicit
+LEGACY-read mode (the plan's post-break criterion): the fixtures stay frozen
+pre-v1 journals and the frozen AMP reference reads them natively.
+
 The non-vacuousness tests exist because an empty report trivially equals an
 empty report: they pin that the fixtures actually exercise every signal class,
 both cascade-contributor detection paths, the saturation cap, the value-range
@@ -91,7 +95,7 @@ def assert_same(new: dict, ref: dict) -> None:
 def test_shard_parity(frozen, shard):
     fix = FIXTURES / f"{shard}.jsonl"
     ref = frozen.reduce_journal(fix)
-    new = core.reduce_journal(fix, amp_config())
+    new = core.reduce_journal(fix, amp_config(), legacy=True)
     assert_same(new, ref)
 
 
@@ -101,7 +105,7 @@ def test_merge_and_finalize_parity(frozen):
         frozen.merge_reports([frozen.reduce_journal(f) for f in fixes]))
     cfg = amp_config()
     new = core.finalize_report(
-        core.merge_reports([core.reduce_journal(f, cfg) for f in fixes]), cfg)
+        core.merge_reports([core.reduce_journal(f, cfg, legacy=True) for f in fixes]), cfg)
     assert_same(new, ref)
 
 
@@ -111,7 +115,7 @@ def test_merge_and_finalize_parity(frozen):
 
 @pytest.mark.parametrize("shard", SHARDS)
 def test_shard_golden(shard):
-    new = core.reduce_journal(FIXTURES / f"{shard}.jsonl", amp_config())
+    new = core.reduce_journal(FIXTURES / f"{shard}.jsonl", amp_config(), legacy=True)
     golden = json.loads((GOLDENS / f"{shard}.shard.json").read_text(encoding="utf-8"))
     assert_same(new, golden)
 
@@ -119,7 +123,7 @@ def test_shard_golden(shard):
 def test_final_golden():
     cfg = amp_config()
     new = core.finalize_report(
-        core.merge_reports([core.reduce_journal(FIXTURES / f"{s}.jsonl", cfg)
+        core.merge_reports([core.reduce_journal(FIXTURES / f"{s}.jsonl", cfg, legacy=True)
                             for s in SHARDS]), cfg)
     golden = json.loads((GOLDENS / "final.report.json").read_text(encoding="utf-8"))
     assert_same(new, golden)
@@ -132,8 +136,8 @@ def test_final_golden():
 
 def test_reports_non_empty_and_exercise_signals():
     cfg = amp_config()
-    shard_a = core.reduce_journal(FIXTURES / "mixed_a.jsonl", cfg)
-    shard_b = core.reduce_journal(FIXTURES / "mixed_b.jsonl", cfg)
+    shard_a = core.reduce_journal(FIXTURES / "mixed_a.jsonl", cfg, legacy=True)
+    shard_b = core.reduce_journal(FIXTURES / "mixed_b.jsonl", cfg, legacy=True)
 
     for shard, n_samples in ((shard_a, 12), (shard_b, 8)):
         # v0.3 fixtures: every record carries an id
@@ -225,9 +229,9 @@ def test_merge_associativity(tmp_path):
     concat = tmp_path / "concat.jsonl"
     concat.write_bytes((FIXTURES / "mixed_a.jsonl").read_bytes()
                        + (FIXTURES / "mixed_b.jsonl").read_bytes())
-    merged = core.merge_reports([core.reduce_journal(FIXTURES / "mixed_a.jsonl", cfg),
-                                 core.reduce_journal(FIXTURES / "mixed_b.jsonl", cfg)])
-    direct = core.reduce_journal(concat, cfg)
+    merged = core.merge_reports([core.reduce_journal(FIXTURES / "mixed_a.jsonl", cfg, legacy=True),
+                                 core.reduce_journal(FIXTURES / "mixed_b.jsonl", cfg, legacy=True)])
+    direct = core.reduce_journal(concat, cfg, legacy=True)
     # kinds differ by design (merged vs shard); compare the payload
     for key in ("samples_seen", "no_id_records", "integrals"):
         assert_same(merged[key], direct[key])
@@ -236,7 +240,7 @@ def test_merge_associativity(tmp_path):
 def test_cli_smoke(tmp_path):
     from tracked_tools.reduce import cli
     out = tmp_path / "report.json"
-    rc = cli.main(["--predict", f"ff={U_FF!r}",
+    rc = cli.main(["--legacy", "--predict", f"ff={U_FF!r}",
                    "report", str(FIXTURES / "mixed_a.jsonl"),
                    str(FIXTURES / "mixed_b.jsonl"), "-o", str(out)])
     assert rc == 0
@@ -252,7 +256,7 @@ def test_cli_reduce_and_merge(tmp_path):
     shard_files = []
     for shard in SHARDS:
         out = tmp_path / f"{shard}.shard.json"
-        rc = cli.main([*predict, "reduce", str(FIXTURES / f"{shard}.jsonl"),
+        rc = cli.main(["--legacy", *predict, "reduce", str(FIXTURES / f"{shard}.jsonl"),
                        "-o", str(out)])
         assert rc == 0
         golden = json.loads((GOLDENS / f"{shard}.shard.json").read_text(encoding="utf-8"))

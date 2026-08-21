@@ -201,6 +201,87 @@ def _read_jsonl(path: Path) -> Iterator[dict]:
                 raise ValueError(f"Bad JSON on line {lineno} of {path}: {exc}") from exc
 
 
+# ---------------------------------------------------------------------------
+# Version-aware journal reading (docs/SCHEMA.md, normative)
+# ---------------------------------------------------------------------------
+
+# Legacy emitters clamped ±Inf to ±DBL_MAX; v1 non-finite sentinels are mapped
+# to the same magnitude (alarm direction), so the SAME computation journaled
+# as v0.3 or v1 reduces identically for ±Inf.  NaN — which the legacy pipeline
+# silently zeroed ("maximally stable", the documented bug) — now also clamps
+# to the alarm direction in v1 mode (a documented, deliberate divergence).
+DBL_MAX_CLAMP = 1.7976931348623157e308
+
+_SENTINELS = ("nan", "inf", "-inf")
+_NUMERIC_KEYS = ("val", "cond", "rel_err")
+
+
+def _map_v1_record(rec: dict, path) -> dict:
+    """Apply the v1 reader rules to one op record (SCHEMA.md 'Non-finite
+    encoding'): exact sentinels only, no nulls, alarm-direction mapping."""
+    nonfinite = False
+    for k in _NUMERIC_KEYS:
+        if k not in rec:
+            continue
+        v = rec[k]
+        if v is None:
+            raise ValueError(
+                f"{path}: null {k!r} in a v1 journal — legacy contamination "
+                "(legacy and v1 shards must not be mixed)")
+        if isinstance(v, str):
+            if v not in _SENTINELS:
+                raise ValueError(
+                    f"{path}: invalid value {v!r} for {k!r} — v1 accepts "
+                    "exactly the sentinels \"nan\"/\"inf\"/\"-inf\"")
+            rec[k] = -DBL_MAX_CLAMP if v == "-inf" else DBL_MAX_CLAMP
+            nonfinite = True
+    if nonfinite:
+        rec["_nonfinite"] = True
+    return rec
+
+
+def read_journal(path, legacy: bool = False) -> Iterator[dict]:
+    """Stream op records from a journal, enforcing the SCHEMA.md reader rules.
+
+    v1 mode (default): line 1 MUST be a header record with ``schema == 1``;
+    mid-stream headers (shard boundaries from concatenation/streaming) are
+    validated and skipped BEFORE any grouping; non-finite sentinels are mapped
+    per :func:`_map_v1_record`; ``null`` and non-sentinel strings hard-fail.
+
+    Legacy mode (explicit opt-in for pre-v1 journals): byte-identical behavior
+    to the historical reducer, except any record carrying a ``schema`` key
+    hard-fails (v1 contamination).
+    """
+    it = _read_jsonl(Path(path))
+    if legacy:
+        for rec in it:
+            if "schema" in rec:
+                raise ValueError(
+                    f"{path}: v1 header record found in a legacy-mode read — "
+                    "this journal is not pre-v1")
+            yield rec
+        return
+
+    first = next(it, None)
+    if first is None:
+        return                                # zero-byte file: empty journal
+    if "schema" not in first:
+        raise ValueError(
+            f"{path}: no v1 header on line 1 — a pre-v1 (v0.3) journal must "
+            "be read in explicit legacy mode (--legacy / legacy=True)")
+    if first.get("schema") != 1:
+        raise ValueError(
+            f"{path}: unsupported journal schema {first.get('schema')!r}")
+    for rec in it:
+        if "schema" in rec:                   # mid-stream shard boundary
+            if rec.get("schema") != 1:
+                raise ValueError(
+                    f"{path}: mixed journal schemas mid-stream "
+                    f"({rec.get('schema')!r} after 1)")
+            continue
+        yield _map_v1_record(rec, path)
+
+
 def _scope_str(node_id: str) -> str:
     """Extract the scope suffix from an op id, or "" if unscoped.
 
@@ -689,14 +770,27 @@ def _update_region(reg: dict, rec: dict, amp_v: float, sens_v: float,
     reg["region_local_vars"].update(local_vars)
 
 
-def reduce_journal(path, cfg: ReducerConfig | None = None) -> dict:
-    """Reduce one journal file to a mergeable shard report (streaming)."""
+def reduce_journal(path, cfg: ReducerConfig | None = None, *,
+                   legacy: bool = False) -> dict:
+    """Reduce one journal file to a mergeable shard report (streaming).
+
+    ``legacy=True`` reads a pre-v1 (headerless v0.3) journal; the default
+    hard-requires the v1 header (see :func:`read_journal`).  The v1-mode shard
+    report additionally carries ``nonfinite_records`` — the count of records
+    whose val/cond/rel_err was a non-finite sentinel, clamped to the alarm
+    direction (the key is absent in legacy mode, whose output stays
+    byte-identical to the historical reducer).
+    """
     cfg = cfg or ReducerConfig()
     integrals: dict[str, dict] = {}
     samples_seen: dict[str, int] = {}
     no_id_records = 0
+    nonfinite_records = 0
 
-    for scope, batch in _iter_samples(_read_jsonl(Path(path))):
+    for scope, batch in _iter_samples(read_journal(path, legacy=legacy)):
+        for r in batch:
+            if r.pop("_nonfinite", False):
+                nonfinite_records += 1
         integral = _parse_scope(scope).get("integral", "")
         nodes, amp, node_sens, source_sens, source_ids = _analyze_sample(batch, cfg)
         if not nodes:
@@ -732,7 +826,7 @@ def reduce_journal(path, cfg: ReducerConfig | None = None) -> dict:
             nodes, amp, node_sens, source_ids, prov_var_names,
             integral, scope, cfg))
 
-    return {
+    report = {
         "schema_version": SCHEMA_VERSION,
         "kind": "stability_shard_report",
         "samples_seen": samples_seen,
@@ -740,6 +834,9 @@ def reduce_journal(path, cfg: ReducerConfig | None = None) -> dict:
         "integrals": {name: _integral_to_json(name, data)
                       for name, data in integrals.items()},
     }
+    if not legacy:
+        report["nonfinite_records"] = nonfinite_records
+    return report
 
 
 def _integral_to_json(name: str, data: dict) -> dict:
@@ -769,9 +866,16 @@ def merge_reports(reports: list[dict]) -> dict:
     out_samples: dict[str, int] = {}
     out_integrals: dict[str, dict] = {}
     no_id = 0
+    # additive v1-read field: present in the merge iff any input shard has it
+    # (legacy-mode outputs must stay byte-identical to the historical reducer)
+    nonfinite = 0
+    have_nonfinite = False
 
     for rep in reports:
         no_id += rep.get("no_id_records", 0)
+        if "nonfinite_records" in rep:
+            have_nonfinite = True
+            nonfinite += rep.get("nonfinite_records", 0)
         for name, cnt in rep.get("samples_seen", {}).items():
             out_samples[name] = out_samples.get(name, 0) + cnt
         for name, idata in rep.get("integrals", {}).items():
@@ -787,13 +891,16 @@ def merge_reports(reports: list[dict]) -> dict:
             # merged even when they share lines (the consumer owns overlap).
             dst.setdefault("cascade_chains", {}).update(idata.get("cascade_chains", {}))
 
-    return {
+    merged = {
         "schema_version": SCHEMA_VERSION,
         "kind": "stability_merged_report",
         "samples_seen": out_samples,
         "no_id_records": no_id,
         "integrals": out_integrals,
     }
+    if have_nonfinite:
+        merged["nonfinite_records"] = nonfinite
+    return merged
 
 
 def _new_region_json() -> dict:
@@ -1027,16 +1134,21 @@ def finalize_report(merged: dict, cfg: ReducerConfig | None = None) -> dict:
             "cascade_chains": cascade_chains,
         }
 
-    return {
+    final = {
         "schema_version": SCHEMA_VERSION,
         "kind": "stability_report",
         "samples_seen": merged.get("samples_seen", {}),
         "no_id_records": merged.get("no_id_records", 0),
         "integrals": out_integrals,
     }
+    if "nonfinite_records" in merged:
+        final["nonfinite_records"] = merged["nonfinite_records"]
+    return final
 
 
-def report_from_journals(paths: list, cfg: ReducerConfig | None = None) -> dict:
+def report_from_journals(paths: list, cfg: ReducerConfig | None = None, *,
+                         legacy: bool = False) -> dict:
     """Convenience: reduce N shard journals, merge, finalize."""
     cfg = cfg or ReducerConfig()
-    return finalize_report(merge_reports([reduce_journal(p, cfg) for p in paths]), cfg)
+    return finalize_report(
+        merge_reports([reduce_journal(p, cfg, legacy=legacy) for p in paths]), cfg)

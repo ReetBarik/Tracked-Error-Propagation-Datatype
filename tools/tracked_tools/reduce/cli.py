@@ -44,6 +44,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--predict", action="append", metavar="NAME=U",
                     help="additional target format: emit predicted_rel_err_if_NAME "
                          "using unit roundoff U (repeatable)")
+    ap.add_argument("--legacy", action="store_true",
+                    help="read pre-v1 (headerless v0.3) journals; without this "
+                         "flag a v1 header record is hard-required")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     p_red = sub.add_parser("reduce", help="reduce one journal -> shard report")
@@ -62,9 +65,10 @@ def main(argv: list[str] | None = None) -> int:
     cfg = _config_from_args(args)
 
     if args.cmd == "reduce":
-        _write_json(reduce_journal(args.journal, cfg), args.out)
+        _write_json(reduce_journal(args.journal, cfg, legacy=args.legacy), args.out)
     elif args.cmd == "report":
-        _write_json(report_from_journals(args.journals, cfg), args.out)
+        _write_json(report_from_journals(args.journals, cfg, legacy=args.legacy),
+                    args.out)
     elif args.cmd == "merge":
         shards = [json.loads(Path(s).read_text(encoding="utf-8")) for s in args.shards]
         _write_json(finalize_report(merge_reports(shards), cfg), args.out)

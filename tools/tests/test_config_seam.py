@@ -54,11 +54,12 @@ def rec(op="mul", ident="m#1@integral=k/sample=0", ins=("a", "b"), val=1.0,
 def test_saturation_cap_is_injectable(tmp_path):
     """gate-a counting keys off cfg.saturation_cap, not a hardcoded 2**53."""
     j = write_journal(tmp_path, [rec(op="atan2", cond=2.0 ** 24)])
-    default = core.reduce_journal(j, ReducerConfig())
+    default = core.reduce_journal(j, ReducerConfig(), legacy=True)
     reg = next(iter(default["integrals"]["k"]["regions"].values()))
     assert reg["gate_a_count"] == 0 and reg["max_cond"] == 2.0 ** 24
 
-    lowered = core.reduce_journal(j, ReducerConfig(saturation_cap=2.0 ** 24))
+    lowered = core.reduce_journal(j, ReducerConfig(saturation_cap=2.0 ** 24),
+                                  legacy=True)
     reg = next(iter(lowered["integrals"]["k"]["regions"].values()))
     assert reg["gate_a_count"] == 1 and reg["max_cond"] == 0.0
 
@@ -74,7 +75,7 @@ def test_local_cancel_threshold_note_is_truthful(tmp_path):
     j = write_journal(tmp_path, [rec(op="sub", cond=1e13, rel_err=1e-4)])
     cfg = ReducerConfig(local_cancel_cond=1e12)
     final = core.finalize_report(
-        core.merge_reports([core.reduce_journal(j, cfg)]), cfg)
+        core.merge_reports([core.reduce_journal(j, cfg, legacy=True)]), cfg)
     region = next(iter(final["integrals"]["k"]["regions"].values()))
     assert region["signal_class"] == "local_cancellation"
     assert "1e15" not in region["note"]
@@ -82,7 +83,7 @@ def test_local_cancel_threshold_note_is_truthful(tmp_path):
     # default config keeps the legacy byte-exact spelling
     j2 = write_journal(tmp_path, [rec(op="sub", cond=1e16, rel_err=1e-4)], "j2.jsonl")
     final = core.finalize_report(
-        core.merge_reports([core.reduce_journal(j2, ReducerConfig())]),
+        core.merge_reports([core.reduce_journal(j2, ReducerConfig(), legacy=True)]),
         ReducerConfig())
     region = next(iter(final["integrals"]["k"]["regions"].values()))
     assert "exceeds 1e15" in region["note"]
@@ -92,7 +93,7 @@ def test_range_guard_bounds_and_name_are_injectable(tmp_path):
     j = write_journal(tmp_path, [rec(val=1e-45)])   # below float min normal
     base_cfg = ReducerConfig()
     final = core.finalize_report(
-        core.merge_reports([core.reduce_journal(j, base_cfg)]), base_cfg)
+        core.merge_reports([core.reduce_journal(j, base_cfg, legacy=True)]), base_cfg)
     region = next(iter(final["integrals"]["k"]["regions"].values()))
     assert region["value_range_ok_for_float"] is False
 
@@ -100,7 +101,7 @@ def test_range_guard_bounds_and_name_are_injectable(tmp_path):
     cfg = ReducerConfig(range_name="double", range_min_normal=2.3e-308,
                         range_max=1.7e308)
     final = core.finalize_report(
-        core.merge_reports([core.reduce_journal(j, cfg)]), cfg)
+        core.merge_reports([core.reduce_journal(j, cfg, legacy=True)]), cfg)
     region = next(iter(final["integrals"]["k"]["regions"].values()))
     assert "value_range_ok_for_float" not in region
     assert region["value_range_ok_for_double"] is True
@@ -111,14 +112,14 @@ def test_mechanistic_thresholds_are_injectable(tmp_path):
     # threshold is lowered
     j = write_journal(tmp_path, [rec(op="add", cond=1.0, rel_err=1e-8)])
     final = core.finalize_report(
-        core.merge_reports([core.reduce_journal(j, ReducerConfig())]),
+        core.merge_reports([core.reduce_journal(j, ReducerConfig(), legacy=True)]),
         ReducerConfig())
     region = next(iter(final["integrals"]["k"]["regions"].values()))
     assert region["signal_class"] == "stable"
 
     cfg = ReducerConfig(cascade_rel_err=1e-9)
     final = core.finalize_report(
-        core.merge_reports([core.reduce_journal(j, cfg)]), cfg)
+        core.merge_reports([core.reduce_journal(j, cfg, legacy=True)]), cfg)
     region = next(iter(final["integrals"]["k"]["regions"].values()))
     assert region["signal_class"] == "cancellation_cascade"
 
@@ -127,7 +128,7 @@ def test_prediction_formats_follow_config(tmp_path):
     j = write_journal(tmp_path, [rec()])
     cfg = ReducerConfig(predictions={"qf": 2.0 ** -100})
     final = core.finalize_report(
-        core.merge_reports([core.reduce_journal(j, cfg)]), cfg)
+        core.merge_reports([core.reduce_journal(j, cfg, legacy=True)]), cfg)
     region = next(iter(final["integrals"]["k"]["regions"].values()))
     assert "predicted_rel_err_if_qf" in region
     assert "predicted_rel_err_if_float" not in region
@@ -140,7 +141,7 @@ def test_prediction_formats_follow_config(tmp_path):
 def diff_reduce(frozen, path):
     """Run both implementations (AMP-equivalent config on the port)."""
     cfg = ReducerConfig(predictions={"float": core.U_FLOAT, "ff": 2.0 ** -46})
-    return core.reduce_journal(path, cfg), frozen.reduce_journal(path)
+    return core.reduce_journal(path, cfg, legacy=True), frozen.reduce_journal(path)
 
 
 def test_no_id_records_differential(tmp_path, frozen):
