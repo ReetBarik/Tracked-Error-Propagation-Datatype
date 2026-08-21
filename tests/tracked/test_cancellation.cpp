@@ -148,9 +148,10 @@ TEST_CASE("sub: genuine subnormal underflow to 0 (a != b) reports cond ~ 1/u") {
     // Portable fallback: no reliable FTZ control. Exercise the adjacent regime
     // — two distinct near-equal subnormals whose difference stays nonzero must
     // still report a large cond via the normal branch, not be swallowed as
-    // exact cancellation.
-    double av = 0x1.8p-1022;
-    double bv = 0x1.0p-1022;
+    // exact cancellation. av = 2^-1023 + 2^-1074, bv = 2^-1023: both exactly
+    // representable subnormals, diff = 2^-1074, cond = 2^52 + 1 ~ 4.5e15.
+    double av = 0x1.0000000000002p-1023;
+    double bv = 0x1.0p-1023;
     auto a = track("a", av);
     auto b = track("b", bv);
     auto r = a - b;
