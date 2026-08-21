@@ -35,6 +35,29 @@
 9. **⛔ HARD STOP after point 14.** Point 15 (cluster-side qcdloop re-characterization) runs
    on the cluster, not this Mac — **check in with Reet before starting it.**
 
+## Execution sessions & sequencing override
+
+**Sequencing override (critical, applies regardless of session split):** build the
+`tracked-reduce` differential-parity harness against the **current v0.3 schema** and get it
+green **before** landing the Phase-2 schema break. Never change the format and the
+implementation in the same step — the harness is the regression net for the break; parity
+failures after a simultaneous change are undiagnosable.
+
+**Session A — library core + switchover** (one session, this order):
+P0 → P1 → P5 reducer port + parity harness (green on v0.3) → P2 schema break → P3 → P4 →
+P5 remaining tools (injector, C8, interop kit) → P7 AMP switchover → acceptance point 14 →
+**STOP** (point 15 is cluster-side; check in with Reet first).
+Commit **and push at every phase boundary** so an interrupted session resumes from the last
+green phase instead of restarting. Two verification passes worth an adversarial review:
+(a) the schema-v1 design *before* it lands (the journal format becomes a public contract at
+that moment); (b) the reducer generic-core vs AMP-policy split (the easiest place to
+silently smuggle a behavior change past the parity harness).
+
+**Session B — viewer (P6), fresh session/context:** regenerate fixture journals under v1,
+then the distiller and the two views. Zero coupling to Session A beyond the v1 schema —
+do **not** bolt it onto the end of Session A; it is design-quality work that deserves fresh
+context (apply the dataviz guidance when writing chart/layout code).
+
 ## Source of truth
 
 **This repo.** The AMP consumer vendors it at `AMP/third_party/tracked/` via git subtree.
