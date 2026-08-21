@@ -28,8 +28,31 @@ reproduces AMP's historical `stability_reducer.py` byte-for-byte on the frozen
 v0.3 fixture journals (`tests/parity/`); CI enforces this against committed
 goldens.
 
-## Coming in this package
+## tracked-line-inject
 
-- `tracked-line-inject` — libclang per-statement `line=` scope injection.
-- `tracked-boundary-patch` — compiler-error-driven int↔tracked boundary patches.
-- `tracked_tools/interop/` — LLM interop-shim kit (ruleset, caching, plumbing).
+libclang-driven per-statement `line=<basename>:<N>` scope injection: emits a
+`git apply`-able patch wrapping every value-producing statement in a target
+header tree so operator arithmetic (which carries no `SourceLocation`) gets
+line-level attribution. Declarations wrap with `push_scope`/`pop_scope`;
+everything else with an RAII block. Parameterized on extra include dirs,
+defines, and the RAII scope variable name; composes with a boundary (C8)
+patch; `.hash`-sidecar regeneration cache. Requires the `libclang` extra
+(`pip install -e "tools[inject]"`) and, for real trees, `g++` on PATH.
+
+## tracked-boundary-patch
+
+Compiler-error-driven int↔tracked boundary annotation: feed it the gcc stderr
+of a shimmed build and it maps the three recognized crossing patterns
+(tracked→int assignment, int→tracked ref bind, tracked-vs-int comparison) to
+exact source edits, synthesized as a deterministic unified diff with an
+exact-once edit discipline. Unrecognized int↔tracked diagnostics hard-fail
+(`C8_UNCLASSIFIED_ERROR`) for human review. Parameterized on the instrumented
+scalar spelling (`--type tracked::Tracked`). gcc diagnostics only (v1).
+
+## tracked_tools/interop/
+
+The interop-shim kit: the classification ruleset (`ruleset.txt`, Rules 1–9 +
+C1–C7 — byte-pinned, consumers' cached `SOURCE_HASH`es depend on it), the
+SOURCE_HASH staleness cache (`cache.py`), and LLM generation plumbing
+(`llm.py`; anthropic-SDK streaming as the default transport, pluggable via
+any callable). Library-side shim conventions: `docs/INTEROP.md`.
